@@ -1,0 +1,12 @@
+[{
+  "modid": "teamsmod",
+  "name": "Team Mod",
+  "description": "Adds functional teams to the game",
+  "version": "0.6",
+  "mcversion": "1.12.2",
+  "logoFile": "assets/examplemod/textures/logo.png",
+  "url": "minecraftforge.net/",
+  "updateJSON": "minecraftforge.net/versions.json",
+  "authorList": ["daPoseidonGuy"],
+  "credits": "Inspired by the teams in Aether 2 for 1.7.10"
+}]
