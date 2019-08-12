@@ -70,14 +70,13 @@ public class GuiTeam extends Gui {
                     for (UUID uid : team.getPlayers()) {
                         if(!uid.equals(id)) {
                             PacketHandler.INSTANCE.sendToServer(new MessageRequestHunger(id,uid));
-                            GameProfile gameProfile = mc.player.getGameProfile();
                             AbstractClientPlayer clientP = (AbstractClientPlayer) mc.player.world.getPlayerEntityByUUID(uid);
                             if(clientP!=null) {
                                 new GuiTeam(mc, offsety+16, 0, null,MathHelper.ceil(clientP.getHealth()),"health");
                                 if(hungerMap.containsKey(uid)) {
                                     new GuiTeam(Minecraft.getMinecraft(), offsety+16, 0, null, hungerMap.get(uid),"hunger");
                                 }
-                                new GuiTeam(mc, offsety, 0,gameProfile, 0,"profile");
+                                new GuiTeam(mc, offsety, 0,clientP.getGameProfile(), 0,"profile");
                                 offsety += 46;
                             }
                         }
