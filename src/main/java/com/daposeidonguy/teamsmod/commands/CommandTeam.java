@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.commands;
 
+import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
@@ -57,8 +58,10 @@ public class CommandTeam implements ICommand {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
+
         if (!sender.getEntityWorld().isRemote && args.length > 0) {
             SaveData data = SaveData.get(sender.getEntityWorld());
+            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)sender);
             switch (args[0]) {
                 case "create":
                     try {
@@ -101,7 +104,6 @@ public class CommandTeam implements ICommand {
                         if(team.getPlayers().contains(uid)) {
                             sender.sendMessage(new TextComponentString("Removing that player from your team!"));
                             data.removePlayer((EntityPlayer)sender,uid);
-                            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams), FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uid));
                         }
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("Must enter a valid playername to remove from your team: /team remove <playername>"));
@@ -121,11 +123,10 @@ public class CommandTeam implements ICommand {
                         data.removePlayer(invitee,uid);
                     }
                     data.addPlayer(inviter, uid);
-                    if (team != null && inviter != null) {
+                    if (team != null && inviter != null && !ConfigHandler.disableAchievementSync) {
                         Team.syncPlayers(team, (EntityPlayerMP)invitee);
                     }
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
-                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams), (EntityPlayerMP)invitee);
                     break;
                 case "invite":
                     try {
@@ -149,16 +150,13 @@ public class CommandTeam implements ICommand {
                     UUID id = ((EntityPlayer) sender).getUniqueID();
                     List<UUID> uuidList = Team.getTeam(sender.getCommandSenderEntity().getUniqueID()).getPlayers();
                     data.removeTeam(id);
-                    for(UUID uuid : uuidList) {
-                        EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
-                        PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),playerMP);
-                    }
                     sender.sendMessage(new TextComponentString("Your team has been disbanded"));
                     break;
                 case "player":
                     try {
                         String playerName = args[1];
-                        Team playerteam = Team.getTeam(EntityPlayer.getOfflineUUID(playerName));
+                        Team playerteam = Team.getTeam(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
+                        System.out.println(playerteam!=null);
                         sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
                         sender.sendMessage(new TextComponentString(playerteam.getName()));
                     } catch (Exception ex) {
@@ -178,12 +176,7 @@ public class CommandTeam implements ICommand {
                     try {
                         String teamName = args[1];
                         sender.sendMessage(new TextComponentString("The team \"" + teamName + "\" has been removed"));
-                        List<UUID> uuidList1 = Team.getTeam(sender.getCommandSenderEntity().getUniqueID()).getPlayers();
                         data.removeTeam(teamName);
-                        for(UUID uuid : uuidList1) {
-                            EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
-                            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),playerMP);
-                        }
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("That team doesn't exist, or an error occurred"));
                     }
@@ -211,7 +204,6 @@ public class CommandTeam implements ICommand {
                     break;
                 default:
                     sender.sendMessage(new TextComponentString("Invalid command"));
-            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)sender);
         }
     } else {
         sender.sendMessage(new TextComponentString("Must include command"));

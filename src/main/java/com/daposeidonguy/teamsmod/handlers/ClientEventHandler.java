@@ -16,13 +16,18 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onChatMessage(ClientChatReceivedEvent event) {
-        EntityPlayerSP p = Minecraft.getMinecraft().player;
-        Team team = Team.getTeam(Minecraft.getMinecraft().player.getUniqueID());
-        if(event.getMessage().getUnformattedComponentText().substring(3).contains(p.getDisplayNameString()) || team!=null && event.getMessage().getUnformattedComponentText().substring(3).contains(team.getName())) {
-            Style newStyle = new Style();
-            newStyle.setBold(true);
-            event.setMessage(event.getMessage().setStyle(newStyle));
-            p.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1.0F,5.0F);
+        if(!ConfigHandler.disablePing) {
+            EntityPlayerSP p = Minecraft.getMinecraft().player;
+            Team team = Team.getTeam(p.getUniqueID());
+            int slice = event.getMessage().getUnformattedComponentText().indexOf(">");
+            if(slice>=0) {
+                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && event.getMessage().getUnformattedComponentText().substring(slice).contains(team.getName())) {
+                    Style newStyle = new Style();
+                    newStyle.setBold(true);
+                    event.setMessage(event.getMessage().setStyle(newStyle));
+                    p.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1.0F,5.0F);
+                }
+            }
         }
     }
 

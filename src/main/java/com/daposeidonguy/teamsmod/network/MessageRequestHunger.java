@@ -12,15 +12,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.UUID;
 
-public class MessageRequest implements IMessage {
+public class MessageRequestHunger implements IMessage {
 
     private NBTTagCompound tagId = new NBTTagCompound();
 
-    public MessageRequest() {
+    public MessageRequestHunger() {
 
     }
 
-    public MessageRequest(UUID id1, UUID id2) {
+    public MessageRequestHunger(UUID id1,UUID id2) {
         tagId.setString("uid1",id1.toString());
         tagId.setString("uid2",id2.toString());
     }
@@ -34,19 +34,16 @@ public class MessageRequest implements IMessage {
     public void toBytes(ByteBuf buf) {
         ByteBufUtils.writeTag(buf,tagId);
     }
-    public static class MessageHandler implements IMessageHandler<MessageRequest,IMessage> {
+    public static class MessageHandler implements IMessageHandler<MessageRequestHunger,IMessage> {
         @Override
-        public IMessage onMessage(MessageRequest message, MessageContext ctx) {
+        public IMessage onMessage(MessageRequestHunger message, MessageContext ctx) {
             FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                 EntityPlayer p1 = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(message.tagId.getString("uid1")));
                 EntityPlayer p2 = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(message.tagId.getString("uid2")));
                 if (p1==null || p2==null) {
                     return;
                 }
-                if(p1==null) {
-                } else if (p2==null) {
-                }
-                PacketHandler.INSTANCE.sendTo(new MessageHunger(p2.getFoodStats().getFoodLevel()), (EntityPlayerMP) p1);
+                PacketHandler.INSTANCE.sendTo(new MessageHunger(p2.getUniqueID(),p2.getFoodStats().getFoodLevel()),(EntityPlayerMP)p1);
             });
             return null;
         }

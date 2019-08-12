@@ -10,13 +10,11 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SaveData extends WorldSavedData {
 
+    public static Map<UUID,Integer> mapHunger = new HashMap();
     public static List<Team> listTeams = new ArrayList<>();
     public static final String NAME = TeamsMod.MODID;
 

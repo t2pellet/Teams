@@ -1,6 +1,6 @@
 [{
   "modid": "teamsmod",
-  "name": "Team Mod",
+  "name": "Teams Mod",
   "description": "Adds functional teams to the game",
   "version": "0.6",
   "mcversion": "1.12.2",
