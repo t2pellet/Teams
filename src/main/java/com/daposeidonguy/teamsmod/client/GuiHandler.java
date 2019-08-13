@@ -10,7 +10,6 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -57,9 +56,13 @@ public class GuiHandler {
                     if(Team.getTeam(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())==null) {
                         FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager());
                     } else {
-                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager1());
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager1(Team.getTeam(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()).getName()));
                     }
                     break;
+                case Integer.MIN_VALUE+7:
+//                    PacketHandler.INSTANCE.sendToServer(new MessageLeave(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
+                    FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team leave");
+                    FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
 
         }
@@ -77,13 +80,20 @@ public class GuiHandler {
                     if(!uid.equals(id)) {
                         PacketHandler.INSTANCE.sendToServer(new MessageRequestHunger(id,uid));
                         AbstractClientPlayer clientP = (AbstractClientPlayer) mc.player.world.getPlayerEntityByUUID(uid);
+//                        if(clientP!=null) {
+//                            new GuiTeam(mc, offsety+16, 0, null, MathHelper.ceil(clientP.getHealth()),"health");
+//                            if(hungerMap.containsKey(uid)) {
+//                                new GuiTeam(Minecraft.getMinecraft(), offsety+16, 0, null, hungerMap.get(uid),"hunger");
+//                            }
+//                            new GuiTeam(mc, offsety, 0,clientP.getGameProfile(), 0,"profile");
+//                            offsety += 46;
+//                        }
                         if(clientP!=null) {
-                            new GuiTeam(mc, offsety+16, 0, null, MathHelper.ceil(clientP.getHealth()),"health");
+                            int hunger = 20;
                             if(hungerMap.containsKey(uid)) {
-                                new GuiTeam(Minecraft.getMinecraft(), offsety+16, 0, null, hungerMap.get(uid),"hunger");
+                                hunger = hungerMap.get(uid);
                             }
-                            new GuiTeam(mc, offsety, 0,clientP.getGameProfile(), 0,"profile");
-                            offsety += 46;
+                            new GuiTeam(mc,offsety, (int)Math.ceil(clientP.getHealth()),hunger,clientP);
                         }
                     }
                 }

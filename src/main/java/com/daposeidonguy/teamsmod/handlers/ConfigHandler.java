@@ -13,4 +13,6 @@ public class ConfigHandler {
     public static boolean enableFriendlyFire;
     @Config.Comment({"Whether to disable achievement sync for teammates"})
     public static boolean disableAchievementSync;
+    @Config.Comment({"Allows everyone to use /team remove"})
+    public static boolean noOpRemoveTeam;
 }

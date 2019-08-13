@@ -48,7 +48,7 @@ public class CommandTeam implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "\nteam create <name>\nteam list\nteam invite <name>\nteam kick <name>\nteam disband\nteam remove <name>\nteam info <name>\nteam player <name>";
+        return "\nteam create <name>\nteam list\nteam invite <name>\nteam kick <name>\nteam leave\nteam remove <name>\nteam info <name>\nteam player <name>";
     }
 
     @Override
@@ -122,6 +122,7 @@ public class CommandTeam implements ICommand {
                     }
                     PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)invitee);
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
+                    inviter.sendMessage(new TextComponentString(invitee.getDisplayNameString() + " has joined your team!"));
                     break;
                 case "invite":
                     try {
@@ -141,12 +142,16 @@ public class CommandTeam implements ICommand {
                         sender.sendMessage(new TextComponentString("Must enter an online player's username to invite"));
                     }
                     break;
-                case "disband":
-                    UUID id = ((EntityPlayer) sender).getUniqueID();
-                    List<UUID> uuidList = Team.getTeam(sender.getCommandSenderEntity().getUniqueID()).getPlayers();
-                    data.removeTeam(id);
-                    sender.sendMessage(new TextComponentString("Your team has been disbanded"));
-                    PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
+                case "leave":
+                    try {
+                        EntityPlayer p = (EntityPlayer)sender;
+                        Team toLeave = Team.getTeam(p.getUniqueID());
+                        data.removePlayer(p,p.getUniqueID());
+                        p.sendMessage(new TextComponentString("You left your team"));
+                        if(toLeave.getPlayers().isEmpty()) {
+                            data.removeTeam(toLeave.getName());
+                        }
+                    } catch (Exception ex) {}
                     break;
                 case "player":
                     try {
@@ -161,7 +166,15 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "remove":
-                    if(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP)sender).getGameProfile())==null) {
+                    boolean flag = false;
+                    if(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP)sender).getGameProfile())==null && !ConfigHandler.noOpRemoveTeam) {
+                        flag=true;
+                    } else if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
+                        if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getWorldInfo().areCommandsAllowed()) {
+                            flag = true;
+                        }
+                    }
+                    if (flag) {
                         TextComponentString error = new TextComponentString("You do not have permission to use this command");
                         Style red = new Style();
                         red.setColor(TextFormatting.RED);
@@ -173,7 +186,6 @@ public class CommandTeam implements ICommand {
                         String teamName = args[1];
                         sender.sendMessage(new TextComponentString("The team \"" + teamName + "\" has been removed"));
                         data.removeTeam(teamName);
-                        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("That team doesn't exist, or an error occurred"));
                     }
@@ -204,7 +216,7 @@ public class CommandTeam implements ICommand {
         } else {
             sender.sendMessage(new TextComponentString("Must include command"));
         }
-        PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)sender);
+        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
     }
 
     @Override

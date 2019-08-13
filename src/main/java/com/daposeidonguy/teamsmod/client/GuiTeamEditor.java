@@ -1,8 +1,5 @@
 package com.daposeidonguy.teamsmod.client;
 
-import com.daposeidonguy.teamsmod.network.MessageInvite;
-import com.daposeidonguy.teamsmod.network.MessageTeam;
-import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.daposeidonguy.teamsmod.team.Team;
 import net.minecraft.client.gui.FontRenderer;
@@ -10,7 +7,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.awt.*;
@@ -66,7 +62,7 @@ public class GuiTeamEditor extends GuiScreen {
             GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
             int yoffset = 30;
             for(Team team : SaveData.listTeams) {
-                GuiTeamEditor.fontRenderer.drawString(team.getName(),guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(team.getName()),guiTop+yoffset,Color.GRAY.getRGB());
+                GuiTeamEditor.fontRenderer.drawString(team.getName(),guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(team.getName()) / 2,guiTop+yoffset,Color.GRAY.getRGB());
                 yoffset+=15;
             }
 
@@ -79,6 +75,11 @@ public class GuiTeamEditor extends GuiScreen {
         private int guiTop, guiLeft;
         private GuiTextField text;
         private GuiButton button;
+        private String name;
+
+        public GuiTeamManager1(String name) {
+            this.name = name;
+        }
 
         @Override
         public void initGui() {
@@ -86,11 +87,13 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.text = new GuiTextField(Integer.MIN_VALUE+6,FMLClientHandler.instance().getClient().fontRenderer,guiLeft + WIDTH / 2 - 60,guiTop+50,120,20);
+
+            this.text = new GuiTextField(Integer.MIN_VALUE+6,FMLClientHandler.instance().getClient().fontRenderer,guiLeft + WIDTH / 2 - 60,guiTop+45,120,20);
             this.text.setFocused(true);
 
-            this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 75, 120,20,"Invite Player");
+            this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 70, 120,20,"Invite Player");
             this.buttonList.add(this.button);
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+7,guiLeft+WIDTH/2-60,guiTop+100,120,20,"Leave Team"));
             this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Close menu"));
         }
 
@@ -99,8 +102,8 @@ public class GuiTeamEditor extends GuiScreen {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Team Manager",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager") / 2,guiTop+10,Color.BLACK.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+40,Color.GRAY.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Team Manager: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+35,Color.GRAY.getRGB());
             this.text.drawTextBox();
 
             super.drawScreen(mouseX, mouseY, partialTicks);
@@ -117,8 +120,9 @@ public class GuiTeamEditor extends GuiScreen {
             super.mouseClicked(mouseX, mouseY, mouseButton);
             this.text.mouseClicked(mouseX,mouseY,mouseButton);
             if(this.button.isMouseOver()) {
-                PacketHandler.INSTANCE.sendToServer(new MessageInvite(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
-                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Invited player " + "\"" + this.text.getText() + "\""));
+//                PacketHandler.INSTANCE.sendToServer(new MessageInvite(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
+//                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Invited player " + "\"" + this.text.getText() + "\""));
+                FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team invite " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
         }
@@ -168,8 +172,9 @@ public class GuiTeamEditor extends GuiScreen {
             super.mouseClicked(mouseX, mouseY, mouseButton);
             this.text.mouseClicked(mouseX,mouseY,mouseButton);
             if(this.button.isMouseOver()) {
-                PacketHandler.INSTANCE.sendToServer(new MessageTeam(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
-                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Created team " + "\"" + this.text.getText() + "\""));
+//                PacketHandler.INSTANCE.sendToServer(new MessageTeam(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
+//                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Created team " + "\"" + this.text.getText() + "\""));
+                FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team create " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
         }

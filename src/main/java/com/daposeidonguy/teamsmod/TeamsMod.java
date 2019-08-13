@@ -21,16 +21,14 @@ public class TeamsMod
 
     public static final String MODID = "teamsmod";
     public static final String NAME = "Teams Mod";
-    public static final String VERSION = "0.6";
+    public static final String VERSION = "0.7";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0, Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageRequestHunger.MessageHandler.class, MessageRequestHunger.class,2,Side.SERVER);
-        PacketHandler.INSTANCE.registerMessage(MessageTeam.MessageHandler.class,MessageTeam.class,3,Side.SERVER);
-        PacketHandler.INSTANCE.registerMessage(MessageInvite.MessageHandler.class,MessageInvite.class,4,Side.SERVER);
-        PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,4,Side.SERVER);
+        PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.SERVER);
         if(FMLCommonHandler.instance().getSide()==Side.CLIENT) {
             Keybind.register();
             MinecraftForge.EVENT_BUS.register(GuiHandler.instance());
@@ -38,8 +36,6 @@ public class TeamsMod
             PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageRequestHunger.MessageHandler.class, MessageRequestHunger.class,2,Side.CLIENT);
-            PacketHandler.INSTANCE.registerMessage(MessageTeam.MessageHandler.class,MessageTeam.class,3,Side.CLIENT);
-            PacketHandler.INSTANCE.registerMessage(MessageInvite.MessageHandler.class,MessageInvite.class,4,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.CLIENT);
         }
     }
