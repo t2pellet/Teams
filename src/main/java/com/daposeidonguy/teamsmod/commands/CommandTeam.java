@@ -93,7 +93,7 @@ public class CommandTeam implements ICommand {
                 case "kick":
                     try {
                         String playerName= args[1];
-                        UUID uid = EntityPlayer.getOfflineUUID(playerName);
+                        UUID uid = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
                         Team team = Team.getTeam(((EntityPlayer)sender).getUniqueID());
                         if(team.getPlayers().contains(uid)) {
                             sender.sendMessage(new TextComponentString("Removing that player from your team!"));
@@ -117,10 +117,15 @@ public class CommandTeam implements ICommand {
                         data.removePlayer(invitee,uid);
                     }
                     data.addPlayer(inviter, uid);
-                    if (team != null && inviter != null && !ConfigHandler.disableAchievementSync) {
-                        Team.syncPlayers(team, (EntityPlayerMP)invitee);
-                    }
                     PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)invitee);
+                    if (team != null && inviter != null && !ConfigHandler.disableAchievementSync) {
+                        for(UUID p : team.getPlayers()) {
+                            EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(p);
+                            if(playerMP!=null) {
+                                Team.syncPlayers(team,playerMP);
+                            }
+                        }
+                    }
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
                     inviter.sendMessage(new TextComponentString(invitee.getDisplayNameString() + " has joined your team!"));
                     break;

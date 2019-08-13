@@ -80,20 +80,13 @@ public class GuiHandler {
                     if(!uid.equals(id)) {
                         PacketHandler.INSTANCE.sendToServer(new MessageRequestHunger(id,uid));
                         AbstractClientPlayer clientP = (AbstractClientPlayer) mc.player.world.getPlayerEntityByUUID(uid);
-//                        if(clientP!=null) {
-//                            new GuiTeam(mc, offsety+16, 0, null, MathHelper.ceil(clientP.getHealth()),"health");
-//                            if(hungerMap.containsKey(uid)) {
-//                                new GuiTeam(Minecraft.getMinecraft(), offsety+16, 0, null, hungerMap.get(uid),"hunger");
-//                            }
-//                            new GuiTeam(mc, offsety, 0,clientP.getGameProfile(), 0,"profile");
-//                            offsety += 46;
-//                        }
                         if(clientP!=null) {
                             int hunger = 20;
                             if(hungerMap.containsKey(uid)) {
                                 hunger = hungerMap.get(uid);
                             }
                             new GuiTeam(mc,offsety, (int)Math.ceil(clientP.getHealth()),hunger,clientP);
+                            offsety+=46;
                         }
                     }
                 }

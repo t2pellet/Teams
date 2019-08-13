@@ -81,6 +81,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
+        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
         if(!event.player.getEntityWorld().isRemote) {
             if(((EntityPlayerMP)event.player).getStatFile().readStat(StatList.LEAVE_GAME)==0) {
                 event.player.sendMessage(new TextComponentString("Welcome to the server! This server has a teams system allowing you to disable PvP, sync advancements and see health/hunger of your teammates!\nType /team to get started"));
@@ -96,7 +97,9 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
         if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
-            SaveData data = SaveData.get(event.getWorld());
+            try {
+                SaveData.get(event.getWorld());
+            } catch (NoClassDefFoundError ex) {}
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
         }
         if(!event.getWorld().isRemote && !ConfigHandler.disableAchievementSync) {
