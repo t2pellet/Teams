@@ -29,7 +29,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void arrowShootPlayer(LivingAttackEvent event) {
-        if (!ConfigHandler.enableFriendlyFire && event.getSource().getTrueSource() instanceof EntityPlayer) {
+        if (!ConfigHandler.enableFriendlyFire && event.getSource().getTrueSource() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer attacker = (EntityPlayer) event.getSource().getTrueSource();
             EntityPlayer target = (EntityPlayer)event.getEntityLiving();
             Team targetTeam = Team.getTeam(target.getUniqueID());
@@ -85,12 +85,15 @@ public class CommonEventHandler {
     }
 
     @SubscribeEvent
+    public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
+        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
+    }
+
+    @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
         if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
-            if(event.getEntity().getServer().getOnlinePlayerNames().length<2) {
-                SaveData data = SaveData.get(event.getWorld());
-            }
-            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)event.getEntity());
+            SaveData data = SaveData.get(event.getWorld());
+            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
         }
         if(!event.getWorld().isRemote && !ConfigHandler.disableAchievementSync) {
             if (event.getEntity() instanceof EntityPlayer && !event.getWorld().isRemote) {

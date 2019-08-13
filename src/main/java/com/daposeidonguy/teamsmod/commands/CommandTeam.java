@@ -61,7 +61,6 @@ public class CommandTeam implements ICommand {
 
         if (!sender.getEntityWorld().isRemote && args.length > 0) {
             SaveData data = SaveData.get(sender.getEntityWorld());
-            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)sender);
             switch (args[0]) {
                 case "create":
                     try {
@@ -72,17 +71,12 @@ public class CommandTeam implements ICommand {
                                 return;
                             }
                         }
-                        EntityPlayer player = (EntityPlayer) sender;
-                        boolean flag = false;
-                        for (Team team : SaveData.listTeams) {
-                            if (team.getName().equals(name)) {
-                                flag = true;
-                                break;
-                            }
+                        EntityPlayer player = (EntityPlayer)sender;
+                        if(Team.getTeam(player.getUniqueID())!=null) {
+                            sender.sendMessage(new TextComponentString("You're already in a team! Leave it first!"));
+                            return;
                         }
-                        if (!flag) {
-                            data.addTeam(name, player);
-                        }
+                        data.addTeam(name, player);
                         sender.sendMessage(new TextComponentString("New team named" + " \"" + name + "\" created"));
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("Incorrect syntax. /team create <teamname>"));
@@ -126,6 +120,7 @@ public class CommandTeam implements ICommand {
                     if (team != null && inviter != null && !ConfigHandler.disableAchievementSync) {
                         Team.syncPlayers(team, (EntityPlayerMP)invitee);
                     }
+                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)invitee);
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
                     break;
                 case "invite":
@@ -151,6 +146,7 @@ public class CommandTeam implements ICommand {
                     List<UUID> uuidList = Team.getTeam(sender.getCommandSenderEntity().getUniqueID()).getPlayers();
                     data.removeTeam(id);
                     sender.sendMessage(new TextComponentString("Your team has been disbanded"));
+                    PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
                     break;
                 case "player":
                     try {
@@ -177,6 +173,7 @@ public class CommandTeam implements ICommand {
                         String teamName = args[1];
                         sender.sendMessage(new TextComponentString("The team \"" + teamName + "\" has been removed"));
                         data.removeTeam(teamName);
+                        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("That team doesn't exist, or an error occurred"));
                     }
@@ -203,10 +200,11 @@ public class CommandTeam implements ICommand {
                     break;
                 default:
                     sender.sendMessage(new TextComponentString("Invalid command"));
+            }
+        } else {
+            sender.sendMessage(new TextComponentString("Must include command"));
         }
-    } else {
-        sender.sendMessage(new TextComponentString("Must include command"));
-    }
+        PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)sender);
     }
 
     @Override

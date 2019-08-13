@@ -1,7 +1,6 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
-import com.daposeidonguy.teamsmod.network.MessageRequestData;
 import com.daposeidonguy.teamsmod.network.MessageRequestHunger;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.Team;
@@ -63,7 +62,6 @@ public class GuiTeam extends Gui {
             if (FMLClientHandler.instance().getSide() == Side.CLIENT) {
                 Minecraft mc = FMLClientHandler.instance().getClient();
                 UUID id = mc.player.getUniqueID();
-                PacketHandler.INSTANCE.sendToServer(new MessageRequestData(id));
                 Team team = Team.getTeam(id);
                 if (team != null && !event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE && ClientEventHandler.displayHud) {
                     int offsety = 0;

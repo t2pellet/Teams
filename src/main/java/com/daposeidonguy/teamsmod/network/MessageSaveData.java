@@ -36,9 +36,9 @@ public class MessageSaveData implements IMessage {
             tagCompound.setString("Team Name",team.getName());
             tagCompound.setTag("Player List",team.getPlayerListTag());
             tagList.appendTag(tagCompound);
-        }
         if(!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote) {
-            this.tagTeam.setTag("Teams",tagList);
+                this.tagTeam.setTag("Teams",tagList);
+            }
         }
     }
 
