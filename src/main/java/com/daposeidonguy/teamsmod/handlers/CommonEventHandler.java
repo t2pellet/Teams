@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.network.MessageClear;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
@@ -36,7 +37,6 @@ public class CommonEventHandler {
             Team attackerTeam = Team.getTeam(attacker.getUniqueID());
             if(targetTeam!=null && attackerTeam!=null && targetTeam.getName().equals(attackerTeam.getName())) {
                 event.setCanceled(true);
-                attacker.sendMessage(new TextComponentString("Don't attack your own teammate!"));
             }
         }
     }
@@ -50,7 +50,6 @@ public class CommonEventHandler {
             Team attackerTeam = Team.getTeam(attacker.getUniqueID());
             if(targetTeam!=null && attackerTeam!=null && targetTeam.getName().equals(attackerTeam.getName())) {
                 event.setCanceled(true);
-                attacker.sendMessage(new TextComponentString("Don't attack your own teammate!"));
             }
         }
     }
@@ -73,6 +72,11 @@ public class CommonEventHandler {
                 event.setComponent(new TextComponentTranslation(message));
             }
         }
+    }
+
+    @SubscribeEvent
+    public void logOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
     }
 
     @SubscribeEvent
