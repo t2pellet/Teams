@@ -21,7 +21,7 @@ public class ClientEventHandler {
             Team team = Team.getTeam(p.getUniqueID());
             int slice = event.getMessage().getUnformattedComponentText().indexOf(">");
             if(slice>=0) {
-                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && event.getMessage().getUnformattedComponentText().substring(slice).contains(team.getName())) {
+                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && event.getMessage().getUnformattedComponentText().substring(slice).contains(' ' + team.getName() + ' ')) {
                     Style newStyle = new Style();
                     newStyle.setBold(true);
                     event.setMessage(event.getMessage().setStyle(newStyle));

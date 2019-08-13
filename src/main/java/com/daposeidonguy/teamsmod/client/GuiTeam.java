@@ -61,7 +61,7 @@ public class GuiTeam extends Gui {
         @SubscribeEvent
         public void RenderGuiEvent(RenderGameOverlayEvent.Post event) {
             if (FMLClientHandler.instance().getSide() == Side.CLIENT) {
-                Minecraft mc = Minecraft.getMinecraft();
+                Minecraft mc = FMLClientHandler.instance().getClient();
                 UUID id = mc.player.getUniqueID();
                 PacketHandler.INSTANCE.sendToServer(new MessageRequestData(id));
                 Team team = Team.getTeam(id);

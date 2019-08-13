@@ -198,7 +198,6 @@ public class CommandTeam implements ICommand {
                             }
                         }
                     } catch(Exception ex){
-                        ex.printStackTrace();
                         sender.sendMessage(new TextComponentString("Enter team name to get info on"));
                     }
                     break;

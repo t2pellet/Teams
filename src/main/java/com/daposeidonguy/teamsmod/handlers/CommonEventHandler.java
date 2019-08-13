@@ -1,6 +1,9 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.network.MessageSaveData;
+import com.daposeidonguy.teamsmod.network.PacketHandler;
+import com.daposeidonguy.teamsmod.team.SaveData;
 import com.daposeidonguy.teamsmod.team.Team;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -11,6 +14,7 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -24,8 +28,22 @@ import java.util.UUID;
 public class CommonEventHandler {
 
     @SubscribeEvent
+    public static void arrowShootPlayer(LivingAttackEvent event) {
+        if (!ConfigHandler.enableFriendlyFire && event.getSource().getTrueSource() instanceof EntityPlayer) {
+            EntityPlayer attacker = (EntityPlayer) event.getSource().getTrueSource();
+            EntityPlayer target = (EntityPlayer)event.getEntityLiving();
+            Team targetTeam = Team.getTeam(target.getUniqueID());
+            Team attackerTeam = Team.getTeam(attacker.getUniqueID());
+            if(targetTeam!=null && attackerTeam!=null && targetTeam.getName().equals(attackerTeam.getName())) {
+                event.setCanceled(true);
+                attacker.sendMessage(new TextComponentString("Don't attack your own teammate!"));
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void playerHitPlayer(AttackEntityEvent event) {
-        if(!ConfigHandler.enableFriendlyFire && event.getEntityLiving() instanceof EntityPlayer && event.getTarget() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
+        if(!ConfigHandler.enableFriendlyFire && (event.getEntityLiving() instanceof EntityPlayer) && event.getTarget() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
             EntityPlayer target = (EntityPlayer)event.getTarget();
             EntityPlayer attacker = event.getEntityPlayer();
             Team targetTeam = Team.getTeam(target.getUniqueID());
@@ -46,11 +64,14 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerChat(ServerChatEvent event) {
-        EntityPlayerMP p = event.getPlayer();
-        Team team = Team.getTeam(p.getUniqueID());
-        if (team!=null && !ConfigHandler.disablePrefix) {
-            String message = "[" + team.getName() + "]" + " <" +  p.getDisplayNameString() + "> "  + event.getMessage();
-            event.setComponent(new TextComponentTranslation(message));
+        if(!event.getPlayer().getServerWorld().isRemote) {
+            EntityPlayerMP p = event.getPlayer();
+            Team team = Team.getTeam(p.getUniqueID());
+
+            if (team!=null && !ConfigHandler.disablePrefix) {
+                String message = "[" + team.getName() + "]" + " <" +  p.getDisplayNameString() + "> "  + event.getMessage();
+                event.setComponent(new TextComponentTranslation(message));
+            }
         }
     }
 
@@ -65,6 +86,12 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
+        if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
+            if(event.getEntity().getServer().getOnlinePlayerNames().length<2) {
+                SaveData data = SaveData.get(event.getWorld());
+            }
+            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)event.getEntity());
+        }
         if(!event.getWorld().isRemote && !ConfigHandler.disableAchievementSync) {
             if (event.getEntity() instanceof EntityPlayer && !event.getWorld().isRemote) {
                 EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
