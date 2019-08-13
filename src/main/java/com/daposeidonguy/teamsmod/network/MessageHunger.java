@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.network;
 
-import com.daposeidonguy.teamsmod.client.GuiTeam;
+import com.daposeidonguy.teamsmod.client.GuiHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,7 +40,7 @@ public class MessageHunger implements IMessage {
         public IMessage onMessage(MessageHunger message, MessageContext ctx) {
             NBTTagCompound tagCompound = message.tag;
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                GuiTeam.GuiHandler.hungerMap.put(UUID.fromString(tagCompound.getString("id")),tagCompound.getInteger("hunger"));
+                GuiHandler.hungerMap.put(UUID.fromString(tagCompound.getString("id")),tagCompound.getInteger("hunger"));
             });
             return null;
         }
