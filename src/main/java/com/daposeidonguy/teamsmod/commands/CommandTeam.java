@@ -160,10 +160,13 @@ public class CommandTeam implements ICommand {
                 case "player":
                     try {
                         String playerName = args[1];
-                        String playerteam = SaveData.teamMap.get(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
-                        System.out.println(playerteam!=null);
-                        sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
-                        sender.sendMessage(new TextComponentString(playerteam));
+                        if(SaveData.teamMap.containsKey(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName))) {
+                            String playerteam = SaveData.teamMap.get(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
+                            sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
+                            sender.sendMessage(new TextComponentString(playerteam));
+                        } else {
+                            sender.sendMessage(new TextComponentString(playerName + " is not in a team"));
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         sender.sendMessage(new TextComponentString("Enter valid playername"));

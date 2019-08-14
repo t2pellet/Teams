@@ -104,14 +104,10 @@ public class CommonEventHandler {
     }
 
     @SubscribeEvent
-    public void logOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
-    }
-
-    @SubscribeEvent
     public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
-        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
+        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
         if(!event.player.getEntityWorld().isRemote) {
+            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
             if(((EntityPlayerMP)event.player).getStatFile().readStat(StatList.LEAVE_GAME)==0) {
                 event.player.sendMessage(new TextComponentString("Welcome to the server! This server has a teams system allowing you to disable PvP, sync advancements and see health/hunger of your teammates!\nType /team to get started"));
             }
@@ -120,7 +116,10 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
+        if(!event.player.getEntityWorld().isRemote) {
+            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
+        }
+        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
     }
 
     @SubscribeEvent

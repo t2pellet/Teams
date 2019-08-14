@@ -69,9 +69,12 @@ public class GuiTeamEditor extends GuiScreen {
             int yoffset = 30;
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
             while(teamIterator.hasNext()) {
-                    String playerName = mc.world.getPlayerEntityByUUID(teamIterator.next()).getDisplayNameString();
+                EntityPlayer p = mc.world.getPlayerEntityByUUID(teamIterator.next());
+                if(p!=null) {
+                    String playerName = p.getDisplayNameString();
                     GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
                     yoffset+=15;
+                }
             }
 
             super.drawScreen(mouseX, mouseY, partialTicks);

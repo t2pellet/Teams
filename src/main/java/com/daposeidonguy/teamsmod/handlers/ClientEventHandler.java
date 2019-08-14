@@ -1,18 +1,27 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.client.Keybind;
+import com.daposeidonguy.teamsmod.network.MessageClear;
+import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.Style;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class ClientEventHandler {
 
     public static boolean displayHud = true;
+
+    @Mod.EventHandler
+    public void leaveGame(FMLServerStoppingEvent event) {
+        PacketHandler.INSTANCE.sendToAll(new MessageClear());
+    }
 
     @SubscribeEvent
     public void onChatMessage(ClientChatReceivedEvent event) {
