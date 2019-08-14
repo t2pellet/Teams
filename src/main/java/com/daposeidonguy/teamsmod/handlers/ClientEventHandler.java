@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.client.Keybind;
-import com.daposeidonguy.teamsmod.team.Team;
+import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.SoundEvents;
@@ -18,10 +18,10 @@ public class ClientEventHandler {
     public void onChatMessage(ClientChatReceivedEvent event) {
         if(!ConfigHandler.disablePing) {
             EntityPlayerSP p = Minecraft.getMinecraft().player;
-            Team team = Team.getTeam(p.getUniqueID());
+            String team = SaveData.teamMap.get(p.getUniqueID());
             int slice = event.getMessage().getUnformattedComponentText().indexOf(">");
             if(slice>=0) {
-                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && (event.getMessage().getUnformattedComponentText().substring(slice).contains(' ' + team.getName() + ' ') || event.getMessage().getUnformattedComponentText().substring(slice).equals(' ' + team.getName()))) {
+                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && (event.getMessage().getUnformattedComponentText().substring(slice).contains(' ' + team + ' ') || event.getMessage().getUnformattedComponentText().substring(slice).equals(' ' + team))) {
                     Style newStyle = new Style();
                     newStyle.setBold(true);
                     event.setMessage(event.getMessage().setStyle(newStyle));

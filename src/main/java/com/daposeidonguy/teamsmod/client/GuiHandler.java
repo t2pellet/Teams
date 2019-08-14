@@ -2,9 +2,7 @@ package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
-import com.daposeidonguy.teamsmod.network.MessageRequestHunger;
-import com.daposeidonguy.teamsmod.network.PacketHandler;
-import com.daposeidonguy.teamsmod.team.Team;
+import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButtonImage;
@@ -18,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -53,14 +52,14 @@ public class GuiHandler {
                     FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamList());
                     break;
                 case Integer.MIN_VALUE+1:
-                    if(Team.getTeam(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())==null) {
+                    if(!SaveData.teamMap.containsKey(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())) {
                         FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager());
+
                     } else {
-                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager1(Team.getTeam(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()).getName()));
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager1(SaveData.teamMap.get(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())));
                     }
                     break;
                 case Integer.MIN_VALUE+7:
-//                    PacketHandler.INSTANCE.sendToServer(new MessageLeave(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
                     FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team leave");
                     FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
@@ -73,12 +72,14 @@ public class GuiHandler {
         if (FMLClientHandler.instance().getSide() == Side.CLIENT) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             UUID id = mc.player.getUniqueID();
-            Team team = Team.getTeam(id);
-            if (team != null && !event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE && ClientEventHandler.displayHud) {
+
+            if (SaveData.teamMap.containsKey(id) && !event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE && ClientEventHandler.displayHud) {
+                String team = SaveData.teamMap.get(id);
                 int offsety = 0;
-                for (UUID uid : team.getPlayers()) {
+                Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
+                while(uuidIterator.hasNext()) {
+                    UUID uid = uuidIterator.next();
                     if(!uid.equals(id)) {
-                        PacketHandler.INSTANCE.sendToServer(new MessageRequestHunger(id,uid));
                         AbstractClientPlayer clientP = (AbstractClientPlayer) mc.player.world.getPlayerEntityByUUID(uid);
                         if(clientP!=null) {
                             int hunger = 20;

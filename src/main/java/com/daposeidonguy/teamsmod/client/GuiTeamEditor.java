@@ -1,7 +1,6 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.team.SaveData;
-import com.daposeidonguy.teamsmod.team.Team;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -11,6 +10,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class GuiTeamEditor extends GuiScreen {
 
@@ -61,8 +61,10 @@ public class GuiTeamEditor extends GuiScreen {
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
             GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
             int yoffset = 30;
-            for(Team team : SaveData.listTeams) {
-                GuiTeamEditor.fontRenderer.drawString(team.getName(),guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(team.getName()) / 2,guiTop+yoffset,Color.GRAY.getRGB());
+            Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
+            while(teamIterator.hasNext()) {
+                String team = teamIterator.next();
+                GuiTeamEditor.fontRenderer.drawString(team,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(team) / 2,guiTop+yoffset,Color.GRAY.getRGB());
                 yoffset+=15;
             }
 
@@ -120,8 +122,6 @@ public class GuiTeamEditor extends GuiScreen {
             super.mouseClicked(mouseX, mouseY, mouseButton);
             this.text.mouseClicked(mouseX,mouseY,mouseButton);
             if(this.button.isMouseOver()) {
-//                PacketHandler.INSTANCE.sendToServer(new MessageInvite(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
-//                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Invited player " + "\"" + this.text.getText() + "\""));
                 FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team invite " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
@@ -172,8 +172,6 @@ public class GuiTeamEditor extends GuiScreen {
             super.mouseClicked(mouseX, mouseY, mouseButton);
             this.text.mouseClicked(mouseX,mouseY,mouseButton);
             if(this.button.isMouseOver()) {
-//                PacketHandler.INSTANCE.sendToServer(new MessageTeam(this.text.getText(),FMLClientHandler.instance().getClientPlayerEntity().getUniqueID()));
-//                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("Created team " + "\"" + this.text.getText() + "\""));
                 FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team create " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }

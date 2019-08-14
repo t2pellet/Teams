@@ -1,7 +1,9 @@
 package com.daposeidonguy.teamsmod.team;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -14,8 +16,8 @@ import java.util.*;
 
 public class SaveData extends WorldSavedData {
 
-    public static Map<UUID,Integer> mapHunger = new HashMap();
-    public static List<Team> listTeams = new ArrayList<>();
+    public static Map<UUID,String> teamMap = new HashMap<>();
+    public static Map<String,List<UUID>> teamsMap = new HashMap<>();
     public static final String NAME = TeamsMod.MODID;
 
 
@@ -23,83 +25,83 @@ public class SaveData extends WorldSavedData {
         super(NAME);
     }
 
-    public SaveData(String s) {
-        super(s);
+    public SaveData(String name) {
+        super(name);
         markDirty();
     }
 
     public void addTeam(String name, EntityPlayer player) {
         List<UUID> tempList = new ArrayList<>();
         tempList.add(player.getUniqueID());
-        Team team = new Team(name,tempList);
-        listTeams.add(team);
+        teamsMap.put(name,tempList);
+        teamMap.put(player.getUniqueID(),name);
         markDirty();
     }
 
     public void addPlayer(EntityPlayer p, UUID uid) {
-        Team team = Team.getTeam(p.getUniqueID());
-        team.addPlayer(uid);
+        String name = teamMap.get(p.getUniqueID());
+        teamsMap.get(name).add(uid);
+        teamMap.put(uid,name);
         markDirty();
     }
 
     public void removePlayer(EntityPlayer p,UUID uid) {
-        Team team = Team.getTeam(p.getUniqueID());
-        team.removePlayer(uid);
+        String name = teamMap.get(p.getUniqueID());
+        teamsMap.get(name).remove(uid);
+        teamMap.remove(uid);
         markDirty();
     }
 
     public void removeTeam(String name) {
-        Iterator<Team> teamIterator = listTeams.iterator();
-        while(teamIterator.hasNext()) {
-            Team team = teamIterator.next();
-            if(team.getName().equals(name)) {
-                listTeams.remove(team);
-                break;
-            }
+        Iterator<UUID> uuidIterator = teamsMap.get(name).iterator();
+        while(uuidIterator.hasNext()) {
+            UUID id = uuidIterator.next();
+            teamMap.remove(id);
         }
-    }
-
-    public void removeTeam(UUID player) {
-        Iterator<Team> teamIterator = listTeams.iterator();
-        while(teamIterator.hasNext()) {
-            Team team = teamIterator.next();
-            if(team.getPlayers().contains(player)) {
-                listTeams.remove(team);
-                break;
-            }
-        }
+        teamsMap.remove(name);
         markDirty();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        listTeams.clear();
-        NBTTagList tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND);
-        for (NBTBase b : tagList) {
-            NBTTagCompound tagCompound = (NBTTagCompound) b;
-            NBTTagList playerTagList = tagCompound.getTagList("Player List",Constants.NBT.TAG_COMPOUND);
+        teamsMap.clear();
+        teamMap.clear();
+        String name = "";
+        Iterator<NBTBase> tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
+        while(tagList.hasNext()) {
+            NBTTagCompound tagCompound = (NBTTagCompound)tagList.next();
+            Iterator<NBTBase> playerTagListIterator = tagCompound.getTagList("Player List",Constants.NBT.TAG_COMPOUND).iterator();
             List<UUID> uuidList = new ArrayList();
-            for (NBTBase p : playerTagList) {
-                NBTTagCompound playerTag = (NBTTagCompound) p;
+            while(playerTagListIterator.hasNext()) {
+                NBTTagCompound playerTag = (NBTTagCompound)playerTagListIterator.next();
                 UUID id = UUID.fromString(playerTag.getString("uuid"));
+                name = tagCompound.getString("Team Name");
+                teamMap.put(id,name);
                 uuidList.add(id);
             }
-            Team team = new Team(tagCompound.getString("Team Name"),uuidList);
-            listTeams.add(team);
-
+            teamsMap.put(name,uuidList);
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagList tagList = new NBTTagList();
-
-        Iterator<Team> iteratorTeams = listTeams.iterator();
+        Iterator<String> iteratorTeams = teamsMap.keySet().iterator();
         while(iteratorTeams.hasNext()) {
             NBTTagCompound tagCompound = new NBTTagCompound();
-            Team team = iteratorTeams.next();
-            tagCompound.setString("Team Name",team.getName());
-            tagCompound.setTag("Player List",team.getPlayerListTag());
+            String team = iteratorTeams.next();
+            tagCompound.setString("Team Name",team);
+
+
+            NBTTagList playerListTag = new NBTTagList();
+            Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+            while(uuidIterator.hasNext()) {
+                UUID id = uuidIterator.next();
+                NBTTagCompound playerTag = new NBTTagCompound();
+                playerTag.setString("uuid",id.toString());
+                playerListTag.appendTag(playerTag);
+            }
+            tagCompound.setTag("Player List",playerListTag);
             tagList.appendTag(tagCompound);
         }
         compound.setTag("Teams",tagList);
@@ -115,4 +117,26 @@ public class SaveData extends WorldSavedData {
         }
         return data;
     }
+
+    public static void syncPlayers(String team, EntityPlayerMP player) {
+        for(Advancement adv : player.getServerWorld().getAdvancementManager().getAdvancements()) {
+            Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+            while(uuidIterator.hasNext()) {
+                UUID id = uuidIterator.next();
+                EntityPlayerMP teammate = (EntityPlayerMP)player.getEntityWorld().getPlayerEntityByUUID(id);
+                if(teammate != null && teammate.getAdvancements().getProgress(adv).isDone()) {
+                    for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                        player.getAdvancements().grantCriterion(adv,s);
+                    }
+                }
+            }
+            if(player!=null && player.getAdvancements().getProgress(adv).isDone()) {
+                for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                    player.getAdvancements().grantCriterion(adv,s);
+                }
+
+            }
+        }
+    }
+
 }

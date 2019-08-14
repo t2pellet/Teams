@@ -1,23 +1,18 @@
 package com.daposeidonguy.teamsmod.network;
 
 import com.daposeidonguy.teamsmod.team.SaveData;
-import com.daposeidonguy.teamsmod.team.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MessageSaveData implements IMessage {
 
@@ -27,19 +22,28 @@ public class MessageSaveData implements IMessage {
 
     }
 
-    public MessageSaveData(List<Team> listTeam) {
+    public MessageSaveData(Map<String,List<UUID>> teamsMap) {
+
         NBTTagList tagList = new NBTTagList();
-        Iterator<Team> iteratorTeams = listTeam.iterator();
+        Iterator<String> iteratorTeams = teamsMap.keySet().iterator();
         while(iteratorTeams.hasNext()) {
             NBTTagCompound tagCompound = new NBTTagCompound();
-            Team team = iteratorTeams.next();
-            tagCompound.setString("Team Name",team.getName());
-            tagCompound.setTag("Player List",team.getPlayerListTag());
-            tagList.appendTag(tagCompound);
-        if(!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote) {
-                this.tagTeam.setTag("Teams",tagList);
+            String team = iteratorTeams.next();
+            tagCompound.setString("Team Name",team);
+
+
+            NBTTagList playerListTag = new NBTTagList();
+            Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+            while(uuidIterator.hasNext()) {
+                UUID id = uuidIterator.next();
+                NBTTagCompound playerTag = new NBTTagCompound();
+                playerTag.setString("uuid",id.toString());
+                playerListTag.appendTag(playerTag);
             }
+            tagCompound.setTag("Player List",playerListTag);
+            tagList.appendTag(tagCompound);
         }
+        tagTeam.setTag("Teams",tagList);
     }
 
     @Override
@@ -57,19 +61,22 @@ public class MessageSaveData implements IMessage {
         public IMessage onMessage(MessageSaveData message, MessageContext ctx) {
             NBTTagCompound nbt = message.tagTeam;
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                SaveData.listTeams.clear();
-                NBTTagList tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND);
-                for (NBTBase b : tagList) {
-                    NBTTagCompound tagCompound = (NBTTagCompound) b;
-                    NBTTagList playerTagList = tagCompound.getTagList("Player List", Constants.NBT.TAG_COMPOUND);
+                SaveData.teamsMap.clear();
+                SaveData.teamMap.clear();
+                String name = "";
+                Iterator<NBTBase> tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
+                while(tagList.hasNext()) {
+                    NBTTagCompound tagCompound = (NBTTagCompound)tagList.next();
+                    Iterator<NBTBase> playerTagListIterator = tagCompound.getTagList("Player List",Constants.NBT.TAG_COMPOUND).iterator();
                     List<UUID> uuidList = new ArrayList();
-                    for (NBTBase p : playerTagList) {
-                        NBTTagCompound playerTag = (NBTTagCompound) p;
+                    while(playerTagListIterator.hasNext()) {
+                        NBTTagCompound playerTag = (NBTTagCompound)playerTagListIterator.next();
                         UUID id = UUID.fromString(playerTag.getString("uuid"));
+                        name = tagCompound.getString("Team Name");
+                        SaveData.teamMap.put(id,name);
                         uuidList.add(id);
                     }
-                    Team team = new Team(tagCompound.getString("Team Name"), uuidList);
-                    SaveData.listTeams.add(team);
+                    SaveData.teamsMap.put(name,uuidList);
                 }
             });
             return null;

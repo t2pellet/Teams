@@ -4,7 +4,6 @@ import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
-import com.daposeidonguy.teamsmod.team.Team;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -65,14 +64,12 @@ public class CommandTeam implements ICommand {
                 case "create":
                     try {
                         String name = args[1];
-                        for (Team team : SaveData.listTeams) {
-                            if (team.getName().equals(name)) {
-                                sender.sendMessage(new TextComponentString("That team already exists"));
-                                return;
-                            }
+                        if(SaveData.teamsMap.containsKey(name)) {
+                            sender.sendMessage(new TextComponentString("That team already exists"));
+                            return;
                         }
                         EntityPlayer player = (EntityPlayer)sender;
-                        if(Team.getTeam(player.getUniqueID())!=null) {
+                        if(SaveData.teamMap.containsKey(player.getUniqueID())) {
                             sender.sendMessage(new TextComponentString("You're already in a team! Leave it first!"));
                             return;
                         }
@@ -83,19 +80,18 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "list":
-                    Iterator<Team> teamIterator = SaveData.listTeams.iterator();
+                    Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
                     sender.sendMessage(new TextComponentString("List of teams:"));
                     while (teamIterator.hasNext()) {
-                        Team team = teamIterator.next();
-                        sender.sendMessage(new TextComponentString(team.getName()));
+                        String team = teamIterator.next();
+                        sender.sendMessage(new TextComponentString(team));
                     }
                     break;
                 case "kick":
                     try {
                         String playerName= args[1];
                         UUID uid = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
-                        Team team = Team.getTeam(((EntityPlayer)sender).getUniqueID());
-                        if(team.getPlayers().contains(uid)) {
+                        if(SaveData.teamMap.containsKey(uid)) {
                             sender.sendMessage(new TextComponentString("Removing that player from your team!"));
                             data.removePlayer((EntityPlayer)sender,uid);
                         }
@@ -107,22 +103,23 @@ public class CommandTeam implements ICommand {
                     EntityPlayer invitee = (EntityPlayer)sender;
                     EntityPlayerMP inviter = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(invitee.getEntityData().getString("invitedby")));
                     UUID uid = invitee.getUniqueID();
-                    Team team = Team.getTeam(inviter.getUniqueID());
-                    if(team==null) {
+                    if(inviter==null) {
                         sender.sendMessage(new TextComponentString("You have not been invited to a team"));
                         break;
                     }
-                    else if (Team.getTeam(uid)!=null){
+                    else if (SaveData.teamMap.containsKey(uid)){
                         sender.sendMessage(new TextComponentString("Removing you from your old team..."));
                         data.removePlayer(invitee,uid);
                     }
                     data.addPlayer(inviter, uid);
-                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.listTeams),(EntityPlayerMP)invitee);
-                    if (team != null && inviter != null && !ConfigHandler.disableAchievementSync) {
-                        for(UUID p : team.getPlayers()) {
-                            EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(p);
+                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap),(EntityPlayerMP)invitee);
+                    if (SaveData.teamMap.containsKey(inviter.getUniqueID()) && inviter != null && !ConfigHandler.disableAchievementSync) {
+                        String name = SaveData.teamMap.get(inviter.getUniqueID());
+                        Iterator<UUID> uuidIterator = SaveData.teamsMap.get(name).iterator();
+                        while (uuidIterator.hasNext()) {
+                            EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuidIterator.next());
                             if(playerMP!=null) {
-                                Team.syncPlayers(team,playerMP);
+                                SaveData.syncPlayers(name,playerMP);
                             }
                         }
                     }
@@ -135,8 +132,8 @@ public class CommandTeam implements ICommand {
                         EntityPlayer newp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
                         EntityPlayer oldp = (EntityPlayer)sender;
                         UUID uuid = newp.getUniqueID();
-                        Team theteam = Team.getTeam(oldp.getUniqueID());
-                        if(theteam.getPlayers().contains(uuid)) {
+                        String theteam = SaveData.teamMap.get(oldp.getUniqueID());
+                        if(SaveData.teamsMap.get(theteam).contains(uuid)) {
                             sender.sendMessage(new TextComponentString("That player is already in your team!"));
                             return;
                         }
@@ -150,21 +147,23 @@ public class CommandTeam implements ICommand {
                 case "leave":
                     try {
                         EntityPlayer p = (EntityPlayer)sender;
-                        Team toLeave = Team.getTeam(p.getUniqueID());
+                        String toLeave = SaveData.teamMap.get(p.getUniqueID());
                         data.removePlayer(p,p.getUniqueID());
                         p.sendMessage(new TextComponentString("You left your team"));
-                        if(toLeave.getPlayers().isEmpty()) {
-                            data.removeTeam(toLeave.getName());
+                        if(SaveData.teamsMap.get(toLeave).isEmpty()) {
+                            data.removeTeam(toLeave);
                         }
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                        sender.sendMessage(new TextComponentString("You're not in a team"));
+                    }
                     break;
                 case "player":
                     try {
                         String playerName = args[1];
-                        Team playerteam = Team.getTeam(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
+                        String playerteam = SaveData.teamMap.get(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
                         System.out.println(playerteam!=null);
                         sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
-                        sender.sendMessage(new TextComponentString(playerteam.getName()));
+                        sender.sendMessage(new TextComponentString(playerteam));
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         sender.sendMessage(new TextComponentString("Enter valid playername"));
@@ -196,18 +195,16 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "info":
-                    sender.sendMessage(new TextComponentString("Online Players in Team: "));
+                    sender.sendMessage(new TextComponentString("Players in Team: "));
                     try {
                         String teamName = args[1];
-                        for (Team t : SaveData.listTeams) {
-                            if (t.getName().equals(teamName)) {
-                                for (UUID u : t.getPlayers()) {
-                                    String name = "";
-                                    GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(u);
-                                    if (profile!=null) {
-                                        name = profile.getName();
-                                    }
-                                    sender.sendMessage(new TextComponentString(name));
+                        if(SaveData.teamsMap.containsKey(teamName)) {
+                            Iterator<UUID> uuidIterator = SaveData.teamsMap.get(teamName).iterator();
+                            while(uuidIterator.hasNext()) {
+                                UUID id = uuidIterator.next();
+                                GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(id);
+                                if (profile!=null) {
+                                    sender.sendMessage(new TextComponentString(profile.getName()));
                                 }
                             }
                         }
@@ -221,7 +218,7 @@ public class CommandTeam implements ICommand {
         } else {
             sender.sendMessage(new TextComponentString("Must include command"));
         }
-        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.listTeams));
+        PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
     }
 
     @Override
@@ -277,12 +274,8 @@ public class CommandTeam implements ICommand {
                 }
                 return playerList;
             } else if (args[0].equals("info") || args[0].equals("remove")) {
-                Iterator<Team> teamIterator = SaveData.listTeams.iterator();
-                List<String> teamList = new ArrayList<>();
-                while (teamIterator.hasNext()) {
-                    teamList.add(teamIterator.next().getName());
-                }
-                return teamList;
+
+                return new ArrayList(SaveData.teamsMap.keySet());
             }
             return NonNullList.create();
         }

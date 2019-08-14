@@ -24,7 +24,8 @@ public class MessageClear implements IMessage {
         @Override
         public IMessage onMessage(MessageClear message, MessageContext ctx) {
             FMLClientHandler.instance().getClient().addScheduledTask(() -> {
-                SaveData.listTeams.clear();
+                SaveData.teamsMap.clear();
+                SaveData.teamMap.clear();
             });
             return null;
         }
