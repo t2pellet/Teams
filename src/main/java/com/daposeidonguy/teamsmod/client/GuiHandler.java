@@ -32,7 +32,7 @@ public class GuiHandler {
     public void otherEvent(GuiScreenEvent.InitGuiEvent.Post event) {
         if(event.getGui() instanceof GuiInventory) {
             GuiInventory guiInventory = (GuiInventory)event.getGui();
-            GuiButtonImage guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+125,guiInventory.height / 2 - 22, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+            GuiButtonImage guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+150,guiInventory.getGuiTop()+5, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
             guiButtonImage.displayString="team";
             event.getButtonList().add(guiButtonImage);
         }
@@ -62,6 +62,7 @@ public class GuiHandler {
                 case Integer.MIN_VALUE+7:
                     FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team leave");
                     FMLClientHandler.instance().getClient().displayGuiScreen(null);
+                    break;
             }
 
         }

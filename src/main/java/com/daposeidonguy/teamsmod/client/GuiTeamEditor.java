@@ -11,6 +11,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.UUID;
 
 public class GuiTeamEditor extends GuiScreen {
 
@@ -41,6 +42,41 @@ public class GuiTeamEditor extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
+    public static class GuiTeamInfo extends GuiScreen {
+        private int guiTop, guiLeft;
+        private String name;
+
+        public GuiTeamInfo(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void initGui() {
+            super.initGui();
+            this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
+            this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
+
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
+        }
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+            drawDefaultBackground();
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
+            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Teams Info: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Info: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            int yoffset = 30;
+            Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
+            while(teamIterator.hasNext()) {
+                String playerName = FMLClientHandler.instance().getServer().getPlayerProfileCache().getProfileByUUID(teamIterator.next()).getName();
+                GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
+                yoffset+=15;
+            }
+
+            super.drawScreen(mouseX, mouseY, partialTicks);
+        }
+    }
+
     public static class GuiTeamList extends GuiScreen {
 
         private int guiTop, guiLeft;
@@ -64,11 +100,21 @@ public class GuiTeamEditor extends GuiScreen {
             Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
             while(teamIterator.hasNext()) {
                 String team = teamIterator.next();
-                GuiTeamEditor.fontRenderer.drawString(team,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(team) / 2,guiTop+yoffset,Color.GRAY.getRGB());
-                yoffset+=15;
+                GuiButton button = new GuiButton(Integer.MIN_VALUE+8,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
+                this.buttonList.add(button);
+                button.drawButton(FMLClientHandler.instance().getClient(),mouseX,mouseY,partialTicks);
+                yoffset+=25;
             }
-
             super.drawScreen(mouseX, mouseY, partialTicks);
+        }
+
+        @Override
+        protected void actionPerformed(GuiButton button) throws IOException {
+            if(button.isMouseOver() && button.id == Integer.MIN_VALUE+8) {
+                FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamInfo(button.displayString));
+            } else {
+                super.actionPerformed(button);
+            }
         }
     }
 
@@ -78,6 +124,7 @@ public class GuiTeamEditor extends GuiScreen {
         private GuiTextField text;
         private GuiButton button;
         private String name;
+
 
         public GuiTeamManager1(String name) {
             this.name = name;
@@ -106,10 +153,20 @@ public class GuiTeamEditor extends GuiScreen {
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
             GuiTeamEditor.fontRenderer.drawString("Team Manager: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
             GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+35,Color.GRAY.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Players List:",guiLeft+WIDTH+60 - GuiTeamEditor.fontRenderer.getStringWidth("Players List:"),guiTop+35,Color.WHITE.getRGB());
+            Iterator<UUID> uuidIterator = SaveData.teamsMap.get(name).iterator();
+            int yoffset=15;
+            while(uuidIterator.hasNext()) {
+                String playerName = FMLClientHandler.instance().getServer().getPlayerProfileCache().getProfileByUUID(uuidIterator.next()).getName();
+                GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH+58 - GuiTeamEditor.fontRenderer.getStringWidth(playerName),guiTop+yoffset+35,Color.GRAY.getRGB());
+                yoffset+=15;
+            }
             this.text.drawTextBox();
 
             super.drawScreen(mouseX, mouseY, partialTicks);
         }
+
+
 
         @Override
         protected void keyTyped(char typedChar, int keyCode) throws IOException {
@@ -157,6 +214,15 @@ public class GuiTeamEditor extends GuiScreen {
             GuiTeamEditor.fontRenderer.drawString("Team Manager",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager") / 2,guiTop+10,Color.BLACK.getRGB());
             GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+40,Color.GRAY.getRGB());
             this.text.drawTextBox();
+
+            GuiTeamEditor.fontRenderer.drawString("Taken Names:",guiLeft+WIDTH+60 - GuiTeamEditor.fontRenderer.getStringWidth("Taken Names:"),guiTop+35,Color.WHITE.getRGB());
+            Iterator<String> nameIterator = SaveData.teamsMap.keySet().iterator();
+            int yoffset=15;
+            while(nameIterator.hasNext()) {
+                String name = nameIterator.next();
+                GuiTeamEditor.fontRenderer.drawString(name,guiLeft+WIDTH+58 - GuiTeamEditor.fontRenderer.getStringWidth(name),guiTop+yoffset+35,Color.GRAY.getRGB());
+                yoffset+=15;
+            }
 
             super.drawScreen(mouseX, mouseY, partialTicks);
         }

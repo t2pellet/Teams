@@ -21,7 +21,7 @@ public class TeamsMod
 
     public static final String MODID = "teamsmod";
     public static final String NAME = "Teams Mod";
-    public static final String VERSION = "0.7";
+    public static final String VERSION = "0.8";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
