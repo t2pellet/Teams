@@ -4,7 +4,10 @@ import com.daposeidonguy.teamsmod.client.GuiHandler;
 import com.daposeidonguy.teamsmod.client.Keybind;
 import com.daposeidonguy.teamsmod.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
-import com.daposeidonguy.teamsmod.network.*;
+import com.daposeidonguy.teamsmod.network.MessageClear;
+import com.daposeidonguy.teamsmod.network.MessageHunger;
+import com.daposeidonguy.teamsmod.network.MessageSaveData;
+import com.daposeidonguy.teamsmod.network.PacketHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -27,7 +30,6 @@ public class TeamsMod
     public void preInit(FMLPreInitializationEvent event) {
         PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0, Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.SERVER);
-        PacketHandler.INSTANCE.registerMessage(MessageRequestHunger.MessageHandler.class, MessageRequestHunger.class,2,Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.SERVER);
         if(FMLCommonHandler.instance().getSide()==Side.CLIENT) {
             Keybind.register();
@@ -35,7 +37,6 @@ public class TeamsMod
             MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
             PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.CLIENT);
-            PacketHandler.INSTANCE.registerMessage(MessageRequestHunger.MessageHandler.class, MessageRequestHunger.class,2,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.CLIENT);
         }
     }

@@ -20,9 +20,10 @@ public class MessageHunger implements IMessage {
 
     }
 
-    public MessageHunger(UUID id,int hunger) {
+    public MessageHunger(UUID id,int hunger,int health) {
         tag.setString("id",id.toString());
         tag.setInteger("hunger",hunger);
+        tag.setInteger("health",health);
     }
 
     @Override
@@ -40,6 +41,7 @@ public class MessageHunger implements IMessage {
         public IMessage onMessage(MessageHunger message, MessageContext ctx) {
             NBTTagCompound tagCompound = message.tag;
             Minecraft.getMinecraft().addScheduledTask(() -> {
+                GuiHandler.healthMap.put(UUID.fromString(tagCompound.getString("id")),tagCompound.getInteger("health"));
                 GuiHandler.hungerMap.put(UUID.fromString(tagCompound.getString("id")),tagCompound.getInteger("hunger"));
             });
             return null;

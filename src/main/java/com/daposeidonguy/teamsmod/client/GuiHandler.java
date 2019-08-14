@@ -4,7 +4,6 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +22,7 @@ import java.util.UUID;
 public class GuiHandler {
 
     public static Map<UUID,Integer> hungerMap = new HashMap<>();
+    public static Map<UUID,Integer> healthMap = new HashMap<>();
 
     public static GuiHandler instance() {
         return new GuiHandler();
@@ -81,15 +81,20 @@ public class GuiHandler {
                 while(uuidIterator.hasNext()) {
                     UUID uid = uuidIterator.next();
                     if(!uid.equals(id)) {
-                        AbstractClientPlayer clientP = (AbstractClientPlayer) mc.player.world.getPlayerEntityByUUID(uid);
-                        if(clientP!=null) {
-                            int hunger = 20;
-                            if(hungerMap.containsKey(uid)) {
-                                hunger = hungerMap.get(uid);
-                            }
-                            new GuiTeam(mc,offsety, (int)Math.ceil(clientP.getHealth()),hunger,clientP);
-                            offsety+=46;
+                        int hunger = 20;
+                        if (hungerMap.containsKey(uid)) {
+                            hunger = hungerMap.get(uid);
                         }
+                        int health = 20;
+                        if (healthMap.containsKey(uid)) {
+                            health = healthMap.get(uid);
+                        }
+                        try {
+                            String name = mc.world.getPlayerEntityByUUID(uid).getDisplayNameString();
+                            ResourceLocation loc = mc.getConnection().getPlayerInfo(name).getLocationSkin();
+                            new GuiTeam(mc, offsety, health, hunger, name, loc);
+                            offsety += 46;
+                        } catch (Exception ex) {}
                     }
                 }
             }

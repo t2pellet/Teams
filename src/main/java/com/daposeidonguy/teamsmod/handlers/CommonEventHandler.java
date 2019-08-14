@@ -36,11 +36,11 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void tickEvent(TickEvent.ServerTickEvent event) {
         ticks+=1;
-        if (ticks>29) {
+        if (ticks>20) {
             Iterator<EntityPlayerMP> playerMPIterator = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers().iterator();
             while(playerMPIterator.hasNext()) {
                 EntityPlayerMP playerMP = playerMPIterator.next();
-                PacketHandler.INSTANCE.sendToAll(new MessageHunger(playerMP.getUniqueID(),playerMP.getFoodStats().getFoodLevel()));
+                PacketHandler.INSTANCE.sendToAll(new MessageHunger(playerMP.getUniqueID(),playerMP.getFoodStats().getFoodLevel(),(int)Math.ceil(playerMP.getHealth())));
             }
             ticks=0;
         }
