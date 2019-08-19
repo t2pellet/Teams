@@ -167,8 +167,9 @@ public class GuiTeamEditor extends GuiScreen {
             int yoffset=15;
             while(uuidIterator.hasNext()) {
                 String clientName = mc.player.getDisplayNameString();
-                UUID uid = uuidIterator.next().getUniqueID();
-                String playerName = uuidIterator.next().getDisplayNameString();
+                EntityPlayer p = uuidIterator.next();
+                UUID uid = p.getUniqueID();
+                String playerName = p.getDisplayNameString();
                 if(playerName!=clientName && !SaveData.teamMap.containsKey(uid)) {
                     GuiTeamEditor.fontRenderer.drawString(playerName, guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
                     yoffset += 15;
