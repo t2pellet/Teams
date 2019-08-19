@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.GuiScrollingList;
 
@@ -64,7 +65,7 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
         }
 
         @Override
@@ -72,13 +73,12 @@ public class GuiTeamEditor extends GuiScreen {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Online Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Online Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Team Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
             int yoffset = 30;
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
             while(teamIterator.hasNext()) {
-                EntityPlayer p = mc.world.getPlayerEntityByUUID(teamIterator.next());
-                if(p!=null) {
-                    String playerName = p.getDisplayNameString();
+                String playerName = UsernameCache.getLastKnownUsername(teamIterator.next());
+                if(!playerName.isEmpty()) {
                     GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
                     yoffset+=15;
                 }
@@ -100,7 +100,7 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
 
             List<GuiButton> scrollList = new ArrayList<>();
             int yoffset = 30;
@@ -117,6 +117,7 @@ public class GuiTeamEditor extends GuiScreen {
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+            drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
             GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
@@ -151,7 +152,7 @@ public class GuiTeamEditor extends GuiScreen {
             this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 70, 120,20,"Invite Player");
             this.buttonList.add(this.button);
             this.buttonList.add(new GuiButton(Integer.MIN_VALUE+7,guiLeft+WIDTH/2-60,guiTop+100,120,20,"Leave Team"));
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Close menu"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Go back"));
         }
 
         @Override
@@ -160,14 +161,15 @@ public class GuiTeamEditor extends GuiScreen {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
             GuiTeamEditor.fontRenderer.drawString("Team Manager: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+35,Color.GRAY.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Players List:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Players List:") / 2,guiTop+35,Color.WHITE.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Enter Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Enter Name") /2,guiTop+35,Color.GRAY.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Eligible Players:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Eligible Players:") / 2,guiTop+35,Color.WHITE.getRGB());
             Iterator<EntityPlayer> uuidIterator = mc.world.playerEntities.iterator();
             int yoffset=15;
             while(uuidIterator.hasNext()) {
                 String clientName = mc.player.getDisplayNameString();
+                UUID uid = uuidIterator.next().getUniqueID();
                 String playerName = uuidIterator.next().getDisplayNameString();
-                if(playerName!=clientName) {
+                if(playerName!=clientName && !SaveData.teamMap.containsKey(uid)) {
                     GuiTeamEditor.fontRenderer.drawString(playerName, guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
                     yoffset += 15;
                 }
@@ -212,7 +214,7 @@ public class GuiTeamEditor extends GuiScreen {
 
             this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 75, 120,20,"Create Team");
             this.buttonList.add(this.button);
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Close menu"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Go back"));
         }
 
         @Override

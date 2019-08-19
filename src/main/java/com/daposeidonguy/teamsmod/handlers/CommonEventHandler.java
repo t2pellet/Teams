@@ -105,7 +105,6 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
-        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
         if(!event.player.getEntityWorld().isRemote) {
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
             if(((EntityPlayerMP)event.player).getStatFile().readStat(StatList.LEAVE_GAME)==0) {
@@ -118,8 +117,8 @@ public class CommonEventHandler {
     public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
         if(!event.player.getEntityWorld().isRemote) {
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
+            PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
         }
-        PacketHandler.INSTANCE.sendTo(new MessageClear(),(EntityPlayerMP)event.player);
     }
 
     @SubscribeEvent

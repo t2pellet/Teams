@@ -5,6 +5,7 @@ import com.daposeidonguy.teamsmod.client.Keybind;
 import com.daposeidonguy.teamsmod.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.network.*;
+import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +23,7 @@ public class TeamsMod
 
     public static final String MODID = "teamsmod";
     public static final String NAME = "Teams Mod";
-    public static final String VERSION = "0.8";
+    public static final String VERSION = "0.9";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -56,7 +57,11 @@ public class TeamsMod
     }
 
     @EventHandler
-    public void serverSTop(FMLServerStoppingEvent event) {
+    public void serverStop(FMLServerStoppingEvent event) {
+        if(FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
+            SaveData.teamMap.clear();
+            SaveData.teamsMap.clear();
+        }
         PacketHandler.INSTANCE.sendToAll(new MessageClear());
     }
 }

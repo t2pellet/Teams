@@ -120,25 +120,29 @@ public class SaveData extends WorldSavedData {
     }
 
     public static void syncPlayers(String team, EntityPlayerMP player) {
-        if(!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote) {
-            for(Advancement adv : player.getServerWorld().getAdvancementManager().getAdvancements()) {
-                Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
-                while(uuidIterator.hasNext()) {
-                    UUID id = uuidIterator.next();
-                    EntityPlayerMP teammate = (EntityPlayerMP)player.getEntityWorld().getPlayerEntityByUUID(id);
-                    if(teammate != null && teammate.getAdvancements().getProgress(adv).isDone()) {
-                        for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {
-                            player.getAdvancements().grantCriterion(adv,s);
+        try {
+            if(!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote) {
+                for(Advancement adv : player.getServerWorld().getAdvancementManager().getAdvancements()) {
+                    Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+                    while(uuidIterator.hasNext()) {
+                        UUID id = uuidIterator.next();
+                        EntityPlayerMP teammate = (EntityPlayerMP)player.getEntityWorld().getPlayerEntityByUUID(id);
+                        if(teammate != null && teammate.getAdvancements().getProgress(adv).isDone()) {
+                            for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                                player.getAdvancements().grantCriterion(adv,s);
+                            }
                         }
                     }
-                }
-                if(player!=null && player.getAdvancements().getProgress(adv).isDone()) {
-                    for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
-                        player.getAdvancements().grantCriterion(adv,s);
-                    }
+                    if(player!=null && player.getAdvancements().getProgress(adv).isDone()) {
+                        for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                            player.getAdvancements().grantCriterion(adv,s);
+                        }
 
+                    }
                 }
             }
+        } catch (NullPointerException ex) {
+            syncPlayers(team,player);
         }
     }
 
