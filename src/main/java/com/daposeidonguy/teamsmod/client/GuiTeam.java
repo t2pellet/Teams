@@ -16,19 +16,19 @@ public class GuiTeam extends Gui {
         int height = resolution.getScaledHeight();
 
         mc.renderEngine.bindTexture(new ResourceLocation("textures/gui/icons.png"));
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 20, (height / 4 - 5) + offsety + 16, 53, 0, 9, 9);
-        drawString(mc.fontRenderer, String.valueOf(health), (int) Math.round(width * 0.001) + 30, (height / 4 - 4) + offsety+16, Color.WHITE.getRGB());
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 20, (height / 4 - 5) + offsety, 53, 0, 9, 9);
+        drawString(mc.fontRenderer, String.valueOf(health), (int) Math.round(width * 0.001) + 30, (height / 4 - 4) + offsety, Color.WHITE.getRGB());
 
         mc.renderEngine.bindTexture(new ResourceLocation("textures/gui/icons.png"));
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 46, (height / 4 - 5) + offsety+16, 16, 36, 9, 9);
-        drawString(mc.fontRenderer, String.valueOf(hunger), (int) Math.round(width * 0.001) + 58, (height / 4 - 5) + offsety+16, Color.WHITE.getRGB());
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 46, (height / 4 - 5) + offsety, 16, 36, 9, 9);
+        drawString(mc.fontRenderer, String.valueOf(hunger), (int) Math.round(width * 0.001) + 58, (height / 4 - 5) + offsety, Color.WHITE.getRGB());
 
 
         mc.renderEngine.bindTexture(loc);
         GL11.glPushMatrix();
         GL11.glScalef(0.5F, 0.5F, 0.5F);
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 4, (height / 2 - 16) + 2 * offsety, 32, 32, 32, 32);
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 4, (height / 2 - 32) + 2 * offsety, 32, 32, 32, 32);
         GL11.glPopMatrix();
-        drawString(mc.fontRenderer,name, (int) Math.round(width * 0.001) + 20, (height / 4 - 4) + offsety, Color.WHITE.getRGB());
+        drawString(mc.fontRenderer,name, (int) Math.round(width * 0.001) + 20, (height / 4 - 20) + offsety, Color.WHITE.getRGB());
     }
 }

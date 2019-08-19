@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -77,24 +78,27 @@ public class GuiHandler {
             if (SaveData.teamMap.containsKey(id) && !event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE && ClientEventHandler.displayHud) {
                 String team = SaveData.teamMap.get(id);
                 int offsety = 0;
+                int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
-                while(uuidIterator.hasNext()) {
+                while(uuidIterator.hasNext() && count<6) {
                     UUID uid = uuidIterator.next();
                     if(!uid.equals(id)) {
                         int hunger = 20;
                         if (hungerMap.containsKey(uid)) {
                             hunger = hungerMap.get(uid);
                         }
-                        int health = 20;
+                        int health = 0;
                         if (healthMap.containsKey(uid)) {
                             health = healthMap.get(uid);
                         }
-                        try {
-                            String name = mc.world.getPlayerEntityByUUID(uid).getDisplayNameString();
-                            ResourceLocation loc = mc.getConnection().getPlayerInfo(name).getLocationSkin();
+                        if(health!=0) {
+                            NetworkPlayerInfo playerInfo = mc.getConnection().getPlayerInfo(uid);
+                            String name = playerInfo.getDisplayName().toString();
+                            ResourceLocation loc = playerInfo.getLocationSkin();
                             new GuiTeam(mc, offsety, health, hunger, name, loc);
                             offsety += 46;
-                        } catch (Exception ex) {}
+                            count+=1;
+                        }
                     }
                 }
             }

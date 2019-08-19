@@ -1,0 +1,12 @@
+{
+	"time_to_mine": {
+		"category": "record",
+		"sounds": [
+			{
+				"name": "teamsmod:music/time_to_mine",
+				"stream": true,
+				"volume": 0.6
+			}
+		]
+	}
+}

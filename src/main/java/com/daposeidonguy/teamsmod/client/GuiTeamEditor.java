@@ -1,17 +1,24 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.team.SaveData;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.GuiScrollingList;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 public class GuiTeamEditor extends GuiScreen {
@@ -30,7 +37,7 @@ public class GuiTeamEditor extends GuiScreen {
 
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+1,guiLeft + WIDTH / 2 - 60, guiTop + 40, 120,20,"Create/Manage Team"));
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+2,guiLeft + WIDTH / 2 - 60, guiTop + 70, 120,20,"List Teams"));
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+3,guiLeft + WIDTH / 2 - 60, guiTop + 100, 120,20,"Compare Stats (WIP)"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+3,guiLeft + WIDTH / 2 - 60, guiTop + 100, 120,20,"Unimplemented (WIP)"));
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
     }
 
@@ -65,7 +72,7 @@ public class GuiTeamEditor extends GuiScreen {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Teams Info: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Online Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Online Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Online Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
             int yoffset = 30;
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
             while(teamIterator.hasNext()) {
@@ -84,6 +91,8 @@ public class GuiTeamEditor extends GuiScreen {
     public static class GuiTeamList extends GuiScreen {
 
         private int guiTop, guiLeft;
+        private GuiScrollingList buttonscrollist;
+
 
         @Override
         public void initGui() {
@@ -92,34 +101,29 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
             this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
-        }
 
-        @Override
-        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-            drawDefaultBackground();
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
+            List<GuiButton> scrollList = new ArrayList<>();
             int yoffset = 30;
             Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
             while(teamIterator.hasNext()) {
                 String team = teamIterator.next();
                 GuiButton button = new GuiButton(Integer.MIN_VALUE+8,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
-                this.buttonList.add(button);
-                button.drawButton(FMLClientHandler.instance().getClient(),mouseX,mouseY,partialTicks);
+                scrollList.add(button);
                 yoffset+=25;
             }
-            super.drawScreen(mouseX, mouseY, partialTicks);
+
+            buttonscrollist = new GuiTeamScroll(mc,242,100,this.guiTop+25,this.guiTop+125,guiLeft+3,25,this,scrollList);
         }
 
         @Override
-        protected void actionPerformed(GuiButton button) throws IOException {
-            if(button.isMouseOver() && button.id == Integer.MIN_VALUE+8) {
-                FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamInfo(button.displayString));
-            } else {
-                super.actionPerformed(button);
-            }
+        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
+            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
+            super.drawScreen(mouseX, mouseY, partialTicks);
+            buttonscrollist.drawScreen(mouseX,mouseY,partialTicks);
         }
+
     }
 
     public static class GuiTeamManager1 extends GuiScreen {
@@ -173,8 +177,6 @@ public class GuiTeamEditor extends GuiScreen {
             super.drawScreen(mouseX, mouseY, partialTicks);
         }
 
-
-
         @Override
         protected void keyTyped(char typedChar, int keyCode) throws IOException {
             super.keyTyped(typedChar, keyCode);
@@ -222,7 +224,7 @@ public class GuiTeamEditor extends GuiScreen {
             GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+40,Color.GRAY.getRGB());
             this.text.drawTextBox();
 
-            GuiTeamEditor.fontRenderer.drawString("Taken Names:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Taken Names:") /2,guiTop+35,Color.WHITE.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Taken Names:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Taken Names:") /2,guiTop+35, Color.WHITE.getRGB());
             Iterator<String> nameIterator = SaveData.teamsMap.keySet().iterator();
             int yoffset=15;
             while(nameIterator.hasNext()) {
@@ -252,4 +254,61 @@ public class GuiTeamEditor extends GuiScreen {
     }
 
 
+    public static class GuiTeamScroll extends GuiScrollingList {
+
+        private GuiScreen parent;
+        private List<GuiButton> buttonList;
+
+        public GuiTeamScroll(Minecraft client, int width, int height, int top, int bottom, int left, int entryHeight, GuiScreen parent, List<GuiButton> buttonList) {
+            super(client, width, height, top, bottom, left, entryHeight);
+            this.parent = parent;
+            this.buttonList = buttonList;
+        }
+
+        @Override
+        protected int getSize() {
+            return buttonList.size();
+        }
+
+        @Override
+        protected void elementClicked(int index, boolean doubleClick) {
+            GuiButton button = buttonList.get(index);
+            if (button.isMouseOver() && button.id == Integer.MIN_VALUE+8 && button.enabled) {
+                FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamInfo(button.displayString));
+            }else {
+                super.actionPerformed(button);
+            }
+        }
+
+        @Override
+        protected boolean isSelected(int index) {
+            return false;
+        }
+
+        @Override
+        protected void drawBackground() {}
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+            super.drawScreen(mouseX, mouseY, partialTicks);
+            for(GuiButton button : buttonList) {
+                if( button.y+5 > this.top && button.y + 15 < this.bottom) {
+                    button.drawButton(parent.mc,mouseX,mouseY,partialTicks);
+                }
+            }
+        }
+
+        @Override
+        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) {
+            GuiButton button = buttonList.get(slotIdx);
+            button.y = slotTop;
+            button.visible = button.y+5 > this.top && button.y + 15 < this.bottom;
+            button.enabled = button.visible;
+        }
+
+        @Override
+        protected void drawGradientRect(int left, int top, int right, int bottom, int color1, int color2) {
+        }
+    }
 }

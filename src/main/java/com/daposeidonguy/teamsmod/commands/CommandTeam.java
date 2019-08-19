@@ -2,6 +2,7 @@ package com.daposeidonguy.teamsmod.commands;
 
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
+import com.daposeidonguy.teamsmod.network.MessageSong;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.mojang.authlib.GameProfile;
@@ -213,6 +214,18 @@ public class CommandTeam implements ICommand {
                         }
                     } catch(Exception ex){
                         sender.sendMessage(new TextComponentString("Enter team name to get info on"));
+                    }
+                    break;
+                case "test":
+                    EntityPlayer player = (EntityPlayer)sender;
+                    if(SaveData.teamMap.containsKey(player.getUniqueID())) {
+                        System.out.println(SaveData.teamMap.get(player.getUniqueID()));
+                        Iterator<UUID> uuidIterator = SaveData.teamsMap.get(SaveData.teamMap.get(player.getUniqueID())).iterator();
+                        while(uuidIterator.hasNext()) {
+                            EntityPlayerMP p = (EntityPlayerMP)sender.getEntityWorld().getPlayerEntityByUUID(uuidIterator.next());
+                            System.out.println(p.getDisplayNameString());
+                            PacketHandler.INSTANCE.sendTo(new MessageSong(),p);
+                        }
                     }
                     break;
                 default:
