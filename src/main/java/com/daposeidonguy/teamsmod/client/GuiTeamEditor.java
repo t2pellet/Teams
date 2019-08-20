@@ -1,8 +1,11 @@
 package com.daposeidonguy.teamsmod.client;
 
+import com.daposeidonguy.teamsmod.network.MessageGui;
+import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -11,6 +14,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.GuiScrollingList;
@@ -38,7 +42,7 @@ public class GuiTeamEditor extends GuiScreen {
 
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+1,guiLeft + WIDTH / 2 - 60, guiTop + 40, 120,20,"Create/Manage Team"));
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+2,guiLeft + WIDTH / 2 - 60, guiTop + 70, 120,20,"List Teams"));
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+3,guiLeft + WIDTH / 2 - 60, guiTop + 100, 120,20,"Unimplemented (WIP)"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+3,guiLeft + WIDTH / 2 - 60, guiTop + 100, 120,20,"Transfer Items"));
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
     }
 
@@ -197,7 +201,6 @@ public class GuiTeamEditor extends GuiScreen {
         }
     }
 
-
     public static class GuiTeamManager extends GuiScreen {
 
         private int guiTop, guiLeft;
@@ -257,6 +260,56 @@ public class GuiTeamEditor extends GuiScreen {
     }
 
 
+    public static class GuiPlayerList extends GuiScreen {
+
+        private int guiTop, guiLeft;
+        private GuiScrollingList buttonscrollist;
+
+
+        @Override
+        public void initGui() {
+            super.initGui();
+            this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
+            this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
+
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
+
+            List<GuiButton> scrollList = new ArrayList<>();
+            int yoffset = 30;
+            String name = null;
+            if(SaveData.teamMap.containsKey(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())) {
+                name = SaveData.teamMap.get(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID());
+            }
+            if(name==null) {
+                FMLClientHandler.instance().getClient().displayGuiScreen(null);
+                FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("You are not in a team!"));
+                return;
+            }
+            Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
+            while(teamIterator.hasNext()) {
+                String team = mc.world.getPlayerEntityByUUID(teamIterator.next()).getDisplayNameString();
+                if(team!=mc.player.getDisplayNameString()) {
+                    GuiButton button = new GuiButton(Integer.MIN_VALUE+9,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
+                    scrollList.add(button);
+                    yoffset+=25;
+                }
+            }
+
+            buttonscrollist = new GuiTeamScroll(mc,242,100,this.guiTop+25,this.guiTop+125,guiLeft+3,25,this,scrollList);
+        }
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+            drawDefaultBackground();
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
+            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
+            super.drawScreen(mouseX, mouseY, partialTicks);
+            buttonscrollist.drawScreen(mouseX,mouseY,partialTicks);
+        }
+
+    }
+
     public static class GuiTeamScroll extends GuiScrollingList {
 
         private GuiScreen parent;
@@ -279,8 +332,15 @@ public class GuiTeamEditor extends GuiScreen {
             if (button.isMouseOver() && button.id == Integer.MIN_VALUE+8 && button.enabled) {
                 FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamInfo(button.displayString));
-            }else {
-                super.actionPerformed(button);
+            }else if (button.isMouseOver() && button.id == Integer.MIN_VALUE+9 && button.enabled) {
+                EntityPlayerSP p = FMLClientHandler.instance().getClientPlayerEntity();
+                String otherP = FMLClientHandler.instance().getClientPlayerEntity().getEntityWorld().getPlayerEntityByName(button.displayString).getDisplayNameString();
+
+                FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory,otherP),FMLClientHandler.instance().getClientPlayerEntity().inventory));
+                PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(),otherP));
+            } else {
+                    super.actionPerformed(button);
             }
         }
 

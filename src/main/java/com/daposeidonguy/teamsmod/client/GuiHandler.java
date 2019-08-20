@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class GuiHandler {
 
+
     public static Map<UUID,Integer> hungerMap = new HashMap<>();
     public static Map<UUID,Integer> healthMap = new HashMap<>();
 
@@ -68,8 +69,9 @@ public class GuiHandler {
                     FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team leave");
                     FMLClientHandler.instance().getClient().displayGuiScreen(null);
                     break;
+                case Integer.MIN_VALUE+3:
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiPlayerList());
             }
-
         }
     }
 

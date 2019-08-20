@@ -27,7 +27,7 @@ public class GuiTeam extends Gui {
         mc.renderEngine.bindTexture(loc);
         GL11.glPushMatrix();
         GL11.glScalef(0.5F, 0.5F, 0.5F);
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 4, (height / 2 - 28) + 2 * offsety, 32, 32, 32, 32);
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 4, (height / 2 - 34) + 2 * offsety, 32, 32, 32, 32);
         GL11.glPopMatrix();
         drawString(mc.fontRenderer,name, (int) Math.round(width * 0.001) + 20, (height / 4 - 20) + offsety, Color.WHITE.getRGB());
     }
