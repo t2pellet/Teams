@@ -23,8 +23,8 @@ public class ClientEventHandler {
         String text = event.getMessage().getUnformattedText();
         int slice = text.indexOf(">") + 1;
         if(slice>0) {
+            String playerName = text.substring(1,slice-1);
             if(!ConfigHandler.client.disablePrefix) {
-                String playerName = text.substring(1,slice-1);
                 UUID uid = FMLClientHandler.instance().getClient().world.getPlayerEntityByName(playerName).getUniqueID();
                 if(SaveData.teamMap.containsKey(uid)) {
                     String message = "[" + SaveData.teamMap.get(uid) + "]" + " <" + playerName + "> "  + text.substring(slice+1);

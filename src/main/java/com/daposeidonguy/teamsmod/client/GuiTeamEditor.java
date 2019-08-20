@@ -1,5 +1,8 @@
 package com.daposeidonguy.teamsmod.client;
 
+import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
+import com.daposeidonguy.teamsmod.inventory.ContainerTransfer;
 import com.daposeidonguy.teamsmod.network.MessageGui;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
@@ -10,9 +13,13 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.UsernameCache;
@@ -77,12 +84,22 @@ public class GuiTeamEditor extends GuiScreen {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Team Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            try {
+                GuiTeamEditor.fontRenderer.drawString("Team Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
             int yoffset = 30;
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
             while(teamIterator.hasNext()) {
-                String playerName = UsernameCache.getLastKnownUsername(teamIterator.next());
-                if(!playerName.isEmpty()) {
+                UUID uid = teamIterator.next();
+                String playerName = "";
+                if(UsernameCache.containsUUID(uid)) {
+                    playerName = UsernameCache.getLastKnownUsername(uid);
+                } else {
+                    playerName = FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(uid).getDisplayNameString();
+                }
+                if(!playerName.equals("")) {
                     GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
                     yoffset+=15;
                 }
@@ -303,7 +320,7 @@ public class GuiTeamEditor extends GuiScreen {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
             drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Player List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Player List") / 2,guiTop+10,Color.BLACK.getRGB());
             super.drawScreen(mouseX, mouseY, partialTicks);
             buttonscrollist.drawScreen(mouseX,mouseY,partialTicks);
         }
@@ -337,8 +354,13 @@ public class GuiTeamEditor extends GuiScreen {
                 String otherP = FMLClientHandler.instance().getClientPlayerEntity().getEntityWorld().getPlayerEntityByName(button.displayString).getDisplayNameString();
 
                 FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory,otherP),FMLClientHandler.instance().getClientPlayerEntity().inventory));
-                PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(),otherP));
+                if(!ConfigHandler.server.disableInventoryTransfer) {
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory,otherP),FMLClientHandler.instance().getClientPlayerEntity().inventory));
+                    PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(),otherP));
+                } else {
+                    FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("That feature is disabled"));
+                    FMLClientHandler.instance().getClient().displayGuiScreen(null);
+                }
             } else {
                     super.actionPerformed(button);
             }
@@ -372,6 +394,38 @@ public class GuiTeamEditor extends GuiScreen {
 
         @Override
         protected void drawGradientRect(int left, int top, int right, int bottom, int color1, int color2) {
+        }
+    }
+
+    public static class GuiTransfer extends GuiContainer {
+
+        private InventoryPlayer playerInv;
+        private ContainerTransfer container;
+        private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID,"textures/gui/transfer.png");
+
+        public GuiTransfer(ContainerTransfer inventorySlotsIn, InventoryPlayer playerInv) {
+            super(inventorySlotsIn);
+            this.container=inventorySlotsIn;
+            this.playerInv = playerInv;
+        }
+
+        @Override
+        protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
+            super.handleMouseClick(slotIn, slotId, mouseButton, type);
+        }
+
+        @Override
+        protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+            drawDefaultBackground();
+            mc.getTextureManager().bindTexture(TEXTURE);
+            int x = (width - xSize) / 2;
+            int y = (height - ySize) / 2;
+            drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        }
+
+        @Override
+        protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+            fontRenderer.drawString("Transfer Item: " + container.getName(),xSize / 2 - fontRenderer.getStringWidth("Transfer Item: " + container.getName())/2,6, Color.DARK_GRAY.getRGB());
         }
     }
 }

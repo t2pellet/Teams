@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.network;
 
-import com.daposeidonguy.teamsmod.client.InterfaceTransfer;
+import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
+import com.daposeidonguy.teamsmod.inventory.InterfaceTransfer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,9 +41,10 @@ public class MessageGui implements IMessage {
         @Override
         public IMessage onMessage(MessageGui message, MessageContext ctx) {
             FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
-                EntityPlayer p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(message.tag.getString("id")));
-                System.out.println(p.getDisplayNameString());
-                p.displayGui(new InterfaceTransfer(message.tag.getString("name")));
+                if(!ConfigHandler.server.disableInventoryTransfer) {
+                    EntityPlayer p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(message.tag.getString("id")));
+                    p.displayGui(new InterfaceTransfer(message.tag.getString("name")));
+                }
             });
             return null;
         }

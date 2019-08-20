@@ -1,5 +1,6 @@
-package com.daposeidonguy.teamsmod.client;
+package com.daposeidonguy.teamsmod.inventory;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -20,17 +21,23 @@ public class SlotTransfer extends Slot {
     @Override
     public void onSlotChanged() {
         if(FMLCommonHandler.instance().getEffectiveSide()== Side.SERVER && getHasStack()) {
-            System.out.println("SLOT CHANGED");
             ItemStack stack = getStack();
             ItemStack stack1 = stack.copy();
+            stack.setCount(0);
             NBTTagCompound tagStack = new NBTTagCompound();
             stack1.writeToNBT(tagStack);
             for (EntityPlayer p : FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().playerEntities) {
                 if (p.getDisplayNameString().equals(name)) {
-                    stack.setCount(0);
-                    p.addItemStackToInventory(stack1);
+                    if(p.inventory.getFirstEmptyStack()!=-1) {
+                        p.addItemStackToInventory(stack1);
+                    } else {
+                        FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().spawnEntity(new EntityItem(FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld(),p.getPosition().getX(),p.getPosition().getY(),p.getPosition().getZ(),stack1));
+                    }
                 }
             }
+        }
+        else {
+            getStack().setCount(0);
         }
         super.onSlotChanged();
     }

@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.client;
+package com.daposeidonguy.teamsmod.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
@@ -7,8 +7,14 @@ import net.minecraft.item.ItemStack;
 public class ContainerTransfer extends Container {
 
     private InventoryBasic inventory;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
 
     public ContainerTransfer(IInventory playerInv,String name) {
+        this.name = name;
 
         inventory = new InventoryBasic("Transfer",false,1);
 

@@ -23,5 +23,7 @@ public class ConfigHandler {
         public boolean disableAchievementSync;
         @Config.Comment({"Allows everyone to use /team remove"})
         public boolean noOpRemoveTeam;
+        @Config.Comment({"Prevents usage of the inventor transfer feature"})
+        public boolean disableInventoryTransfer;
     }
 }

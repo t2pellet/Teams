@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.client;
+package com.daposeidonguy.teamsmod.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
