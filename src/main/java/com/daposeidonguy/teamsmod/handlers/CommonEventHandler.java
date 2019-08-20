@@ -10,10 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
@@ -48,7 +46,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void arrowShootPlayer(LivingAttackEvent event) {
-        if (!ConfigHandler.enableFriendlyFire && event.getSource().getTrueSource() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer) {
+        if (!ConfigHandler.server.enableFriendlyFire && event.getSource().getTrueSource() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer attacker = (EntityPlayer) event.getSource().getTrueSource();
             EntityPlayer target = (EntityPlayer)event.getEntityLiving();
             String targetTeam = null;
@@ -67,7 +65,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerHitPlayer(AttackEntityEvent event) {
-        if(!ConfigHandler.enableFriendlyFire && (event.getEntityLiving() instanceof EntityPlayer) && event.getTarget() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
+        if(!ConfigHandler.server.enableFriendlyFire && (event.getEntityLiving() instanceof EntityPlayer) && event.getTarget() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
             EntityPlayer target = (EntityPlayer)event.getTarget();
             EntityPlayer attacker = event.getEntityPlayer();
             String targetTeam = null;
@@ -91,17 +89,17 @@ public class CommonEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void playerChat(ServerChatEvent event) {
-        if(!event.getPlayer().getServerWorld().isRemote) {
-            EntityPlayerMP p = event.getPlayer();
-            if(SaveData.teamMap.containsKey(p.getUniqueID()) && !ConfigHandler.disablePrefix) {
-                String team = SaveData.teamMap.get(p.getUniqueID());
-                String message = "[" + team + "]" + " <" +  p.getDisplayNameString() + "> "  + event.getMessage();
-                event.setComponent(new TextComponentTranslation(message));
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void playerChat(ServerChatEvent event) {
+//        if(!event.getPlayer().getServerWorld().isRemote) {
+//            EntityPlayerMP p = event.getPlayer();
+//            if(SaveData.teamMap.containsKey(p.getUniqueID()) && !ConfigHandler.Server.disablePrefix) {
+//                String team = SaveData.teamMap.get(p.getUniqueID());
+//                String message = "[" + team + "]" + " <" +  p.getDisplayNameString() + "> "  + event.getMessage();
+//                event.setComponent(new TextComponentTranslation(message));
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -129,7 +127,7 @@ public class CommonEventHandler {
             } catch (NoClassDefFoundError ex) {}
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
         }
-        if(!event.getWorld().isRemote && !ConfigHandler.disableAchievementSync) {
+        if(!event.getWorld().isRemote && !ConfigHandler.server.disableAchievementSync) {
             if (event.getEntity() instanceof EntityPlayer && !event.getWorld().isRemote) {
                 EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
                 if(SaveData.teamMap.containsKey(player.getUniqueID())) {
@@ -143,7 +141,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void achievementGet(AdvancementEvent event) {
-        if(!ConfigHandler.disableAchievementSync) {
+        if(!ConfigHandler.server.disableAchievementSync) {
             EntityPlayer player = event.getEntityPlayer();
             if(SaveData.teamMap.containsKey(player.getUniqueID()) && !event.getEntity().getEntityWorld().isRemote) {
                 String team = SaveData.teamMap.get(player.getUniqueID());

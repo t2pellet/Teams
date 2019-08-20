@@ -22,7 +22,7 @@ public class GuiTransfer extends GuiContainer {
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        if (slotIn.xPos==80 && slotIn.yPos==35) {
+        if (slotIn != null && slotIn.xPos==80 && slotIn.yPos==35) {
             slotIn.getStack().setCount(0);
         }
         super.handleMouseClick(slotIn, slotId, mouseButton, type);

@@ -5,7 +5,6 @@ import com.daposeidonguy.teamsmod.client.Keybind;
 import com.daposeidonguy.teamsmod.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.network.*;
-import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -64,10 +63,6 @@ public class TeamsMod
 
     @EventHandler
     public void serverStop(FMLServerStoppingEvent event) {
-        if(FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
-            SaveData.teamMap.clear();
-            SaveData.teamsMap.clear();
-        }
         PacketHandler.INSTANCE.sendToAll(new MessageClear());
     }
 }

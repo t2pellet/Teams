@@ -113,7 +113,7 @@ public class CommandTeam implements ICommand {
                     }
                     data.addPlayer(inviter, uid);
                     PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap),(EntityPlayerMP)invitee);
-                    if (SaveData.teamMap.containsKey(inviter.getUniqueID()) && inviter != null && !ConfigHandler.disableAchievementSync) {
+                    if (SaveData.teamMap.containsKey(inviter.getUniqueID()) && inviter != null && !ConfigHandler.server.disableAchievementSync) {
                         String name = SaveData.teamMap.get(inviter.getUniqueID());
                         Iterator<UUID> uuidIterator = SaveData.teamsMap.get(name).iterator();
                         while (uuidIterator.hasNext()) {
@@ -173,15 +173,7 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "remove":
-                    boolean flag = false;
-                    if(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP)sender).getGameProfile())==null && !ConfigHandler.noOpRemoveTeam) {
-                        flag=true;
-                    } else if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
-                        if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getWorldInfo().areCommandsAllowed()) {
-                            flag = true;
-                        }
-                    }
-                    if (flag) {
+                    if (!FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !ConfigHandler.server.noOpRemoveTeam && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP)sender).getGameProfile())==null) {
                         TextComponentString error = new TextComponentString("You do not have permission to use this command");
                         Style red = new Style();
                         red.setColor(TextFormatting.RED);

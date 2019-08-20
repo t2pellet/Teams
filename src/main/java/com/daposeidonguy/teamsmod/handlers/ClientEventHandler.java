@@ -6,9 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+
+import java.util.UUID;
 
 public class ClientEventHandler {
 
@@ -16,12 +20,21 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onChatMessage(ClientChatReceivedEvent event) {
-        if(!ConfigHandler.disablePing) {
-            EntityPlayerSP p = Minecraft.getMinecraft().player;
-            String team = SaveData.teamMap.get(p.getUniqueID());
-            int slice = event.getMessage().getUnformattedComponentText().indexOf(">");
-            if(slice>=0) {
-                if(event.getMessage().getUnformattedComponentText().substring(slice).contains(p.getDisplayNameString()) || team!=null && (event.getMessage().getUnformattedComponentText().substring(slice).contains(' ' + team + ' ') || event.getMessage().getUnformattedComponentText().substring(slice).equals(' ' + team))) {
+        String text = event.getMessage().getUnformattedText();
+        int slice = text.indexOf(">") + 1;
+        if(slice>0) {
+            if(!ConfigHandler.client.disablePrefix) {
+                String playerName = text.substring(1,slice-1);
+                UUID uid = FMLClientHandler.instance().getClient().world.getPlayerEntityByName(playerName).getUniqueID();
+                if(SaveData.teamMap.containsKey(uid)) {
+                    String message = "[" + SaveData.teamMap.get(uid) + "]" + " <" + playerName + "> "  + text.substring(slice+1);
+                    event.setMessage(new TextComponentString(message));
+                }
+            }
+            if(!ConfigHandler.client.disablePing) {
+                EntityPlayerSP p = Minecraft.getMinecraft().player;
+                String team = SaveData.teamMap.get(p.getUniqueID());
+                if(text.substring(slice).contains(p.getDisplayNameString()) || (team!=null && ((text.substring(slice).contains(' ' + team + ' ')) || text.substring(slice).equals(' ' + team) || text.indexOf(team)==text.length()-team.length()))) {
                     Style newStyle = new Style();
                     newStyle.setBold(true);
                     event.setMessage(event.getMessage().setStyle(newStyle));
