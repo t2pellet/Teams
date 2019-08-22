@@ -2,39 +2,75 @@ package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
+import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
 public class GuiHandler {
-
-
     public static Map<UUID,Integer> hungerMap = new HashMap<>();
     public static Map<UUID,Integer> healthMap = new HashMap<>();
+
+    public static Method renderName = ReflectionHelper.findMethod(Render.class,"renderLivingLabel","func_147906_a",Entity.class, String.class,Double.TYPE,Double.TYPE,Double.TYPE,Integer.TYPE);
 
     public static GuiHandler instance() {
         return new GuiHandler();
     }
 
     @SubscribeEvent
+    public void renderPlayer(RenderPlayerEvent.Pre event) {
+        if(!ConfigHandler.client.disableChatBubble && ClientEventHandler.chatMap.containsKey(event.getEntityPlayer().getDisplayNameString())) {
+            EntityPlayerSP local = FMLClientHandler.instance().getClientPlayerEntity();
+            if (!local.getUniqueID().equals(event.getEntityPlayer().getUniqueID())) {
+                String text = ClientEventHandler.chatMap.get(event.getEntityPlayer().getDisplayNameString()).first();
+                long tick = ClientEventHandler.chatMap.get(event.getEntityPlayer().getDisplayNameString()).second();
+                if((ClientEventHandler.ticks - tick) < 200) {
+                    try {
+                        GuiHandler.renderName.invoke(event.getRenderer(),event.getEntityPlayer(),text,event.getX(),event.getY()+0.5,event.getZ(),64);
+                    } catch (InvocationTargetException ex) {
+                        ex.printStackTrace();
+                    } catch (IllegalAccessException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    ClientEventHandler.chatMap.remove(event.getEntityPlayer().getDisplayNameString());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void showGuiButton(GuiScreenEvent.InitGuiEvent.Post event) {
         if(event.getGui() instanceof GuiInventory) {
             GuiInventory guiInventory = (GuiInventory)event.getGui();
-            GuiButtonImage guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+150,guiInventory.getGuiTop()+5, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+            GuiButtonImage guiButtonImage;
+            if(!ConfigHandler.client.smallIcon) {
+                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+150,guiInventory.getGuiTop()+5, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+            } else {
+                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+155,guiInventory.getGuiTop()+5, 15, 14,0,0,13,new ResourceLocation(TeamsMod.MODID,"textures/gui/buttonsmall.png"));
+            }
             guiButtonImage.displayString="team";
             event.getButtonList().add(guiButtonImage);
         }
@@ -77,7 +113,7 @@ public class GuiHandler {
 
     @SubscribeEvent
     public void RenderGuiEvent(RenderGameOverlayEvent.Post event) {
-        if (FMLClientHandler.instance().getSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             UUID id = mc.player.getUniqueID();
 
@@ -100,8 +136,18 @@ public class GuiHandler {
                         if(health!=0) {
                             AbstractClientPlayer p = (AbstractClientPlayer)mc.world.getPlayerEntityByUUID(uid);
                             if(p!=null) {
-                                String name = p.getDisplayNameString();
-                                ResourceLocation loc = p.getLocationSkin();
+                                String name;
+                                ResourceLocation loc;
+                                if(UsernameCache.containsUUID(uid)) {
+                                    name = UsernameCache.getLastKnownUsername(uid);
+                                } else {
+                                    name = p.getDisplayNameString();
+                                }
+                                if(ClientEventHandler.skinMap.containsKey(name)) {
+                                    loc = ClientEventHandler.skinMap.get(name);
+                                } else {
+                                    loc = Minecraft.getMinecraft().getConnection().getPlayerInfo(uid).getLocationSkin();
+                                }
                                 new GuiTeam(mc, offsety, health, hunger, name, loc);
                                 offsety += 46;
                                 count+=1;

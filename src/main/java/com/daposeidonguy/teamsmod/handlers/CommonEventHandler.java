@@ -89,18 +89,6 @@ public class CommonEventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public static void playerChat(ServerChatEvent event) {
-//        if(!event.getPlayer().getServerWorld().isRemote) {
-//            EntityPlayerMP p = event.getPlayer();
-//            if(SaveData.teamMap.containsKey(p.getUniqueID()) && !ConfigHandler.Server.disablePrefix) {
-//                String team = SaveData.teamMap.get(p.getUniqueID());
-//                String message = "[" + team + "]" + " <" +  p.getDisplayNameString() + "> "  + event.getMessage();
-//                event.setComponent(new TextComponentTranslation(message));
-//            }
-//        }
-//    }
-
     @SubscribeEvent
     public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
         if(!event.player.getEntityWorld().isRemote) {
@@ -129,10 +117,9 @@ public class CommonEventHandler {
         }
         if(!event.getWorld().isRemote && !ConfigHandler.server.disableAchievementSync) {
             if (event.getEntity() instanceof EntityPlayer && !event.getWorld().isRemote) {
-                EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
-                if(SaveData.teamMap.containsKey(player.getUniqueID())) {
-                    String team = SaveData.teamMap.get(player.getUniqueID());
-                    SaveData.syncPlayers(team,player);
+                if(SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
+                    String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
+                    SaveData.syncPlayers(team,(EntityPlayerMP)event.getEntity());
 
                 }
             }

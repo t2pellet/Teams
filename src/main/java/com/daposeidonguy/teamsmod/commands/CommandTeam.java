@@ -111,8 +111,6 @@ public class CommandTeam implements ICommand {
                         sender.sendMessage(new TextComponentString("Removing you from your old team..."));
                         data.removePlayer(invitee,uid);
                     }
-                    data.addPlayer(inviter, uid);
-                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap),(EntityPlayerMP)invitee);
                     if (SaveData.teamMap.containsKey(inviter.getUniqueID()) && inviter != null && !ConfigHandler.server.disableAchievementSync) {
                         String name = SaveData.teamMap.get(inviter.getUniqueID());
                         Iterator<UUID> uuidIterator = SaveData.teamsMap.get(name).iterator();
@@ -123,6 +121,8 @@ public class CommandTeam implements ICommand {
                             }
                         }
                     }
+                    data.addPlayer(inviter, uid);
+                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap),(EntityPlayerMP)invitee);
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
                     inviter.sendMessage(new TextComponentString(invitee.getDisplayNameString() + " has joined your team!"));
                     break;
@@ -160,7 +160,7 @@ public class CommandTeam implements ICommand {
                 case "player":
                     try {
                         String playerName = args[1];
-                        if(SaveData.teamMap.containsKey(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName))) {
+                        if(SaveData.teamMap.containsKey(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
                             String playerteam = SaveData.teamMap.get(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
                             sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
                             sender.sendMessage(new TextComponentString(playerteam));

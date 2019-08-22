@@ -19,6 +19,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class TeamsMod
 {
 
+
     public static final SoundEvent SONG = new SoundEvent(new ResourceLocation("teamsmod","time_to_mine"));
 
     public static final String MODID = "teamsmod";
@@ -49,7 +50,6 @@ public class TeamsMod
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-
     }
 
     @EventHandler

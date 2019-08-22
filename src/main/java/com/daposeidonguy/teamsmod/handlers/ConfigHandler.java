@@ -14,6 +14,10 @@ public class ConfigHandler {
         public boolean disablePing;
         @Config.Comment({"Whether or not to have team prefixes enabled"})
         public boolean disablePrefix;
+        @Config.Comment({"Whether the Teams button in the inventory screen should be smaller"})
+        public boolean smallIcon;
+        @Config.Comment({"Whether to disable chat bubbles above playerheads"})
+        public boolean disableChatBubble;
     }
 
     public static class Server {

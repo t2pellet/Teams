@@ -97,7 +97,7 @@ public class GuiTeamEditor extends GuiScreen {
                 if(UsernameCache.containsUUID(uid)) {
                     playerName = UsernameCache.getLastKnownUsername(uid);
                 } else {
-                    playerName = FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(uid).getDisplayNameString();
+                    playerName = FMLClientHandler.instance().getClient().world.getPlayerEntityByUUID(uid).getDisplayNameString();
                 }
                 if(!playerName.equals("")) {
                     GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
@@ -304,11 +304,14 @@ public class GuiTeamEditor extends GuiScreen {
             }
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
             while(teamIterator.hasNext()) {
-                String team = mc.world.getPlayerEntityByUUID(teamIterator.next()).getDisplayNameString();
-                if(team!=mc.player.getDisplayNameString()) {
-                    GuiButton button = new GuiButton(Integer.MIN_VALUE+9,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
-                    scrollList.add(button);
-                    yoffset+=25;
+                UUID uid = teamIterator.next();
+                if(mc.world.getPlayerEntityByUUID(uid)!=null) {
+                    String team = mc.world.getPlayerEntityByUUID(uid).getDisplayNameString();
+                    if(team!=mc.player.getDisplayNameString()) {
+                        GuiButton button = new GuiButton(Integer.MIN_VALUE+9,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
+                        scrollList.add(button);
+                        yoffset+=25;
+                    }
                 }
             }
 
