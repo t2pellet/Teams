@@ -1,12 +1,15 @@
 package com.daposeidonguy.teamsmod.network;
 
+import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -72,7 +75,12 @@ public class MessageSaveData implements IMessage {
                     while(playerTagListIterator.hasNext()) {
                         NBTTagCompound playerTag = (NBTTagCompound)playerTagListIterator.next();
                         UUID id = UUID.fromString(playerTag.getString("uuid"));
+                        AbstractClientPlayer p = (AbstractClientPlayer)FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(id);
                         name = tagCompound.getString("Team Name");
+                        if(p!=null) {
+                            ClientEventHandler.skinMap.put(p.getDisplayNameString(),p.getLocationSkin());
+                            ClientEventHandler.idtoNameMap.put(id,p.getDisplayNameString());
+                        }
                         SaveData.teamMap.put(id,name);
                         uuidList.add(id);
                     }
@@ -82,4 +90,5 @@ public class MessageSaveData implements IMessage {
             return null;
         }
     }
+
 }

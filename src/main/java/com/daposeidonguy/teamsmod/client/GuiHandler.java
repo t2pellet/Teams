@@ -15,7 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -113,7 +112,7 @@ public class GuiHandler {
 
     @SubscribeEvent
     public void RenderGuiEvent(RenderGameOverlayEvent.Post event) {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !ConfigHandler.client.disableTeamsHUD) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             UUID id = mc.player.getUniqueID();
 
@@ -122,7 +121,7 @@ public class GuiHandler {
                 int offsety = 0;
                 int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
-                while(uuidIterator.hasNext() && count<5) {
+                while(uuidIterator.hasNext() && count<4) {
                     UUID uid = uuidIterator.next();
                     if(!uid.equals(id)) {
                         int hunger = 20;
@@ -136,13 +135,8 @@ public class GuiHandler {
                         if(health!=0) {
                             AbstractClientPlayer p = (AbstractClientPlayer)mc.world.getPlayerEntityByUUID(uid);
                             if(p!=null) {
-                                String name;
+                                String name = ClientEventHandler.idtoNameMap.get(uid);
                                 ResourceLocation loc;
-                                if(UsernameCache.containsUUID(uid)) {
-                                    name = UsernameCache.getLastKnownUsername(uid);
-                                } else {
-                                    name = p.getDisplayNameString();
-                                }
                                 if(ClientEventHandler.skinMap.containsKey(name)) {
                                     loc = ClientEventHandler.skinMap.get(name);
                                 } else {

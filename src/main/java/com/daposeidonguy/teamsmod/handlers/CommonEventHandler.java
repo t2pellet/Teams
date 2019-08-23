@@ -1,10 +1,7 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.network.MessageClear;
-import com.daposeidonguy.teamsmod.network.MessageHunger;
-import com.daposeidonguy.teamsmod.network.MessageSaveData;
-import com.daposeidonguy.teamsmod.network.PacketHandler;
+import com.daposeidonguy.teamsmod.network.*;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,6 +11,7 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -116,11 +114,27 @@ public class CommonEventHandler {
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
         }
         if(!event.getWorld().isRemote && !ConfigHandler.server.disableAchievementSync) {
-            if (event.getEntity() instanceof EntityPlayer && !event.getWorld().isRemote) {
+            if (event.getEntity() instanceof EntityPlayer) {
                 if(SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
                     String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
                     SaveData.syncPlayers(team,(EntityPlayerMP)event.getEntity());
 
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void death(LivingDeathEvent event) {
+        if(event.getEntityLiving() instanceof EntityPlayer) {
+            if(SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
+                String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
+                Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
+                while(uuidIterator.hasNext()) {
+                    UUID uuid = uuidIterator.next();
+                    if(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid)!=null) {
+                        PacketHandler.INSTANCE.sendTo(new MessageDeath(),FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid));
+                    }
                 }
             }
         }

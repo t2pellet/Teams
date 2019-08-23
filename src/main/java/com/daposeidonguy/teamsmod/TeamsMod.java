@@ -34,7 +34,7 @@ public class TeamsMod
         PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0, Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.SERVER);
-        PacketHandler.INSTANCE.registerMessage(MessageSong.MessageHandler.class,MessageSong.class,3,Side.SERVER);
+        PacketHandler.INSTANCE.registerMessage(MessageDeath.MessageHandler.class,MessageDeath.class,3,Side.SERVER);
         PacketHandler.INSTANCE.registerMessage(MessageGui.MessageHandler.class, MessageGui.class,4,Side.SERVER);
         if(FMLCommonHandler.instance().getSide()==Side.CLIENT) {
             Keybind.register();
@@ -43,7 +43,7 @@ public class TeamsMod
             PacketHandler.INSTANCE.registerMessage(MessageSaveData.MessageHandler.class,MessageSaveData.class,0,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageHunger.MessageHandler.class, MessageHunger.class,1,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageClear.MessageHandler.class,MessageClear.class,5,Side.CLIENT);
-            PacketHandler.INSTANCE.registerMessage(MessageSong.MessageHandler.class,MessageSong.class,3,Side.CLIENT);
+            PacketHandler.INSTANCE.registerMessage(MessageDeath.MessageHandler.class,MessageDeath.class,3,Side.CLIENT);
             PacketHandler.INSTANCE.registerMessage(MessageGui.MessageHandler.class, MessageGui.class,4,Side.CLIENT);
         }
     }

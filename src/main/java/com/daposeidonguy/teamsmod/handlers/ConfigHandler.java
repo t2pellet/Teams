@@ -18,6 +18,8 @@ public class ConfigHandler {
         public boolean smallIcon;
         @Config.Comment({"Whether to disable chat bubbles above playerheads"})
         public boolean disableChatBubble;
+        @Config.Comment({"Whether to completely disable the Teams HUD. Use if performance is an issue"})
+        public boolean disableTeamsHUD;
     }
 
     public static class Server {

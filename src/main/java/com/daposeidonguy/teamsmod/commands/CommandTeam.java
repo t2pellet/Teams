@@ -136,6 +136,9 @@ public class CommandTeam implements ICommand {
                         if(SaveData.teamsMap.get(theteam).contains(uuid)) {
                             sender.sendMessage(new TextComponentString("That player is already in your team!"));
                             return;
+                        } else if (newp.getUniqueID().equals(oldp.getUniqueID())) {
+                            sender.sendMessage(new TextComponentString("You can't invite yourself to your own team"));
+                            return;
                         }
                         newp.getEntityData().setString("invitedby",oldp.getUniqueID().toString());
                         oldp.sendMessage(new TextComponentString("You have invited " + newp.getDisplayNameString() + " to your team"));
