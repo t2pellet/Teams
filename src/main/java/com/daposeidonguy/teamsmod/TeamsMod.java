@@ -24,7 +24,7 @@ public class TeamsMod
 
     public static final String MODID = "teamsmod";
     public static final String NAME = "Teams Mod";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
 
     @Instance(MODID)
     public static TeamsMod instance;
@@ -59,6 +59,9 @@ public class TeamsMod
     @EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandTeam());
+        if(FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
+            PacketHandler.INSTANCE.sendToAll(new MessageClear());
+        }
     }
 
     @EventHandler

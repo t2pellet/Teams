@@ -16,6 +16,8 @@ public class ConfigHandler {
         public boolean disablePrefix;
         @Config.Comment({"Whether the Teams button in the inventory screen should be smaller"})
         public boolean smallIcon;
+        @Config.Comment({"Whether to use alternate GUI button position"})
+        public boolean useAlternatePosition;
         @Config.Comment({"Whether to disable chat bubbles above playerheads"})
         public boolean disableChatBubble;
         @Config.Comment({"Whether to completely disable the Teams HUD. Use if performance is an issue"})

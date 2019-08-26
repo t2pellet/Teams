@@ -5,7 +5,6 @@ import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -66,9 +65,17 @@ public class GuiHandler {
             GuiInventory guiInventory = (GuiInventory)event.getGui();
             GuiButtonImage guiButtonImage;
             if(!ConfigHandler.client.smallIcon) {
-                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+150,guiInventory.getGuiTop()+5, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+                if(ConfigHandler.client.useAlternatePosition) {
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,4,4, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+                } else {
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+150,guiInventory.getGuiTop()+5, 20, 18,0,0,18,new ResourceLocation(TeamsMod.MODID,"textures/gui/button.png"));
+                }
             } else {
-                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+155,guiInventory.getGuiTop()+5, 15, 14,0,0,13,new ResourceLocation(TeamsMod.MODID,"textures/gui/buttonsmall.png"));
+                if(ConfigHandler.client.useAlternatePosition) {
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,2,2, 15, 14,0,0,13,new ResourceLocation(TeamsMod.MODID,"textures/gui/buttonsmall.png"));
+                } else {
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE,guiInventory.getGuiLeft()+155,guiInventory.getGuiTop()+5, 15, 14,0,0,13,new ResourceLocation(TeamsMod.MODID,"textures/gui/buttonsmall.png"));
+                }
             }
             guiButtonImage.displayString="team";
             event.getButtonList().add(guiButtonImage);
@@ -111,7 +118,7 @@ public class GuiHandler {
     }
 
     @SubscribeEvent
-    public void RenderGuiEvent(RenderGameOverlayEvent.Post event) {
+    public void renderHUDEvent(RenderGameOverlayEvent.Post event) {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !ConfigHandler.client.disableTeamsHUD) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             UUID id = mc.player.getUniqueID();
@@ -133,8 +140,7 @@ public class GuiHandler {
                             health = healthMap.get(uid);
                         }
                         if(health!=0) {
-                            AbstractClientPlayer p = (AbstractClientPlayer)mc.world.getPlayerEntityByUUID(uid);
-                            if(p!=null) {
+                            if(FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(uid)!=null) {
                                 String name = ClientEventHandler.idtoNameMap.get(uid);
                                 ResourceLocation loc;
                                 if(ClientEventHandler.skinMap.containsKey(name)) {

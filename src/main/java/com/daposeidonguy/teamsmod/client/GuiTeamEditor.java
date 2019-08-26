@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.inventory.ContainerTransfer;
 import com.daposeidonguy.teamsmod.network.MessageGui;
@@ -97,7 +98,15 @@ public class GuiTeamEditor extends GuiScreen {
                 if(UsernameCache.containsUUID(uid)) {
                     playerName = UsernameCache.getLastKnownUsername(uid);
                 } else {
-                    playerName = FMLClientHandler.instance().getClient().world.getPlayerEntityByUUID(uid).getDisplayNameString();
+                    if(ClientEventHandler.idtoNameMap.containsKey(uid)) {
+                        playerName = ClientEventHandler.idtoNameMap.get(uid);
+                    } else {
+                        try {
+                            playerName = FMLClientHandler.instance().getClient().getConnection().getPlayerInfo(uid).getDisplayName().toString();
+                        } catch (Exception ex) {
+                            playerName = "Unmet player";
+                        }
+                    }
                 }
                 if(!playerName.equals("")) {
                     GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());

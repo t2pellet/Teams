@@ -66,6 +66,7 @@ public class MessageSaveData implements IMessage {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 SaveData.teamsMap.clear();
                 SaveData.teamMap.clear();
+                ClientEventHandler.skinMap.clear();
                 String name = "";
                 Iterator<NBTBase> tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
                 while(tagList.hasNext()) {

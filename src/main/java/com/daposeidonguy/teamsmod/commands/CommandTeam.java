@@ -67,6 +67,8 @@ public class CommandTeam implements ICommand {
                         if(SaveData.teamsMap.containsKey(name)) {
                             sender.sendMessage(new TextComponentString("That team already exists"));
                             return;
+                        } else if (name.contains(">")) {
+                            sender.sendMessage(new TextComponentString("Team name cannot have that character"));
                         }
                         EntityPlayer player = (EntityPlayer)sender;
                         if(SaveData.teamMap.containsKey(player.getUniqueID())) {
