@@ -17,7 +17,7 @@ public class InterfaceTransfer implements IInteractionObject {
 
     @Override
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return new ContainerTransfer(playerInventory,name);
+        return new ContainerTransfer(playerInventory, name);
     }
 
     @Override

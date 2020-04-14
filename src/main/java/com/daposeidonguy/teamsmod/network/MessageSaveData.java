@@ -25,28 +25,28 @@ public class MessageSaveData implements IMessage {
 
     }
 
-    public MessageSaveData(Map<String,List<UUID>> teamsMap) {
+    public MessageSaveData(Map<String, List<UUID>> teamsMap) {
 
         NBTTagList tagList = new NBTTagList();
         Iterator<String> iteratorTeams = teamsMap.keySet().iterator();
-        while(iteratorTeams.hasNext()) {
+        while (iteratorTeams.hasNext()) {
             NBTTagCompound tagCompound = new NBTTagCompound();
             String team = iteratorTeams.next();
-            tagCompound.setString("Team Name",team);
+            tagCompound.setString("Team Name", team);
 
 
             NBTTagList playerListTag = new NBTTagList();
             Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
-            while(uuidIterator.hasNext()) {
+            while (uuidIterator.hasNext()) {
                 UUID id = uuidIterator.next();
                 NBTTagCompound playerTag = new NBTTagCompound();
-                playerTag.setString("uuid",id.toString());
+                playerTag.setString("uuid", id.toString());
                 playerListTag.appendTag(playerTag);
             }
-            tagCompound.setTag("Player List",playerListTag);
+            tagCompound.setTag("Player List", playerListTag);
             tagList.appendTag(tagCompound);
         }
-        tagTeam.setTag("Teams",tagList);
+        tagTeam.setTag("Teams", tagList);
     }
 
     @Override
@@ -56,36 +56,35 @@ public class MessageSaveData implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf,tagTeam);
+        ByteBufUtils.writeTag(buf, tagTeam);
     }
 
     public static class MessageHandler implements IMessageHandler<MessageSaveData, IMessage> {
         @Override
         public IMessage onMessage(MessageSaveData message, MessageContext ctx) {
+            System.out.println("New Packet: MessageSaveData");
             NBTTagCompound nbt = message.tagTeam;
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 SaveData.teamsMap.clear();
                 SaveData.teamMap.clear();
-                ClientEventHandler.skinMap.clear();
                 String name = "";
                 Iterator<NBTBase> tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
-                while(tagList.hasNext()) {
-                    NBTTagCompound tagCompound = (NBTTagCompound)tagList.next();
-                    Iterator<NBTBase> playerTagListIterator = tagCompound.getTagList("Player List",Constants.NBT.TAG_COMPOUND).iterator();
+                while (tagList.hasNext()) {
+                    NBTTagCompound tagCompound = (NBTTagCompound) tagList.next();
+                    Iterator<NBTBase> playerTagListIterator = tagCompound.getTagList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
                     List<UUID> uuidList = new ArrayList();
-                    while(playerTagListIterator.hasNext()) {
-                        NBTTagCompound playerTag = (NBTTagCompound)playerTagListIterator.next();
+                    while (playerTagListIterator.hasNext()) {
+                        NBTTagCompound playerTag = (NBTTagCompound) playerTagListIterator.next();
                         UUID id = UUID.fromString(playerTag.getString("uuid"));
-                        AbstractClientPlayer p = (AbstractClientPlayer)FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(id);
+                        AbstractClientPlayer p = (AbstractClientPlayer) FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(id);
                         name = tagCompound.getString("Team Name");
-                        if(p!=null) {
-                            ClientEventHandler.skinMap.put(p.getDisplayNameString(),p.getLocationSkin());
-                            ClientEventHandler.idtoNameMap.put(id,p.getDisplayNameString());
+                        if (p != null) {
+                            ClientEventHandler.idtoNameMap.put(id, p.getDisplayNameString());
                         }
-                        SaveData.teamMap.put(id,name);
+                        SaveData.teamMap.put(id, name);
                         uuidList.add(id);
                     }
-                    SaveData.teamsMap.put(name,uuidList);
+                    SaveData.teamsMap.put(name, uuidList);
                 }
             });
             return null;

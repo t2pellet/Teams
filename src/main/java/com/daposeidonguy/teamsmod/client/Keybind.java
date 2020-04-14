@@ -11,8 +11,8 @@ public class Keybind {
     public static KeyBinding display;
 
     public static void register() {
-        if(FMLCommonHandler.instance().getSide()== Side.CLIENT) {
-            display = new KeyBinding("Display Teams HUD", Keyboard.KEY_V,"key.categories.multiplayer");
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            display = new KeyBinding("Display Teams HUD", Keyboard.KEY_V, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(display);
         }
     }

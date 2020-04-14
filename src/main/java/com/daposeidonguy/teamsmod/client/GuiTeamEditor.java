@@ -48,18 +48,18 @@ public class GuiTeamEditor extends GuiScreen {
         this.guiLeft = (this.width - this.WIDTH) / 2;
         this.guiTop = (this.height - this.HEIGHT) / 2;
 
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+1,guiLeft + WIDTH / 2 - 60, guiTop + 40, 120,20,"Create/Manage Team"));
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+2,guiLeft + WIDTH / 2 - 60, guiTop + 70, 120,20,"List Teams"));
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+3,guiLeft + WIDTH / 2 - 60, guiTop + 100, 120,20,"Transfer Items"));
-        this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Close menu"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 1, guiLeft + WIDTH / 2 - 60, guiTop + 40, 120, 20, "Create/Manage Team"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 2, guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "List Teams"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 3, guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Transfer Items"));
+        this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Close menu"));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-        drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-        GuiTeamEditor.fontRenderer.drawString("Teams GUI",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams GUI") / 2,guiTop+10,Color.BLACK.getRGB());
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+        GuiTeamEditor.fontRenderer.drawString("Teams GUI", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams GUI") / 2, guiTop + 10, Color.BLACK.getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -77,28 +77,28 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back"));
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
             try {
-                GuiTeamEditor.fontRenderer.drawString("Team Players: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Players: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
-            } catch(Exception ex) {
+                GuiTeamEditor.fontRenderer.drawString("Team Players: " + name, guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Players: " + name) / 2, guiTop + 10, Color.BLACK.getRGB());
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             int yoffset = 30;
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
-            while(teamIterator.hasNext()) {
+            while (teamIterator.hasNext()) {
                 UUID uid = teamIterator.next();
                 String playerName = "";
-                if(UsernameCache.containsUUID(uid)) {
+                if (UsernameCache.containsUUID(uid)) {
                     playerName = UsernameCache.getLastKnownUsername(uid);
                 } else {
-                    if(ClientEventHandler.idtoNameMap.containsKey(uid)) {
+                    if (ClientEventHandler.idtoNameMap.containsKey(uid)) {
                         playerName = ClientEventHandler.idtoNameMap.get(uid);
                     } else {
                         try {
@@ -108,9 +108,9 @@ public class GuiTeamEditor extends GuiScreen {
                         }
                     }
                 }
-                if(!playerName.equals("")) {
-                    GuiTeamEditor.fontRenderer.drawString(playerName,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2,guiTop+yoffset,Color.GRAY.getRGB());
-                    yoffset+=15;
+                if (!playerName.equals("")) {
+                    GuiTeamEditor.fontRenderer.drawString(playerName, guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset, Color.GRAY.getRGB());
+                    yoffset += 15;
                 }
             }
 
@@ -130,29 +130,29 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back"));
 
             List<GuiButton> scrollList = new ArrayList<>();
             int yoffset = 30;
             Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
-            while(teamIterator.hasNext()) {
+            while (teamIterator.hasNext()) {
                 String team = teamIterator.next();
-                GuiButton button = new GuiButton(Integer.MIN_VALUE+8,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
+                GuiButton button = new GuiButton(Integer.MIN_VALUE + 8, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, team);
                 scrollList.add(button);
-                yoffset+=25;
+                yoffset += 25;
             }
 
-            buttonscrollist = new GuiTeamScroll(mc,242,100,this.guiTop+25,this.guiTop+125,guiLeft+3,25,this,scrollList);
+            buttonscrollist = new GuiTeamScroll(mc, 242, 100, this.guiTop + 25, this.guiTop + 125, guiLeft + 3, 25, this, scrollList);
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Teams List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2,guiTop+10,Color.BLACK.getRGB());
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Teams List", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Teams List") / 2, guiTop + 10, Color.BLACK.getRGB());
             super.drawScreen(mouseX, mouseY, partialTicks);
-            buttonscrollist.drawScreen(mouseX,mouseY,partialTicks);
+            buttonscrollist.drawScreen(mouseX, mouseY, partialTicks);
         }
 
     }
@@ -176,31 +176,31 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
 
-            this.text = new GuiTextField(Integer.MIN_VALUE+6,FMLClientHandler.instance().getClient().fontRenderer,guiLeft + WIDTH / 2 - 60,guiTop+45,120,20);
+            this.text = new GuiTextField(Integer.MIN_VALUE + 6, FMLClientHandler.instance().getClient().fontRenderer, guiLeft + WIDTH / 2 - 60, guiTop + 45, 120, 20);
             this.text.setFocused(true);
 
-            this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 70, 120,20,"Invite Player");
+            this.button = new GuiButton(Integer.MIN_VALUE + 5, guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "Invite Player");
             this.buttonList.add(this.button);
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+7,guiLeft+WIDTH/2-60,guiTop+100,120,20,"Leave Team"));
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Go back"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 7, guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Leave Team"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back"));
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Team Manager: " + name,guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager: " + name) / 2,guiTop+10,Color.BLACK.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Enter Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Enter Name") /2,guiTop+35,Color.GRAY.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Eligible Players:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Eligible Players:") / 2,guiTop+35,Color.WHITE.getRGB());
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Team Manager: " + name, guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager: " + name) / 2, guiTop + 10, Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Enter Name", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Enter Name") / 2, guiTop + 35, Color.GRAY.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Eligible Players:", guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth("Eligible Players:") / 2, guiTop + 35, Color.WHITE.getRGB());
             Iterator<EntityPlayer> uuidIterator = mc.world.playerEntities.iterator();
-            int yoffset=15;
-            while(uuidIterator.hasNext()) {
+            int yoffset = 15;
+            while (uuidIterator.hasNext()) {
                 String clientName = mc.player.getDisplayNameString();
                 EntityPlayer p = uuidIterator.next();
                 UUID uid = p.getUniqueID();
                 String playerName = p.getDisplayNameString();
-                if(playerName!=clientName && !SaveData.teamMap.containsKey(uid)) {
+                if (playerName != clientName && !SaveData.teamMap.containsKey(uid)) {
                     GuiTeamEditor.fontRenderer.drawString(playerName, guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
                     yoffset += 15;
                 }
@@ -213,14 +213,14 @@ public class GuiTeamEditor extends GuiScreen {
         @Override
         protected void keyTyped(char typedChar, int keyCode) throws IOException {
             super.keyTyped(typedChar, keyCode);
-            this.text.textboxKeyTyped(typedChar,keyCode);
+            this.text.textboxKeyTyped(typedChar, keyCode);
         }
 
         @Override
         protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
             super.mouseClicked(mouseX, mouseY, mouseButton);
-            this.text.mouseClicked(mouseX,mouseY,mouseButton);
-            if(this.button.isMouseOver()) {
+            this.text.mouseClicked(mouseX, mouseY, mouseButton);
+            if (this.button.isMouseOver()) {
                 FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team invite " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
@@ -239,30 +239,30 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.text = new GuiTextField(Integer.MIN_VALUE+6,FMLClientHandler.instance().getClient().fontRenderer,guiLeft + WIDTH / 2 - 60,guiTop+50,120,20);
+            this.text = new GuiTextField(Integer.MIN_VALUE + 6, FMLClientHandler.instance().getClient().fontRenderer, guiLeft + WIDTH / 2 - 60, guiTop + 50, 120, 20);
             this.text.setFocused(true);
 
-            this.button = new GuiButton(Integer.MIN_VALUE+5,guiLeft + WIDTH / 2 - 60,guiTop + 75, 120,20,"Create Team");
+            this.button = new GuiButton(Integer.MIN_VALUE + 5, guiLeft + WIDTH / 2 - 60, guiTop + 75, 120, 20, "Create Team");
             this.buttonList.add(this.button);
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60,guiTop + 130,120,20,"Go back"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back"));
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Team Manager",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager") / 2,guiTop+10,Color.BLACK.getRGB());
-            GuiTeamEditor.fontRenderer.drawString("Set Name",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") /2,guiTop+40,Color.GRAY.getRGB());
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Team Manager", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Team Manager") / 2, guiTop + 10, Color.BLACK.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Set Name", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Set Name") / 2, guiTop + 40, Color.GRAY.getRGB());
             this.text.drawTextBox();
 
-            GuiTeamEditor.fontRenderer.drawString("Taken Names:",guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth("Taken Names:") /2,guiTop+35, Color.WHITE.getRGB());
+            GuiTeamEditor.fontRenderer.drawString("Taken Names:", guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth("Taken Names:") / 2, guiTop + 35, Color.WHITE.getRGB());
             Iterator<String> nameIterator = SaveData.teamsMap.keySet().iterator();
-            int yoffset=15;
-            while(nameIterator.hasNext()) {
+            int yoffset = 15;
+            while (nameIterator.hasNext()) {
                 String name = nameIterator.next();
-                GuiTeamEditor.fontRenderer.drawString(name,guiLeft+WIDTH+40 - GuiTeamEditor.fontRenderer.getStringWidth(name) / 2,guiTop+yoffset+35,Color.GRAY.getRGB());
-                yoffset+=15;
+                GuiTeamEditor.fontRenderer.drawString(name, guiLeft + WIDTH + 40 - GuiTeamEditor.fontRenderer.getStringWidth(name) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
+                yoffset += 15;
             }
 
             super.drawScreen(mouseX, mouseY, partialTicks);
@@ -271,14 +271,14 @@ public class GuiTeamEditor extends GuiScreen {
         @Override
         protected void keyTyped(char typedChar, int keyCode) throws IOException {
             super.keyTyped(typedChar, keyCode);
-            this.text.textboxKeyTyped(typedChar,keyCode);
+            this.text.textboxKeyTyped(typedChar, keyCode);
         }
 
         @Override
         protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
             super.mouseClicked(mouseX, mouseY, mouseButton);
-            this.text.mouseClicked(mouseX,mouseY,mouseButton);
-            if(this.button.isMouseOver()) {
+            this.text.mouseClicked(mouseX, mouseY, mouseButton);
+            if (this.button.isMouseOver()) {
                 FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team create " + this.text.getText());
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
             }
@@ -298,43 +298,43 @@ public class GuiTeamEditor extends GuiScreen {
             this.guiLeft = (this.width - GuiTeamEditor.WIDTH) / 2;
             this.guiTop = (this.height - GuiTeamEditor.HEIGHT) / 2;
 
-            this.buttonList.add(new GuiButton(Integer.MIN_VALUE+4,guiLeft + WIDTH / 2 - 60, guiTop + 130,120,20,"Go back"));
+            this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 4, guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back"));
 
             List<GuiButton> scrollList = new ArrayList<>();
             int yoffset = 30;
             String name = null;
-            if(SaveData.teamMap.containsKey(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())) {
+            if (SaveData.teamMap.containsKey(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())) {
                 name = SaveData.teamMap.get(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID());
             }
-            if(name==null) {
+            if (name == null) {
                 FMLClientHandler.instance().getClient().displayGuiScreen(null);
                 FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("You are not in a team!"));
                 return;
             }
             Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
-            while(teamIterator.hasNext()) {
+            while (teamIterator.hasNext()) {
                 UUID uid = teamIterator.next();
-                if(mc.world.getPlayerEntityByUUID(uid)!=null) {
+                if (mc.world.getPlayerEntityByUUID(uid) != null) {
                     String team = mc.world.getPlayerEntityByUUID(uid).getDisplayNameString();
-                    if(team!=mc.player.getDisplayNameString()) {
-                        GuiButton button = new GuiButton(Integer.MIN_VALUE+9,guiLeft+WIDTH / 2 - 60, guiTop + yoffset,120,20,team);
+                    if (team != mc.player.getDisplayNameString()) {
+                        GuiButton button = new GuiButton(Integer.MIN_VALUE + 9, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, team);
                         scrollList.add(button);
-                        yoffset+=25;
+                        yoffset += 25;
                     }
                 }
             }
 
-            buttonscrollist = new GuiTeamScroll(mc,242,100,this.guiTop+25,this.guiTop+125,guiLeft+3,25,this,scrollList);
+            buttonscrollist = new GuiTeamScroll(mc, 242, 100, this.guiTop + 25, this.guiTop + 125, guiLeft + 3, 25, this, scrollList);
         }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             drawDefaultBackground();
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(BACKGROUND);
-            drawTexturedModalRect(guiLeft,guiTop,0,0,WIDTH,HEIGHT);
-            GuiTeamEditor.fontRenderer.drawString("Player List",guiLeft+WIDTH/2 - GuiTeamEditor.fontRenderer.getStringWidth("Player List") / 2,guiTop+10,Color.BLACK.getRGB());
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+            GuiTeamEditor.fontRenderer.drawString("Player List", guiLeft + WIDTH / 2 - GuiTeamEditor.fontRenderer.getStringWidth("Player List") / 2, guiTop + 10, Color.BLACK.getRGB());
             super.drawScreen(mouseX, mouseY, partialTicks);
-            buttonscrollist.drawScreen(mouseX,mouseY,partialTicks);
+            buttonscrollist.drawScreen(mouseX, mouseY, partialTicks);
         }
 
     }
@@ -358,23 +358,25 @@ public class GuiTeamEditor extends GuiScreen {
         @Override
         protected void elementClicked(int index, boolean doubleClick) {
             GuiButton button = buttonList.get(index);
-            if (button.isMouseOver() && button.id == Integer.MIN_VALUE+8 && button.enabled) {
+            if (button.isMouseOver() && button.id == Integer.MIN_VALUE + 8 && button.enabled) {
                 FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamInfo(button.displayString));
-            }else if (button.isMouseOver() && button.id == Integer.MIN_VALUE+9 && button.enabled) {
+            } else if (button.isMouseOver() && button.id == Integer.MIN_VALUE + 9 && button.enabled) {
                 EntityPlayerSP p = FMLClientHandler.instance().getClientPlayerEntity();
                 String otherP = FMLClientHandler.instance().getClientPlayerEntity().getEntityWorld().getPlayerEntityByName(button.displayString).getDisplayNameString();
 
                 FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                if(!ConfigHandler.server.disableInventoryTransfer) {
-                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory,otherP),FMLClientHandler.instance().getClientPlayerEntity().inventory));
-                    PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(),otherP));
+                if (!ConfigHandler.server.disableInventoryTransfer) {
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory, otherP), FMLClientHandler.instance().getClientPlayerEntity().inventory));
+                    if (p != null && p.getEntityWorld().isRemote) {
+                        PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(), otherP));
+                    }
                 } else {
                     FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("That feature is disabled"));
                     FMLClientHandler.instance().getClient().displayGuiScreen(null);
                 }
             } else {
-                    super.actionPerformed(button);
+                super.actionPerformed(button);
             }
         }
 
@@ -384,14 +386,15 @@ public class GuiTeamEditor extends GuiScreen {
         }
 
         @Override
-        protected void drawBackground() {}
+        protected void drawBackground() {
+        }
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
             super.drawScreen(mouseX, mouseY, partialTicks);
-            for(GuiButton button : buttonList) {
-                if( button.y+5 > this.top && button.y + 15 < this.bottom) {
-                    button.drawButton(parent.mc,mouseX,mouseY,partialTicks);
+            for (GuiButton button : buttonList) {
+                if (button.y + 5 > this.top && button.y + 15 < this.bottom) {
+                    button.drawButton(parent.mc, mouseX, mouseY, partialTicks);
                 }
             }
         }
@@ -400,7 +403,7 @@ public class GuiTeamEditor extends GuiScreen {
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) {
             GuiButton button = buttonList.get(slotIdx);
             button.y = slotTop;
-            button.visible = button.y+5 > this.top && button.y + 15 < this.bottom;
+            button.visible = button.y + 5 > this.top && button.y + 15 < this.bottom;
             button.enabled = button.visible;
         }
 
@@ -413,11 +416,11 @@ public class GuiTeamEditor extends GuiScreen {
 
         private InventoryPlayer playerInv;
         private ContainerTransfer container;
-        private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID,"textures/gui/transfer.png");
+        private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
 
         public GuiTransfer(ContainerTransfer inventorySlotsIn, InventoryPlayer playerInv) {
             super(inventorySlotsIn);
-            this.container=inventorySlotsIn;
+            this.container = inventorySlotsIn;
             this.playerInv = playerInv;
         }
 
@@ -437,7 +440,13 @@ public class GuiTeamEditor extends GuiScreen {
 
         @Override
         protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-            fontRenderer.drawString("Transfer Item: " + container.getName(),xSize / 2 - fontRenderer.getStringWidth("Transfer Item: " + container.getName())/2,6, Color.DARK_GRAY.getRGB());
+            fontRenderer.drawString("Transfer Item: " + container.getName(), xSize / 2 - fontRenderer.getStringWidth("Transfer Item: " + container.getName()) / 2, 6, Color.DARK_GRAY.getRGB());
+        }
+
+        @Override
+        public void onGuiClosed() {
+            this.playerInv.addItemStackToInventory(this.container.getSlot(0).getStack());
+            super.onGuiClosed();
         }
     }
 }

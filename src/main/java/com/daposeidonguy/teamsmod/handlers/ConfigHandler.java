@@ -3,7 +3,7 @@ package com.daposeidonguy.teamsmod.handlers;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import net.minecraftforge.common.config.Config;
 
-@Config(modid=TeamsMod.MODID)
+@Config(modid = TeamsMod.MODID)
 public class ConfigHandler {
 
     public static Client client = new Client();

@@ -13,12 +13,12 @@ public class ContainerTransfer extends Container {
         return name;
     }
 
-    public ContainerTransfer(IInventory playerInv,String name) {
+    public ContainerTransfer(IInventory playerInv, String name) {
         this.name = name;
 
-        inventory = new InventoryBasic("Transfer",false,1);
+        inventory = new InventoryBasic("Transfer", false, 1);
 
-        addSlotToContainer(new SlotTransfer(inventory,0,80,35,name));
+        addSlotToContainer(new SlotTransfer(inventory, 0, 80, 35, name));
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -35,7 +35,6 @@ public class ContainerTransfer extends Container {
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
         return super.slotClick(slotId, dragType, clickTypeIn, player);
     }
-
 
 
     @Override

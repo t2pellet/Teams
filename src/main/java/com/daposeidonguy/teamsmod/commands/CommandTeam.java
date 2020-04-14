@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.commands;
 
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
+import com.daposeidonguy.teamsmod.network.MessageInvite;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
@@ -57,21 +58,20 @@ public class CommandTeam implements ICommand {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
-
         if (!sender.getEntityWorld().isRemote && args.length > 0) {
             SaveData data = SaveData.get(sender.getEntityWorld());
             switch (args[0]) {
                 case "create":
                     try {
                         String name = args[1];
-                        if(SaveData.teamsMap.containsKey(name)) {
+                        if (SaveData.teamsMap.containsKey(name)) {
                             sender.sendMessage(new TextComponentString("That team already exists"));
                             return;
                         } else if (name.contains(">")) {
                             sender.sendMessage(new TextComponentString("Team name cannot have that character"));
                         }
-                        EntityPlayer player = (EntityPlayer)sender;
-                        if(SaveData.teamMap.containsKey(player.getUniqueID())) {
+                        EntityPlayer player = (EntityPlayer) sender;
+                        if (SaveData.teamMap.containsKey(player.getUniqueID())) {
                             sender.sendMessage(new TextComponentString("You're already in a team! Leave it first!"));
                             return;
                         }
@@ -91,71 +91,67 @@ public class CommandTeam implements ICommand {
                     break;
                 case "kick":
                     try {
-                        String playerName= args[1];
+                        String playerName = args[1];
                         UUID uid = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
-                        if(SaveData.teamMap.containsKey(uid)) {
+                        if (SaveData.teamMap.containsKey(uid)) {
                             sender.sendMessage(new TextComponentString("Removing that player from your team!"));
-                            data.removePlayer((EntityPlayer)sender,uid);
+                            data.removePlayer((EntityPlayer) sender, uid);
                         }
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("Must enter a valid playername to remove from your team: /team remove <playername>"));
                     }
                     break;
                 case "accept":
-                    EntityPlayer invitee = (EntityPlayer)sender;
+                    EntityPlayer invitee = (EntityPlayer) sender;
                     EntityPlayerMP inviter = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(invitee.getEntityData().getString("invitedby")));
                     UUID uid = invitee.getUniqueID();
-                    if(inviter==null) {
+                    if (inviter == null) {
                         sender.sendMessage(new TextComponentString("You have not been invited to a team"));
                         break;
-                    }
-                    else if (SaveData.teamMap.containsKey(uid)){
+                    } else if (SaveData.teamMap.containsKey(uid)) {
                         sender.sendMessage(new TextComponentString("Removing you from your old team..."));
-                        data.removePlayer(invitee,uid);
+                        data.removePlayer(invitee, uid);
                     }
                     if (SaveData.teamMap.containsKey(inviter.getUniqueID()) && inviter != null && !ConfigHandler.server.disableAchievementSync) {
                         String name = SaveData.teamMap.get(inviter.getUniqueID());
                         Iterator<UUID> uuidIterator = SaveData.teamsMap.get(name).iterator();
                         while (uuidIterator.hasNext()) {
                             EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuidIterator.next());
-                            if(playerMP!=null) {
-                                SaveData.syncPlayers(name,playerMP);
+                            if (playerMP != null) {
+                                SaveData.syncPlayers(name, playerMP);
                             }
                         }
                     }
                     data.addPlayer(inviter, uid);
-                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap),(EntityPlayerMP)invitee);
+                    PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap), (EntityPlayerMP) invitee);
                     sender.sendMessage(new TextComponentString("Joined " + inviter.getDisplayNameString() + "'s team"));
                     inviter.sendMessage(new TextComponentString(invitee.getDisplayNameString() + " has joined your team!"));
                     break;
                 case "invite":
-                    try {
-                        String playerName = args[1];
-                        EntityPlayer newp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
-                        EntityPlayer oldp = (EntityPlayer)sender;
-                        UUID uuid = newp.getUniqueID();
-                        String theteam = SaveData.teamMap.get(oldp.getUniqueID());
-                        if(SaveData.teamsMap.get(theteam).contains(uuid)) {
-                            sender.sendMessage(new TextComponentString("That player is already in your team!"));
-                            return;
-                        } else if (newp.getUniqueID().equals(oldp.getUniqueID())) {
-                            sender.sendMessage(new TextComponentString("You can't invite yourself to your own team"));
+                    EntityPlayer newPlayer = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(args[1]);
+                    EntityPlayer oldPlayer = (EntityPlayer) sender;
+                    if (SaveData.teamMap.containsKey(oldPlayer.getUniqueID())) {
+                        String teamName = SaveData.teamMap.get(oldPlayer.getUniqueID());
+                        if (SaveData.teamsMap.get(teamName).contains(newPlayer.getUniqueID())) {
+                            sender.sendMessage(new TextComponentString("That player is already on your team!"));
                             return;
                         }
-                        newp.getEntityData().setString("invitedby",oldp.getUniqueID().toString());
-                        oldp.sendMessage(new TextComponentString("You have invited " + newp.getDisplayNameString() + " to your team"));
-                        newp.sendMessage(new TextComponentString("You have been invited by " + oldp.getDisplayNameString() + " to join their team. Type /team accept to accept"));
-                    } catch (Exception ex) {
-                        sender.sendMessage(new TextComponentString("Must enter an online player's username to invite"));
+                        newPlayer.getEntityData().setString("invitedby", oldPlayer.getCachedUniqueIdString());
+                        System.out.println("Inviting " + newPlayer.getDisplayNameString() + " to the team " + teamName);
+                        oldPlayer.sendMessage(new TextComponentString("You have invited: " + newPlayer.getDisplayNameString() + " to your team"));
+                        PacketHandler.INSTANCE.sendTo(new MessageInvite(teamName), (EntityPlayerMP) newPlayer);
+                        newPlayer.sendMessage(new TextComponentString("You have been invited to join the team: " + teamName + ". Type /team accept to accept"));
+                    } else {
+                        oldPlayer.sendMessage(new TextComponentString("Failed to Invite : Either the player is invalid or you are not in a team!"));
                     }
                     break;
                 case "leave":
                     try {
-                        EntityPlayer p = (EntityPlayer)sender;
+                        EntityPlayer p = (EntityPlayer) sender;
                         String toLeave = SaveData.teamMap.get(p.getUniqueID());
-                        data.removePlayer(p,p.getUniqueID());
+                        data.removePlayer(p, p.getUniqueID());
                         p.sendMessage(new TextComponentString("You left your team"));
-                        if(SaveData.teamsMap.get(toLeave).isEmpty()) {
+                        if (SaveData.teamsMap.get(toLeave).isEmpty()) {
                             data.removeTeam(toLeave);
                         }
                     } catch (Exception ex) {
@@ -165,7 +161,7 @@ public class CommandTeam implements ICommand {
                 case "player":
                     try {
                         String playerName = args[1];
-                        if(SaveData.teamMap.containsKey(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
+                        if (SaveData.teamMap.containsKey(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
                             String playerteam = SaveData.teamMap.get(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
                             sender.sendMessage(new TextComponentString(playerName + " is in the following team:"));
                             sender.sendMessage(new TextComponentString(playerteam));
@@ -178,7 +174,7 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "remove":
-                    if (!FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !ConfigHandler.server.noOpRemoveTeam && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP)sender).getGameProfile())==null) {
+                    if (!FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !ConfigHandler.server.noOpRemoveTeam && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP) sender).getGameProfile()) == null) {
                         TextComponentString error = new TextComponentString("You do not have permission to use this command");
                         Style red = new Style();
                         red.setColor(TextFormatting.RED);
@@ -198,32 +194,20 @@ public class CommandTeam implements ICommand {
                     sender.sendMessage(new TextComponentString("Players in Team: "));
                     try {
                         String teamName = args[1];
-                        if(SaveData.teamsMap.containsKey(teamName)) {
+                        if (SaveData.teamsMap.containsKey(teamName)) {
                             Iterator<UUID> uuidIterator = SaveData.teamsMap.get(teamName).iterator();
-                            while(uuidIterator.hasNext()) {
+                            while (uuidIterator.hasNext()) {
                                 UUID id = uuidIterator.next();
                                 GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(id);
-                                if (profile!=null) {
+                                if (profile != null) {
                                     sender.sendMessage(new TextComponentString(profile.getName()));
                                 }
                             }
                         }
-                    } catch(Exception ex){
+                    } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("Enter team name to get info on"));
                     }
                     break;
-//                case "test":
-//                    EntityPlayer player = (EntityPlayer)sender;
-//                    if(SaveData.teamMap.containsKey(player.getUniqueID())) {
-//                        System.out.println(SaveData.teamMap.get(player.getUniqueID()));
-//                        Iterator<UUID> uuidIterator = SaveData.teamsMap.get(SaveData.teamMap.get(player.getUniqueID())).iterator();
-//                        while(uuidIterator.hasNext()) {
-//                            EntityPlayerMP p = (EntityPlayerMP)sender.getEntityWorld().getPlayerEntityByUUID(uuidIterator.next());
-//                            System.out.println(p.getDisplayNameString());
-//                            PacketHandler.INSTANCE.sendTo(new MessageSong(),p);
-//                        }
-//                    }
-//                    break;
                 default:
                     sender.sendMessage(new TextComponentString("Invalid command"));
             }
@@ -242,7 +226,7 @@ public class CommandTeam implements ICommand {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length < 2) {
             List<String> tabCompletions = new ArrayList<>();
-            if(args[0].contains("cr")) {
+            if (args[0].contains("cr")) {
                 tabCompletions.add("create");
             } else if (args[0].contains("li")) {
                 tabCompletions.add("list");
@@ -253,8 +237,7 @@ public class CommandTeam implements ICommand {
                     tabCompletions.add("invite");
                 } else if (args[0].contains("inf")) {
                     tabCompletions.add("info");
-                }
-                else {
+                } else {
                     tabCompletions.add("invite");
                     tabCompletions.add("info");
                 }

@@ -13,14 +13,14 @@ public class SlotTransfer extends Slot {
 
     private String name;
 
-    public SlotTransfer(IInventory inventoryIn, int index, int xPosition, int yPosition,String name) {
+    public SlotTransfer(IInventory inventoryIn, int index, int xPosition, int yPosition, String name) {
         super(inventoryIn, index, xPosition, yPosition);
         this.name = name;
     }
 
     @Override
     public void onSlotChanged() {
-        if(FMLCommonHandler.instance().getEffectiveSide()== Side.SERVER && getHasStack()) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && getHasStack()) {
             ItemStack stack = getStack();
             ItemStack stack1 = stack.copy();
             stack.setCount(0);
@@ -28,15 +28,14 @@ public class SlotTransfer extends Slot {
             stack1.writeToNBT(tagStack);
             for (EntityPlayer p : FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().playerEntities) {
                 if (p.getDisplayNameString().equals(name)) {
-                    if(p.inventory.getFirstEmptyStack()!=-1) {
+                    if (p.inventory.getFirstEmptyStack() != -1) {
                         p.addItemStackToInventory(stack1);
                     } else {
-                        FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().spawnEntity(new EntityItem(FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld(),p.getPosition().getX(),p.getPosition().getY(),p.getPosition().getZ(),stack1));
+                        FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().spawnEntity(new EntityItem(FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld(), p.getPosition().getX(), p.getPosition().getY(), p.getPosition().getZ(), stack1));
                     }
                 }
             }
-        }
-        else {
+        } else {
             getStack().setCount(0);
         }
         super.onSlotChanged();

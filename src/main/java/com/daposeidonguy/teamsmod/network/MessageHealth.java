@@ -11,18 +11,18 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.UUID;
 
-public class MessageHunger implements IMessage {
+public class MessageHealth implements IMessage {
 
     private NBTTagCompound tag = new NBTTagCompound();
 
 
-    public MessageHunger() {
+    public MessageHealth() {
 
     }
 
-    public MessageHunger(UUID id, int hunger) {
+    public MessageHealth(UUID id, int health) {
         tag.setString("id", id.toString());
-        tag.setInteger("hunger", hunger);
+        tag.setInteger("health", health);
     }
 
     @Override
@@ -35,19 +35,19 @@ public class MessageHunger implements IMessage {
         ByteBufUtils.writeTag(buf, tag);
     }
 
-    public static class MessageHandler implements IMessageHandler<MessageHunger, IMessage> {
+    public static class MessageHandler implements IMessageHandler<MessageHealth, IMessage> {
         @Override
-        public IMessage onMessage(MessageHunger message, MessageContext ctx) {
+        public IMessage onMessage(MessageHealth message, MessageContext ctx) {
             NBTTagCompound tagCompound = message.tag;
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 UUID uid;
-                System.out.println("New packet: MessageHunger");
+                System.out.println("New packet: MessageHealth");
                 try {
                     uid = UUID.fromString(tagCompound.getString("id"));
                 } catch (IllegalArgumentException ex) {
                     return;
                 }
-                GuiHandler.hungerMap.put(uid, tagCompound.getInteger("hunger"));
+                GuiHandler.healthMap.put(uid, tagCompound.getInteger("health"));
             });
             return null;
         }
