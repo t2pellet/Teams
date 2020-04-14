@@ -39,14 +39,14 @@ public class GuiTeamEditor extends GuiScreen {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 165;
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
-    private int guiTop, guiLeft;
     private static final FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
+    private int guiTop, guiLeft;
 
     @Override
     public void initGui() {
         super.initGui();
-        this.guiLeft = (this.width - this.WIDTH) / 2;
-        this.guiTop = (this.height - this.HEIGHT) / 2;
+        this.guiLeft = (this.width - WIDTH) / 2;
+        this.guiTop = (this.height - HEIGHT) / 2;
 
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 1, guiLeft + WIDTH / 2 - 60, guiTop + 40, 120, 20, "Create/Manage Team"));
         this.buttonList.add(new GuiButton(Integer.MIN_VALUE + 2, guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "List Teams"));
@@ -369,6 +369,7 @@ public class GuiTeamEditor extends GuiScreen {
                 if (!ConfigHandler.server.disableInventoryTransfer) {
                     FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory, otherP), FMLClientHandler.instance().getClientPlayerEntity().inventory));
                     if (p != null && p.getEntityWorld().isRemote) {
+                        System.out.println("Detected good click yumyum");
                         PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(), otherP));
                     }
                 } else {
@@ -414,9 +415,9 @@ public class GuiTeamEditor extends GuiScreen {
 
     public static class GuiTransfer extends GuiContainer {
 
+        private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
         private InventoryPlayer playerInv;
         private ContainerTransfer container;
-        private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
 
         public GuiTransfer(ContainerTransfer inventorySlotsIn, InventoryPlayer playerInv) {
             super(inventorySlotsIn);

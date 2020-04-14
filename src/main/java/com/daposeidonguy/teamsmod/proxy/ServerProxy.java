@@ -4,12 +4,13 @@ import com.daposeidonguy.teamsmod.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ServerProxy {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        PacketHandler.registerMessagesServer();
+        PacketHandler.registerMessages(Side.SERVER);
     }
 
     @Mod.EventHandler

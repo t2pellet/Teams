@@ -4,13 +4,11 @@ import com.daposeidonguy.teamsmod.client.Keybind;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -69,19 +67,6 @@ public class ClientEventHandler {
                         event.setMessage(newMessage);
                         clientPlayer.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 5.0F);
                     }
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerDeath(LivingAttackEvent event) {
-        if (event.getEntityLiving() instanceof EntityPlayer) {
-            UUID clientUUID = FMLClientHandler.instance().getClientPlayerEntity().getUniqueID();
-            if (SaveData.teamMap.containsKey(clientUUID) && event.getEntityLiving().getHealth() < event.getAmount()) {
-                String team = SaveData.teamMap.get(clientUUID);
-                if (SaveData.teamsMap.get(team).contains(event.getEntityLiving().getUniqueID())) {
-                    FMLClientHandler.instance().getClientPlayerEntity().playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 1.0F, 5.0F);
                 }
             }
         }

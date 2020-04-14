@@ -1,45 +1,38 @@
 package com.daposeidonguy.teamsmod.network;
 
-import com.daposeidonguy.teamsmod.client.ToastInvite;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.init.SoundEvents;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MessageInvite implements IMessage {
+public class MessageDeath implements IMessage {
 
-    private String teamName;
-
-    public MessageInvite() {
+    public MessageDeath() {
         super();
     }
 
-    public MessageInvite(String teamName) {
-        this.teamName = teamName;
-    }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        teamName = ByteBufUtils.readUTF8String(buf);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, teamName);
     }
 
-    public static class MessageHandler implements IMessageHandler<MessageInvite, IMessage> {
+    public static class MessageHandler implements IMessageHandler<MessageDeath, IMessage> {
         @Override
         @SideOnly(Side.CLIENT)
-        public IMessage onMessage(MessageInvite message, MessageContext ctx) {
+        public IMessage onMessage(MessageDeath message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                Minecraft.getMinecraft().getToastGui().add(new ToastInvite(message.teamName));
+                Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 1.0F, 5.0F);
             });
             return null;
         }
     }
+
 }

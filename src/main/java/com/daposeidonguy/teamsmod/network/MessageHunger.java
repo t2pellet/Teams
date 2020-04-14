@@ -41,7 +41,6 @@ public class MessageHunger implements IMessage {
             NBTTagCompound tagCompound = message.tag;
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 UUID uid;
-                System.out.println("New packet: MessageHunger");
                 try {
                     uid = UUID.fromString(tagCompound.getString("id"));
                 } catch (IllegalArgumentException ex) {

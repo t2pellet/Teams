@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.client;
 
+import com.daposeidonguy.teamsmod.TeamsMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -15,14 +16,13 @@ public class GuiTeam extends Gui {
         int width = resolution.getScaledWidth();
         int height = resolution.getScaledHeight();
 
-        mc.renderEngine.bindTexture(new ResourceLocation("textures/gui/icons.png"));
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 20, (height / 4 - 5) + offsety, 53, 0, 9, 9);
-        drawString(mc.fontRenderer, String.valueOf(health), (int) Math.round(width * 0.001) + 30, (height / 4 - 4) + offsety, Color.WHITE.getRGB());
+        mc.renderEngine.bindTexture(new ResourceLocation(TeamsMod.MODID, "textures/gui/icon.png"));
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 20, (height / 4 - 5) + offsety, 0, 0, 9, 9);
+        drawString(mc.fontRenderer, String.valueOf(health), (int) Math.round(width * 0.001) + 32, (height / 4 - 5) + offsety, Color.WHITE.getRGB());
 
-        mc.renderEngine.bindTexture(new ResourceLocation("textures/gui/icons.png"));
-        drawTexturedModalRect((int) Math.round(width * 0.001) + 46, (height / 4 - 5) + offsety, 16, 36, 9, 9);
+        mc.renderEngine.bindTexture(new ResourceLocation(TeamsMod.MODID, "textures/gui/icon.png"));
+        drawTexturedModalRect((int) Math.round(width * 0.001) + 46, (height / 4 - 5) + offsety, 9, 0, 9, 9);
         drawString(mc.fontRenderer, String.valueOf(hunger), (int) Math.round(width * 0.001) + 58, (height / 4 - 5) + offsety, Color.WHITE.getRGB());
-
 
         mc.renderEngine.bindTexture(loc);
         GL11.glPushMatrix();

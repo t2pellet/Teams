@@ -48,7 +48,15 @@ public class CommandTeam implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "\nteam create <name>\nteam list\nteam invite <name>\nteam kick <name>\nteam leave\nteam remove <name>\nteam info <name>\nteam player <name>";
+        return "/team create <name> : creates team with the name <name>" +
+                "\n/team list : lists all created teams" +
+                "\n/team info <name> : lists all players in the team with name <name>" +
+                "\n/team player <name> : prints the team of the player with name <name>" +
+                "\n/team invite <name> : invites player with name <name> to your team" +
+                "\n/team accept : accepts invitation to team" +
+                "\n/team kick <name> : kicks player with name <name> from your team" +
+                "\n/team leave : leaves your team" +
+                "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>";
     }
 
     @Override
@@ -174,7 +182,7 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "remove":
-                    if (!FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !ConfigHandler.server.noOpRemoveTeam && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(((EntityPlayerMP) sender).getGameProfile()) == null) {
+                    if (ConfigHandler.server.noOpRemoveTeam || sender.canUseCommand(2, "")) {
                         TextComponentString error = new TextComponentString("You do not have permission to use this command");
                         Style red = new Style();
                         red.setColor(TextFormatting.RED);
@@ -209,10 +217,10 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 default:
-                    sender.sendMessage(new TextComponentString("Invalid command"));
+                    sender.sendMessage(new TextComponentString("Invalid command: try /help teams for more info"));
             }
         } else {
-            sender.sendMessage(new TextComponentString("Must include command"));
+            sender.sendMessage(new TextComponentString("Must include command: try /help teams for more info"));
         }
         PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
     }

@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.UUID;
 
@@ -41,7 +40,7 @@ public class MessageGui implements IMessage {
         @Override
         public IMessage onMessage(MessageGui message, MessageContext ctx) {
             FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
-                if (FMLCommonHandler.instance().getSide() == Side.SERVER && !ConfigHandler.server.disableInventoryTransfer) {
+                if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote && !ConfigHandler.server.disableInventoryTransfer) {
                     if (message.tag.getString("id") != null && message.tag.getString("name") != null) {
                         EntityPlayer p = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(message.tag.getString("id")));
                         if (p != null) {

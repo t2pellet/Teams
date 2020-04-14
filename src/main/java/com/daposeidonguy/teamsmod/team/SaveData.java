@@ -17,9 +17,9 @@ import java.util.*;
 
 public class SaveData extends WorldSavedData {
 
+    public static final String NAME = TeamsMod.MODID;
     public static Map<UUID, String> teamMap = new HashMap<>(); // UUID to team Name
     public static Map<String, List<UUID>> teamsMap = new HashMap<>(); //Team name to list of UUIDs
-    public static final String NAME = TeamsMod.MODID;
 
 
     public SaveData() {
@@ -29,6 +29,39 @@ public class SaveData extends WorldSavedData {
     public SaveData(String name) {
         super(name);
         markDirty();
+    }
+
+    public static SaveData get(World world) {
+        MapStorage storage = world.getMapStorage();
+        SaveData data = (SaveData) storage.getOrLoadData(SaveData.class, NAME);
+        if (data == null) {
+            data = new SaveData();
+            world.setData(NAME, data);
+        }
+        return data;
+    }
+
+    public static void syncPlayers(String team, EntityPlayerMP player) {
+        if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote && player != null) {
+            for (Advancement adv : FMLCommonHandler.instance().getMinecraftServerInstance().getAdvancementManager().getAdvancements()) {
+                Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+                while (uuidIterator.hasNext()) {
+                    UUID id = uuidIterator.next();
+                    EntityPlayerMP teammate = (EntityPlayerMP) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getPlayerEntityByUUID(id);
+                    if (teammate != null) {
+                        if (teammate.getAdvancements().getProgress(adv).isDone()) {
+                            for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                                player.getAdvancements().grantCriterion(adv, s);
+                            }
+                        } else if (player.getAdvancements().getProgress(adv).isDone()) {
+                            for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                                teammate.getAdvancements().grantCriterion(adv, s);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void addTeam(String name, EntityPlayer player) {
@@ -107,38 +140,5 @@ public class SaveData extends WorldSavedData {
         }
         compound.setTag("Teams", tagList);
         return compound;
-    }
-
-    public static SaveData get(World world) {
-        MapStorage storage = world.getMapStorage();
-        SaveData data = (SaveData) storage.getOrLoadData(SaveData.class, NAME);
-        if (data == null) {
-            data = new SaveData();
-            world.setData(NAME, data);
-        }
-        return data;
-    }
-
-    public static void syncPlayers(String team, EntityPlayerMP player) {
-        if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote && player != null) {
-            for (Advancement adv : FMLCommonHandler.instance().getMinecraftServerInstance().getAdvancementManager().getAdvancements()) {
-                Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
-                while (uuidIterator.hasNext()) {
-                    UUID id = uuidIterator.next();
-                    EntityPlayerMP teammate = (EntityPlayerMP) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getPlayerEntityByUUID(id);
-                    if (teammate != null) {
-                        if (teammate.getAdvancements().getProgress(adv).isDone()) {
-                            for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {
-                                player.getAdvancements().grantCriterion(adv, s);
-                            }
-                        } else if (player.getAdvancements().getProgress(adv).isDone()) {
-                            for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
-                                teammate.getAdvancements().grantCriterion(adv, s);
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

@@ -9,10 +9,6 @@ public class ContainerTransfer extends Container {
     private InventoryBasic inventory;
     private String name;
 
-    public String getName() {
-        return name;
-    }
-
     public ContainerTransfer(IInventory playerInv, String name) {
         this.name = name;
 
@@ -29,6 +25,10 @@ public class ContainerTransfer extends Container {
         for (int k = 0; k < 9; k++) {
             addSlotToContainer(new Slot(playerInv, k, 8 + k * 18, 142));
         }
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

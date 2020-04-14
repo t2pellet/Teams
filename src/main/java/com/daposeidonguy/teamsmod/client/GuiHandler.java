@@ -4,7 +4,6 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -64,7 +63,7 @@ public class GuiHandler {
                 if (ConfigHandler.client.useAlternatePosition) {
                     guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, 4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
                 } else {
-                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, guiInventory.getGuiLeft() + 150, guiInventory.getGuiTop() + 5, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, guiInventory.getGuiLeft() + 152, guiInventory.getGuiTop() + 3, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
                 }
             } else {
                 if (ConfigHandler.client.useAlternatePosition) {
@@ -116,12 +115,15 @@ public class GuiHandler {
     @SubscribeEvent
     public void renderHUDEvent(RenderGameOverlayEvent.Post event) {
         //Check if clientside and HUD is enabled
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && !ConfigHandler.client.disableTeamsHUD) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT &&
+                !ConfigHandler.client.disableTeamsHUD &&
+                ClientEventHandler.displayHud &&
+                !event.isCancelable() &&
+                event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             UUID id = mc.player.getUniqueID();
-            //Make sure player is in a team, and ensure it renders at the right time + HUD is not toggled off
-            if (SaveData.teamMap.containsKey(id) && !event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE && ClientEventHandler.displayHud) {
-                String team = SaveData.teamMap.get(id);
+            String team = SaveData.teamMap.get(id);
+            if (team != null) {
                 int offsety = 0;
                 int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
@@ -131,23 +133,27 @@ public class GuiHandler {
                     UUID uid = uuidIterator.next();
                     //Dont render players own health and hunger
                     if (!uid.equals(id) && (FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(uid) != null)) {
-                        int health = 0;
-                        if (healthMap.containsKey(uid)) {
+                        NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(uid);
+                        int health;
+                        try {
                             health = healthMap.get(uid);
+                        } catch (NullPointerException ex) {
+                            health = 20;
                         }
-                        if (health != 0) {
-                            int hunger = 20;
-                            if (hungerMap.containsKey(uid)) {
-                                hunger = hungerMap.get(uid);
-                            }
-                            String name = ClientEventHandler.idtoNameMap.get(uid);
-
-                            NetworkPlayerInfo info = new NetworkPlayerInfo(new GameProfile(uid, name));
-                            ResourceLocation loc = info.getLocationSkin();
-                            new GuiTeam(mc, offsety, health, hunger, name, loc);
-                            offsety += 46;
-                            count += 1;
+                        int hunger;
+                        try {
+                            hunger = hungerMap.get(uid);
+                        } catch (NullPointerException ex) {
+                            hunger = 20;
                         }
+                        String name = ClientEventHandler.idtoNameMap.get(uid);
+                        if (name == null) {
+                            name = info.getGameProfile().getName();
+                        }
+                        ResourceLocation skin = info.getLocationSkin();
+                        new GuiTeam(mc, offsety, health, hunger, name, skin);
+                        offsety += 46;
+                        count += 1;
                     }
                 }
             }

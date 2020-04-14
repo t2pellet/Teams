@@ -1,10 +1,7 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.network.MessageHealth;
-import com.daposeidonguy.teamsmod.network.MessageHunger;
-import com.daposeidonguy.teamsmod.network.MessageSaveData;
-import com.daposeidonguy.teamsmod.network.PacketHandler;
+import com.daposeidonguy.teamsmod.network.*;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -12,6 +9,7 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
@@ -50,6 +48,23 @@ public class CommonEventHandler {
             if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
                 PacketHandler.INSTANCE.sendToAll(new MessageHealth(event.getEntity().getUniqueID(), (int) ((EntityPlayer) event.getEntity()).getHealth()));
                 PacketHandler.INSTANCE.sendToAll(new MessageHunger(event.getEntity().getUniqueID(), ((EntityPlayer) event.getEntity()).getFoodStats().getFoodLevel()));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().getEntityWorld().isRemote) {
+            String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
+            if (team != null) {
+                Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
+                while (uuidIterator.hasNext()) {
+                    UUID uuid = uuidIterator.next();
+                    if (uuid != event.getEntity().getUniqueID()) {
+                        EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
+                        PacketHandler.INSTANCE.sendTo(new MessageDeath(), playerMP);
+                    }
+                }
             }
         }
     }
@@ -107,11 +122,7 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
-            try {
-                SaveData.get(event.getWorld());
-            } catch (NoClassDefFoundError ex) {
-            }
-            System.out.println("New player: " + ((EntityPlayer) event.getEntity()).getDisplayNameString());
+            SaveData.get(event.getWorld());
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
         }
         if (!event.getWorld().isRemote && !ConfigHandler.server.disableAchievementSync) {
@@ -119,7 +130,6 @@ public class CommonEventHandler {
                 if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
                     String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
                     SaveData.syncPlayers(team, (EntityPlayerMP) event.getEntity());
-
                 }
             }
         }

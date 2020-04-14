@@ -62,7 +62,6 @@ public class MessageSaveData implements IMessage {
     public static class MessageHandler implements IMessageHandler<MessageSaveData, IMessage> {
         @Override
         public IMessage onMessage(MessageSaveData message, MessageContext ctx) {
-            System.out.println("New Packet: MessageSaveData");
             NBTTagCompound nbt = message.tagTeam;
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 SaveData.teamsMap.clear();
