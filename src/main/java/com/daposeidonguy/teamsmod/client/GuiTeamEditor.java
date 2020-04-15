@@ -369,7 +369,6 @@ public class GuiTeamEditor extends GuiScreen {
                 if (!ConfigHandler.server.disableInventoryTransfer) {
                     FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory, otherP), FMLClientHandler.instance().getClientPlayerEntity().inventory));
                     if (p != null && p.getEntityWorld().isRemote) {
-                        System.out.println("Detected good click yumyum");
                         PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(), otherP));
                     }
                 } else {

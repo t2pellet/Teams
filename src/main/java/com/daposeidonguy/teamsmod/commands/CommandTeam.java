@@ -182,7 +182,7 @@ public class CommandTeam implements ICommand {
                     }
                     break;
                 case "remove":
-                    if (ConfigHandler.server.noOpRemoveTeam || sender.canUseCommand(2, "")) {
+                    if (!ConfigHandler.server.noOpRemoveTeam && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !sender.canUseCommand(2, "")) {
                         TextComponentString error = new TextComponentString("You do not have permission to use this command");
                         Style red = new Style();
                         red.setColor(TextFormatting.RED);

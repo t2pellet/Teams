@@ -106,20 +106,6 @@ public class CommonEventHandler {
     }
 
     @SubscribeEvent
-    public static void logIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.player.getEntityWorld().isRemote) {
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
-        }
-    }
-
-    @SubscribeEvent
-    public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.player.getEntityWorld().isRemote) {
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
-        }
-    }
-
-    @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
             SaveData.get(event.getWorld());
@@ -132,6 +118,13 @@ public class CommonEventHandler {
                     SaveData.syncPlayers(team, (EntityPlayerMP) event.getEntity());
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (!event.player.getEntityWorld().isRemote) {
+            PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
         }
     }
 

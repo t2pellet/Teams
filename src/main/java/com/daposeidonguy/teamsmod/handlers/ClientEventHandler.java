@@ -1,9 +1,12 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.client.Keybind;
+import com.daposeidonguy.teamsmod.client.ToastInvite;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.mojang.realmsclient.util.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.Style;
@@ -82,6 +85,11 @@ public class ClientEventHandler {
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (Keybind.display.isPressed()) {
             displayHud = !displayHud;
+        }
+        if (Keybind.accept.isPressed()) {
+            if (Minecraft.getMinecraft().getToastGui().getToast(ToastInvite.class, IToast.NO_TOKEN) != null) {
+                Minecraft.getMinecraft().player.sendChatMessage("/team accept");
+            }
         }
     }
 }
