@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.client;
+package com.daposeidonguy.teamsmod.client.gui;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import net.minecraft.client.Minecraft;
@@ -9,9 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class GuiTeam extends Gui {
+public class GuiHud extends Gui {
 
-    public GuiTeam(Minecraft mc, int offsety, int health, int hunger, String name, ResourceLocation loc) {
+    public GuiHud(Minecraft mc, int offsety, int health, int hunger, String name, ResourceLocation loc) {
         ScaledResolution resolution = new ScaledResolution(mc);
         int width = resolution.getScaledWidth();
         int height = resolution.getScaledHeight();

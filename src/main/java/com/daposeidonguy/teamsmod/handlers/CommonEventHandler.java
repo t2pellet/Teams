@@ -60,7 +60,7 @@ public class CommonEventHandler {
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
                 while (uuidIterator.hasNext()) {
                     UUID uuid = uuidIterator.next();
-                    if (uuid != event.getEntity().getUniqueID()) {
+                    if (!event.getEntity().getUniqueID().equals(uuid)) {
                         EntityPlayerMP playerMP = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
                         PacketHandler.INSTANCE.sendTo(new MessageDeath(), playerMP);
                     }

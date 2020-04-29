@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.handlers;
 
 import com.daposeidonguy.teamsmod.client.Keybind;
-import com.daposeidonguy.teamsmod.client.ToastInvite;
+import com.daposeidonguy.teamsmod.client.gui.ToastInvite;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.Minecraft;
@@ -26,6 +26,7 @@ public class ClientEventHandler {
 
     public static Map<String, Pair<String, Long>> chatMap = new HashMap<>();
     public static boolean displayHud = true;
+    public static boolean displayCompass = true;
     public static long ticks = 0;
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
 
@@ -83,12 +84,14 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (Keybind.display.isPressed()) {
+        if (Keybind.hud.isPressed()) {
             displayHud = !displayHud;
-        }
-        if (Keybind.accept.isPressed()) {
-            if (Minecraft.getMinecraft().getToastGui().getToast(ToastInvite.class, IToast.NO_TOKEN) != null) {
-                Minecraft.getMinecraft().player.sendChatMessage("/team accept");
+        } else if (Keybind.accept.isPressed()) {
+            ToastInvite toast = Minecraft.getMinecraft().getToastGui().getToast(ToastInvite.class, IToast.NO_TOKEN);
+            if (toast != null) {
+                toast.accepted = true;
+                Minecraft.getMinecraft().player.sendChatMessage("/teamsmod accept");
+                Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 2.0F);
             }
         }
     }

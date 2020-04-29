@@ -1,11 +1,17 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.client.gui.GuiHud;
+import com.daposeidonguy.teamsmod.client.gui.team.GuiTeam;
+import com.daposeidonguy.teamsmod.client.gui.team.GuiTeamList;
+import com.daposeidonguy.teamsmod.client.gui.team.GuiTeamManager;
+import com.daposeidonguy.teamsmod.client.gui.team.GuiTransferPlayers;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonImage;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.entity.Render;
@@ -63,7 +69,7 @@ public class GuiHandler {
                 if (ConfigHandler.client.useAlternatePosition) {
                     guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, 4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
                 } else {
-                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, guiInventory.getGuiLeft() + 152, guiInventory.getGuiTop() + 3, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
+                    guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, guiInventory.getGuiLeft() + 152, guiInventory.getGuiTop() + 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
                 }
             } else {
                 if (ConfigHandler.client.useAlternatePosition) {
@@ -71,6 +77,16 @@ public class GuiHandler {
                 } else {
                     guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, guiInventory.getGuiLeft() + 155, guiInventory.getGuiTop() + 5, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"));
                 }
+            }
+            guiButtonImage.displayString = "team";
+            event.getButtonList().add(guiButtonImage);
+        } else if (event.getGui() instanceof GuiContainerCreative) {
+            GuiButtonImage guiButtonImage;
+            if (!ConfigHandler.client.smallIcon) {
+                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, 4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"));
+
+            } else {
+                guiButtonImage = new GuiButtonImage(Integer.MIN_VALUE, 2, 2, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"));
             }
             guiButtonImage.displayString = "team";
             event.getButtonList().add(guiButtonImage);
@@ -82,32 +98,32 @@ public class GuiHandler {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             switch (event.getButton().id) {
                 case Integer.MIN_VALUE:
-                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor());
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeam());
                     break;
                 case Integer.MIN_VALUE + 4:
-                    if (event.getGui() instanceof GuiTeamEditor) {
+                    if (event.getGui() instanceof GuiTeam) {
                         FMLClientHandler.instance().getClient().displayGuiScreen(null);
                     } else {
-                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor());
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeam());
                     }
                     break;
                 case Integer.MIN_VALUE + 2:
-                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamList());
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamList());
                     break;
                 case Integer.MIN_VALUE + 1:
                     if (!SaveData.teamMap.containsKey(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())) {
-                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager());
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamManager.GuiTeamCreator());
 
                     } else {
-                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiTeamManager1(SaveData.teamMap.get(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())));
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamManager.GuiTeamEditor(SaveData.teamMap.get(FMLClientHandler.instance().getClientPlayerEntity().getUniqueID())));
                     }
                     break;
                 case Integer.MIN_VALUE + 7:
-                    FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/team leave");
+                    FMLClientHandler.instance().getClientPlayerEntity().sendChatMessage("/teamsmod leave");
                     FMLClientHandler.instance().getClient().displayGuiScreen(null);
                     break;
                 case Integer.MIN_VALUE + 3:
-                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTeamEditor.GuiPlayerList());
+                    FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransferPlayers());
             }
         }
     }
@@ -151,7 +167,7 @@ public class GuiHandler {
                             name = info.getGameProfile().getName();
                         }
                         ResourceLocation skin = info.getLocationSkin();
-                        new GuiTeam(mc, offsety, health, hunger, name, skin);
+                        new GuiHud(mc, offsety, health, hunger, name, skin);
                         offsety += 46;
                         count += 1;
                     }

@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.network;
 
-import com.daposeidonguy.teamsmod.client.ToastInvite;
+import com.daposeidonguy.teamsmod.client.gui.ToastInvite;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

@@ -34,6 +34,7 @@ public class CommandTeam implements ICommand {
         aliases.add("team");
         aliases.add("teams");
         aliases.add("t");
+        aliases.add("teamsmod");
     }
 
     @Override
@@ -48,7 +49,8 @@ public class CommandTeam implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/team create <name> : creates team with the name <name>" +
+        sender.sendMessage(new TextComponentString("Teams Commands: " +
+                "\n/team create <name> : creates team with the name <name>" +
                 "\n/team list : lists all created teams" +
                 "\n/team info <name> : lists all players in the team with name <name>" +
                 "\n/team player <name> : prints the team of the player with name <name>" +
@@ -56,7 +58,8 @@ public class CommandTeam implements ICommand {
                 "\n/team accept : accepts invitation to team" +
                 "\n/team kick <name> : kicks player with name <name> from your team" +
                 "\n/team leave : leaves your team" +
-                "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>";
+                "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>"));
+        return "";
     }
 
     @Override
@@ -73,20 +76,20 @@ public class CommandTeam implements ICommand {
                     try {
                         String name = args[1];
                         if (SaveData.teamsMap.containsKey(name)) {
-                            sender.sendMessage(new TextComponentString("That team already exists"));
+                            sender.sendMessage(new TextComponentString("That team already exists").setStyle(new Style().setColor(TextFormatting.RED)));
                             return;
                         } else if (name.contains(">")) {
-                            sender.sendMessage(new TextComponentString("Team name cannot have that character"));
+                            sender.sendMessage(new TextComponentString("Team name cannot have that character").setStyle(new Style().setColor(TextFormatting.RED)));
                         }
                         EntityPlayer player = (EntityPlayer) sender;
                         if (SaveData.teamMap.containsKey(player.getUniqueID())) {
-                            sender.sendMessage(new TextComponentString("You're already in a team! Leave it first!"));
+                            sender.sendMessage(new TextComponentString("You're already in a team! Leave it first!").setStyle(new Style().setColor(TextFormatting.RED)));
                             return;
                         }
                         data.addTeam(name, player);
                         sender.sendMessage(new TextComponentString("New team named" + " \"" + name + "\" created"));
                     } catch (Exception ex) {
-                        sender.sendMessage(new TextComponentString("Incorrect syntax. /team create <teamname>"));
+                        sender.sendMessage(new TextComponentString("Incorrect syntax. /team create <teamname>").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 case "list":
@@ -106,7 +109,7 @@ public class CommandTeam implements ICommand {
                             data.removePlayer((EntityPlayer) sender, uid);
                         }
                     } catch (Exception ex) {
-                        sender.sendMessage(new TextComponentString("Must enter a valid playername to remove from your team: /team remove <playername>"));
+                        sender.sendMessage(new TextComponentString("Must enter a valid playername to remove from your team: /team remove <playername>").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 case "accept":
@@ -114,7 +117,7 @@ public class CommandTeam implements ICommand {
                     EntityPlayerMP inviter = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(invitee.getEntityData().getString("invitedby")));
                     UUID uid = invitee.getUniqueID();
                     if (inviter == null) {
-                        sender.sendMessage(new TextComponentString("You have not been invited to a team"));
+                        sender.sendMessage(new TextComponentString("You have not been invited to a team").setStyle(new Style().setColor(TextFormatting.RED)));
                         break;
                     } else if (SaveData.teamMap.containsKey(uid)) {
                         sender.sendMessage(new TextComponentString("Removing you from your old team..."));
@@ -136,6 +139,9 @@ public class CommandTeam implements ICommand {
                     inviter.sendMessage(new TextComponentString(invitee.getDisplayNameString() + " has joined your team!"));
                     break;
                 case "invite":
+                    if (args.length < 2) {
+                        sender.sendMessage(new TextComponentString("Must enter player name").setStyle(new Style().setColor(TextFormatting.RED)));
+                    }
                     EntityPlayer newPlayer = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(args[1]);
                     EntityPlayer oldPlayer = (EntityPlayer) sender;
                     if (SaveData.teamMap.containsKey(oldPlayer.getUniqueID())) {
@@ -145,12 +151,11 @@ public class CommandTeam implements ICommand {
                             return;
                         }
                         newPlayer.getEntityData().setString("invitedby", oldPlayer.getCachedUniqueIdString());
-                        System.out.println("Inviting " + newPlayer.getDisplayNameString() + " to the team " + teamName);
                         oldPlayer.sendMessage(new TextComponentString("You have invited: " + newPlayer.getDisplayNameString() + " to your team"));
                         PacketHandler.INSTANCE.sendTo(new MessageInvite(teamName), (EntityPlayerMP) newPlayer);
                         newPlayer.sendMessage(new TextComponentString("You have been invited to join the team: " + teamName + ". Type /team accept to accept"));
                     } else {
-                        oldPlayer.sendMessage(new TextComponentString("Failed to Invite : Either the player is invalid or you are not in a team!"));
+                        oldPlayer.sendMessage(new TextComponentString("Failed to Invite : Either the player is invalid or you are not in a team!").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 case "leave":
@@ -163,7 +168,7 @@ public class CommandTeam implements ICommand {
                             data.removeTeam(toLeave);
                         }
                     } catch (Exception ex) {
-                        sender.sendMessage(new TextComponentString("You're not in a team"));
+                        sender.sendMessage(new TextComponentString("You're not in a team").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 case "player":
@@ -178,16 +183,12 @@ public class CommandTeam implements ICommand {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        sender.sendMessage(new TextComponentString("Enter valid playername"));
+                        sender.sendMessage(new TextComponentString("Enter valid playername").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 case "remove":
                     if (!ConfigHandler.server.noOpRemoveTeam && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !sender.canUseCommand(2, "")) {
-                        TextComponentString error = new TextComponentString("You do not have permission to use this command");
-                        Style red = new Style();
-                        red.setColor(TextFormatting.RED);
-                        error.setStyle(red);
-                        sender.sendMessage(error);
+                        sender.sendMessage(new TextComponentString("You do not have permission to use this command").setStyle(new Style().setColor(TextFormatting.RED)));
                         break;
                     }
                     try {
@@ -213,14 +214,14 @@ public class CommandTeam implements ICommand {
                             }
                         }
                     } catch (Exception ex) {
-                        sender.sendMessage(new TextComponentString("Enter team name to get info on"));
+                        sender.sendMessage(new TextComponentString("Enter team name to get info on").setStyle(new Style().setColor(TextFormatting.RED)));
                     }
                     break;
                 default:
-                    sender.sendMessage(new TextComponentString("Invalid command: try /help teams for more info"));
+                    sender.sendMessage(new TextComponentString("Invalid command: try /help teams for more info").setStyle(new Style().setColor(TextFormatting.RED)));
             }
         } else {
-            sender.sendMessage(new TextComponentString("Must include command: try /help teams for more info"));
+            sender.sendMessage(new TextComponentString("Must include command: try /help teams for more info").setStyle(new Style().setColor(TextFormatting.RED)));
         }
         PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
     }
