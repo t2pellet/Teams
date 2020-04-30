@@ -1,49 +1,53 @@
 package com.daposeidonguy.teamsmod;
 
-import com.daposeidonguy.teamsmod.proxy.ServerProxy;
+import com.daposeidonguy.teamsmod.client.ClientEventHandler;
+import com.daposeidonguy.teamsmod.client.KeyBindings;
+import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.common.CommonEventHandler;
+import com.daposeidonguy.teamsmod.common.commands.CommandTeam;
+import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
+import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(modid = TeamsMod.MODID, name = TeamsMod.NAME, version = TeamsMod.VERSION)
+@Mod(TeamsMod.MODID)
 public class TeamsMod {
 
-
     public static final String MODID = "teamsmod";
-    public static final String NAME = "Teams Mod";
-    public static final String VERSION = "1.4.1";
+    public static Logger logger = LogManager.getLogger(MODID);
+    private static TeamsMod instance;
 
-    @SidedProxy(clientSide = "com.daposeidonguy.teamsmod.proxy.ClientProxy", serverSide = "com.daposeidonguy.teamsmod.proxy.ServerProxy")
-    public static ServerProxy proxy;
-
-
-    @Instance(MODID)
-    public static TeamsMod instance;
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit(event);
+    public TeamsMod() {
+        instance = this;
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::commonSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::clientSetup);
+        MinecraftForge.EVENT_BUS.register(instance);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.SERVER_SPEC);
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-        proxy.init(event);
+    private void commonSetup(FMLCommonSetupEvent event) {
+        PacketHandler.register();
+        MinecraftForge.EVENT_BUS.register(CommonEventHandler.class);
     }
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit(event);
+    private void clientSetup(FMLClientSetupEvent event) {
+        KeyBindings.register();
+        MinecraftForge.EVENT_BUS.register(GuiHandler.instance());
+        MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
     }
 
-    @EventHandler
-    public void serverLoad(FMLServerStartingEvent event) {
-        proxy.serverLoad(event);
-    }
-
-    @EventHandler
-    public void serverStop(FMLServerStoppingEvent event) {
-        proxy.serverStop(event);
+    @SubscribeEvent
+    public void serverStart(FMLServerStartingEvent event) {
+        CommandTeam.register(event.getCommandDispatcher());
     }
 }
