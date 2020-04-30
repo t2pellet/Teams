@@ -8,13 +8,14 @@ import com.daposeidonguy.teamsmod.common.network.MessageGui;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.UUID;
 

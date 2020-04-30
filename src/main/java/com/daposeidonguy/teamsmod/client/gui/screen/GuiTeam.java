@@ -4,12 +4,14 @@ import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.awt.*;
+import java.awt.Color;
+
 
 public class GuiTeam extends Screen {
 
