@@ -22,6 +22,6 @@ public class InterfaceTransfer implements INamedContainerProvider {
 
     @Override
     public ITextComponent getDisplayName() {
-        return new StringTextComponent("Transfer");
+        return new StringTextComponent("transfer");
     }
 }

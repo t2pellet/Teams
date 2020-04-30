@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.client;
 
+import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
@@ -36,41 +37,31 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onChatMessage(ClientChatReceivedEvent event) {
-        int len = event.getMessage().getString().length();
         if (event.getType() == ChatType.CHAT) {
-            int slice = event.getMessage().getString().indexOf(">");
-            if (slice == -1) {
-                return;
+            String messageRaw = event.getMessage().getUnformattedComponentText();
+            String message = event.getMessage().getString();
+            int messageStart = message.indexOf(">");
+            String senderName = message.substring(1, messageStart);
+            TeamsMod.logger.debug(senderName);
+            if (!TeamConfig.disablePing) {
+                String playerName = Minecraft.getInstance().player.getGameProfile().getName();
+                String teamName = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
+                if (messageRaw.contains(playerName) || messageRaw.contains(teamName)) {
+                    event.getMessage().setStyle(new Style().setBold(true));
+                    Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
+                }
             }
-            slice += 1;
-            if (0 < slice && slice < len) {
-                String senderName = event.getMessage().getString().substring(1, slice - 1);
-                String receivedText = event.getMessage().getString().substring(slice + 1);
-                if (!TeamConfig.disableChatBubble) {
-                    Pair<String, Long> chatMessage = new Pair(receivedText, ticks);
-                    chatMap.put(senderName, chatMessage);
+            if (!TeamConfig.disablePrefix) {
+                UUID senderUID = nametoIdMap.get(senderName);
+                if (SaveData.teamMap.containsKey(senderUID)) {
+                    StringTextComponent newMessage = new StringTextComponent("[" + SaveData.teamMap.get(senderUID) + "] " + message);
+                    newMessage.setStyle(event.getMessage().getStyle());
+                    event.setMessage(newMessage);
                 }
-                if (!TeamConfig.disablePrefix) {
-                    UUID senderUID = nametoIdMap.get(senderName);
-                    if (SaveData.teamMap.containsKey(senderUID)) {
-                        StringTextComponent newMessage = new StringTextComponent("[" + SaveData.teamMap.get(senderUID) + "]" + " <" + senderName + "> " + receivedText);
-                        newMessage.setStyle(event.getMessage().getStyle());
-                        event.setMessage(newMessage);
-                    }
-                }
-                if (!TeamConfig.disablePing) {
-                    ClientPlayerEntity clientPlayer = Minecraft.getInstance().player;
-                    String teamName = SaveData.teamMap.get(clientPlayer.getUniqueID());
-                    String clientName = clientPlayer.getGameProfile().getName();
-                    if (receivedText.contains(clientName) || (teamName != null && receivedText.contains(teamName))) {
-                        Style bold = new Style();
-                        bold.setBold(true);
-                        StringTextComponent newMessage = new StringTextComponent(event.getMessage().getString());
-                        newMessage.setStyle(bold);
-                        event.setMessage(newMessage);
-                        clientPlayer.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 5.0F);
-                    }
-                }
+            }
+            if (!TeamConfig.disableChatBubble) {
+                Pair<String, Long> chatMessage = new Pair(message.substring(messageStart + 2), ticks);
+                chatMap.put(senderName, chatMessage);
             }
         }
     }

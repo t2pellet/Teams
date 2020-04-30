@@ -3,11 +3,19 @@ package com.daposeidonguy.teamsmod;
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.daposeidonguy.teamsmod.client.KeyBindings;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.client.gui.screen.inventory.GuiTransfer;
 import com.daposeidonguy.teamsmod.common.CommonEventHandler;
 import com.daposeidonguy.teamsmod.common.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
+import com.daposeidonguy.teamsmod.common.inventory.ContainerTransfer;
+import com.daposeidonguy.teamsmod.common.inventory.ContainerTypes;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -44,10 +52,12 @@ public class TeamsMod {
         KeyBindings.register();
         MinecraftForge.EVENT_BUS.register(GuiHandler.instance());
         MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
+        ScreenManager.registerFactory(ContainerTypes.containerTypeTransfer, GuiTransfer::new);
     }
 
     @SubscribeEvent
     public void serverStart(FMLServerStartingEvent event) {
         CommandTeam.register(event.getCommandDispatcher());
     }
+
 }

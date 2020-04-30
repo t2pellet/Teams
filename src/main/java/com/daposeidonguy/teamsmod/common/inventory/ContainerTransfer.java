@@ -14,6 +14,10 @@ public class ContainerTransfer extends Container {
     private Inventory inventory;
     private String name;
 
+    public ContainerTransfer(int windowID, PlayerInventory playerInv, PacketBuffer extraData) {
+        this(windowID, playerInv, extraData.readString());
+    }
+
     public ContainerTransfer(int windowID, PlayerInventory playerInv, String name) {
         super(ContainerTypes.containerTypeTransfer, windowID);
         this.name = name;
@@ -32,17 +36,8 @@ public class ContainerTransfer extends Container {
         }
     }
 
-    public ContainerTransfer(int windowId, PlayerInventory playerInv, PacketBuffer extraData) {
-        this(windowId, playerInv, extraData.readString());
-    }
-
     public String getName() {
         return name;
-    }
-
-    @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
@@ -73,7 +68,6 @@ public class ContainerTransfer extends Container {
             if (itemstack1.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }
-
             slot.onTake(player, itemstack1);
         }
 

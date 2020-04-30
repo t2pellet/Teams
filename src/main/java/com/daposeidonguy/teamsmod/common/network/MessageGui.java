@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.common.inventory.InterfaceTransfer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -40,10 +41,9 @@ public class MessageGui {
         ctx.get().enqueueWork(() -> {
             if (EffectiveSide.get().isServer() && !TeamConfig.disableInventoryTransfer) {
                 if (tag.getString("id") != null && tag.getString("name") != null) {
-                    PlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(tag.getString("id")));
+                    ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(tag.getString("id")));
                     if (p != null) {
-                        TeamsMod.logger.debug(new StringTextComponent("Received MessageGui"));
-                        NetworkHooks.openGui((ServerPlayerEntity) p, new InterfaceTransfer(tag.getString("name")));
+                        NetworkHooks.openGui(p, new InterfaceTransfer(tag.getString("name")), buf -> buf.writeString(tag.getString("name")));
                     }
                 }
             }

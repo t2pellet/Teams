@@ -8,16 +8,19 @@ import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -37,28 +40,44 @@ public class GuiHandler {
     public static Map<UUID, Integer> hungerMap = new HashMap<>();
     public static Map<UUID, Integer> healthMap = new HashMap<>();
 
-    public static Method renderName = ObfuscationReflectionHelper.findMethod(EntityRenderer.class, "func_225629_a_", Entity.class, String.class, MatrixStack.class, IRenderTypeBuffer.class, Integer.TYPE);
 
     public static GuiHandler instance() {
         return new GuiHandler();
     }
 
+    private void renderChat(EntityRendererManager renderManager, PlayerEntity player, String text, MatrixStack stack, IRenderTypeBuffer buffer, int light) {
+        double d0 = renderManager.squareDistanceTo(player);
+        if (!(d0 > 4096.0D)) {
+            boolean flag = !player.isDiscrete();
+            float f = player.getHeight() + 0.75F;
+            stack.push();
+            stack.translate(0.0D, (double)f, 0.0D);
+            stack.rotate(renderManager.getCameraOrientation());
+            stack.scale(-0.025F, -0.025F, 0.025F);
+            Matrix4f matrix4f = stack.getLast().getMatrix();
+            float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
+            int j = (int)(f1 * 255.0F) << 24;
+            FontRenderer fontrenderer = renderManager.getFontRenderer();
+            float f2 = (float)(-fontrenderer.getStringWidth(text) / 2);
+            fontrenderer.renderString(text, f2, 0, 553648127, false, matrix4f, buffer, flag, j, light);
+            if (flag) {
+                fontrenderer.renderString(text, f2, 0, -1, false, matrix4f, buffer, false, 0, light);
+            }
+            stack.pop();
+        }
+    }
+
     @SubscribeEvent
     public void renderPlayer(RenderPlayerEvent.Pre event) throws InvocationTargetException, IllegalAccessException {
         String playerName = event.getPlayer().getGameProfile().getName();
-        if (!TeamConfig.disableChatBubble && ClientEventHandler.chatMap.containsKey(playerName)) {
-            String localName = Minecraft.getInstance().player.getGameProfile().getName();
-            if (!localName.equals(playerName)) {
-                String text = ClientEventHandler.chatMap.get(playerName).getFirst();
-                long tick = ClientEventHandler.chatMap.get(playerName).getSecond();
-                if ((ClientEventHandler.ticks - tick) < 200) {
-                    BlockPos pos = event.getPlayer().getPosition();
-                    MatrixStack stack = event.getMatrixStack();
-                    stack.scale(0, 0.5f, 0);
-                    GuiHandler.renderName.invoke(event.getRenderer(), event.getPlayer(), text, event.getMatrixStack(), event.getBuffers(), 64);
-                } else {
-                    ClientEventHandler.chatMap.remove(playerName);
-                }
+        String localName = Minecraft.getInstance().player.getGameProfile().getName();
+        if (!localName.equals(playerName) && ClientEventHandler.chatMap.containsKey(playerName)) {
+            String text = ClientEventHandler.chatMap.get(playerName).getFirst();
+            long tick = ClientEventHandler.chatMap.get(playerName).getSecond();
+            if ((ClientEventHandler.ticks - tick) < 200) {
+                renderChat(event.getRenderer().getRenderManager(), event.getPlayer(), text, event.getMatrixStack(), event.getBuffers(), event.getLight());
+            } else {
+                ClientEventHandler.chatMap.remove(playerName);
             }
         }
     }
