@@ -20,7 +20,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, MessageHealth.class, MessageHealth::encode, MessageHealth::new, MessageHealth::onMessage);
         INSTANCE.registerMessage(id++, MessageHunger.class, MessageHunger::encode, MessageHunger::new, MessageHunger::onMessage);
         INSTANCE.registerMessage(id++, MessageSaveData.class, MessageSaveData::encode, MessageSaveData::new, MessageSaveData::onMessage);
-        INSTANCE.registerMessage(id, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
+        INSTANCE.registerMessage(id++, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
+        INSTANCE.registerMessage(id, MessageChat.class, MessageChat::encode, MessageChat::new, MessageChat::onMessage);
     }
 
 }

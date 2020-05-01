@@ -1,13 +1,13 @@
 package com.daposeidonguy.teamsmod.common;
 
-import com.daposeidonguy.teamsmod.common.config.ConfigBaker;
-import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.*;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -18,7 +18,6 @@ import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -44,11 +43,14 @@ public class CommonEventHandler {
     }
 
     @SubscribeEvent
-    public static void config(ModConfig.ModConfigEvent event) {
-        if (event.getConfig().getSpec() == ConfigHolder.CLIENT_SPEC) {
-            ConfigBaker.bakeClient();
-        } else if (event.getConfig().getSpec() == ConfigHolder.SERVER_SPEC) {
-            ConfigBaker.bakeServer();
+    public static void onPlayerChat(ServerChatEvent event) {
+        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageChat(event.getPlayer().getGameProfile().getName(), event.getMessage()));
+        if (TeamConfig.prefixServerSide && !TeamConfig.disablePrefixServer) {
+            String teamName = SaveData.teamMap.get(event.getPlayer().getUniqueID());
+            if (teamName != null) {
+                StringTextComponent prefix = new StringTextComponent("[" + teamName + "] ");
+                event.setComponent(prefix.appendSibling(event.getComponent()));
+            }
         }
     }
 

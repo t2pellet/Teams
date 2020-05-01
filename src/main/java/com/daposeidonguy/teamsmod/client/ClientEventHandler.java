@@ -1,12 +1,9 @@
 package com.daposeidonguy.teamsmod.client;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ChatType;
@@ -24,11 +21,15 @@ import java.util.UUID;
 
 public class ClientEventHandler {
 
+    //Chat
     public static Map<String, com.mojang.datafixers.util.Pair<String, Long>> chatMap = new HashMap<>();
-    public static boolean displayHud = true;
-    public static long ticks = 0;
+    public static String lastMessageReceived;
+    //Util
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
     public static Map<String, UUID> nametoIdMap = new HashMap<>();
+    public static long ticks = 0;
+    //Settings
+    public static boolean displayHud = true;
 
     @SubscribeEvent
     public static void onTick(TickEvent.ClientTickEvent event) {
@@ -38,30 +39,24 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onChatMessage(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
-            String messageRaw = event.getMessage().getUnformattedComponentText();
             String message = event.getMessage().getString();
             int messageStart = message.indexOf(">");
             String senderName = message.substring(1, messageStart);
-            TeamsMod.logger.debug(senderName);
             if (!TeamConfig.disablePing) {
                 String playerName = Minecraft.getInstance().player.getGameProfile().getName();
                 String teamName = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
-                if (messageRaw.contains(playerName) || messageRaw.contains(teamName)) {
+                if (lastMessageReceived.contains(playerName) || (teamName != null && lastMessageReceived.contains(teamName))) {
                     event.getMessage().setStyle(new Style().setBold(true));
                     Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
                 }
             }
-            if (!TeamConfig.disablePrefix) {
+            if (!TeamConfig.disablePrefix && !TeamConfig.prefixServerSide) {
                 UUID senderUID = nametoIdMap.get(senderName);
                 if (SaveData.teamMap.containsKey(senderUID)) {
                     StringTextComponent newMessage = new StringTextComponent("[" + SaveData.teamMap.get(senderUID) + "] " + message);
                     newMessage.setStyle(event.getMessage().getStyle());
                     event.setMessage(newMessage);
                 }
-            }
-            if (!TeamConfig.disableChatBubble) {
-                Pair<String, Long> chatMessage = new Pair(message.substring(messageStart + 2), ticks);
-                chatMap.put(senderName, chatMessage);
             }
         }
     }

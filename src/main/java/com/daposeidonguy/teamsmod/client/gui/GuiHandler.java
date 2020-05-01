@@ -15,9 +15,7 @@ import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix4f;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
@@ -26,11 +24,8 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -68,7 +63,7 @@ public class GuiHandler {
     }
 
     @SubscribeEvent
-    public void renderPlayer(RenderPlayerEvent.Pre event) throws InvocationTargetException, IllegalAccessException {
+    public void renderPlayer(RenderPlayerEvent.Pre event) {
         String playerName = event.getPlayer().getGameProfile().getName();
         String localName = Minecraft.getInstance().player.getGameProfile().getName();
         if (!localName.equals(playerName) && ClientEventHandler.chatMap.containsKey(playerName)) {
