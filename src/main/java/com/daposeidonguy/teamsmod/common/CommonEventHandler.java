@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.common;
 
+import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.*;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
@@ -31,7 +32,7 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void tickEvent(TickEvent.ServerTickEvent event) {
         ticks += 1;
-        if (ticks == 200 && EffectiveSide.get().isServer()) {
+        if (ticks == 250 && EffectiveSide.get().isServer()) {
             Iterator<ServerPlayerEntity> playerMPIterator = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().iterator();
             while (playerMPIterator.hasNext()) {
                 ServerPlayerEntity playerMP = playerMPIterator.next();
@@ -56,9 +57,12 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void onPlayerDamage(LivingHurtEvent event) {
-        if (event.getEntity() instanceof PlayerEntity && !event.getEntity().getEntityWorld().isRemote) {
-            if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), (int) ((PlayerEntity) event.getEntity()).getHealth()));
+        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
+            String teamName = SaveData.teamMap.get(event.getEntity().getUniqueID());
+            if (teamName != null) {
+                TeamsMod.logger.debug("Updating HUD");
+                int health = (int) (event.getEntityLiving().getHealth() - event.getAmount());
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), health));
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
             }
         }
@@ -83,7 +87,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void onPlayerHeal(LivingHealEvent event) {
-        if (event.getEntity() instanceof PlayerEntity && !event.getEntity().getEntityWorld().isRemote) {
+        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), (int) ((PlayerEntity) event.getEntity()).getHealth()));
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));

@@ -146,8 +146,11 @@ public class GuiHandler {
                 while (uuidIterator.hasNext() && count < 4) {
                     UUID uid = uuidIterator.next();
                     //Dont render players own health and hunger
-                    if (!uid.equals(id) && (mc.world.getPlayerByUuid(uid) != null)) {
+                    if (!uid.equals(id)) {
                         NetworkPlayerInfo info = mc.player.connection.getPlayerInfo(uid);
+                        if (info == null) {
+                            return;
+                        }
                         int health;
                         try {
                             health = healthMap.get(uid);

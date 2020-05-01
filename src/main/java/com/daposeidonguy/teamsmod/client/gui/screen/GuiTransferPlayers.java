@@ -1,6 +1,5 @@
 package com.daposeidonguy.teamsmod.client.gui.screen;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.GuiTransfer;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTransfer;
@@ -15,7 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -54,26 +53,28 @@ public class GuiTransferPlayers extends Screen {
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
             UUID uid = teamIterator.next();
-            if (minecraft.world.getPlayerByUuid(uid) != null) {
-                String otherP = minecraft.world.getPlayerByUuid(uid).getGameProfile().getName();
-                if (otherP != minecraft.player.getGameProfile().getName()) {
-                    Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, otherP, (pressable) -> {
-                        minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        if (!TeamConfig.disableInventoryTransfer) {
-                            minecraft.displayGuiScreen(new GuiTransfer(new ContainerTransfer(0, minecraft.player.inventory, otherP), minecraft.player.inventory, new StringTextComponent("Transfer")));
-                            if (EffectiveSide.get().isClient()) {
-                                TeamsMod.logger.debug(new StringTextComponent("Sending messagegui to server"));
-                                PacketHandler.INSTANCE.sendToServer(new MessageGui(minecraft.player.getUniqueID(), otherP));
-                            }
-                        } else {
-                            minecraft.player.sendMessage(new StringTextComponent("That feature is disabled"));
-                            minecraft.displayGuiScreen(null);
-                        }
-                    });
-                    this.addButton(button);
-                    yoffset += 25;
+            if (uid.equals(minecraft.player.getUniqueID())) {
+                if (teamIterator.hasNext()) {
+                    uid = teamIterator.next();
+                } else {
+                    return;
                 }
             }
+            String otherP = minecraft.player.connection.getPlayerInfo(uid).getGameProfile().getName();
+            Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, otherP, (pressable) -> {
+                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
+                if (!TeamConfig.disableInventoryTransfer) {
+                    minecraft.displayGuiScreen(new GuiTransfer(new ContainerTransfer(0, minecraft.player.inventory, otherP), minecraft.player.inventory, new StringTextComponent("Transfer")));
+                    if (EffectiveSide.get().isClient()) {
+                        PacketHandler.INSTANCE.sendToServer(new MessageGui(minecraft.player.getUniqueID(), otherP));
+                    }
+                } else {
+                    minecraft.player.sendMessage(new StringTextComponent("That feature is disabled"));
+                    minecraft.displayGuiScreen(null);
+                }
+            });
+            this.addButton(button);
+            yoffset += 25;
         }
     }
 
