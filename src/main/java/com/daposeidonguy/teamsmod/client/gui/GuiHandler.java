@@ -141,7 +141,6 @@ public class GuiHandler {
                 int offsety = 0;
                 int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
-
                 //Iterate through players in storage (up to 4 of them)
                 while (uuidIterator.hasNext() && count < 4) {
                     UUID uid = uuidIterator.next();

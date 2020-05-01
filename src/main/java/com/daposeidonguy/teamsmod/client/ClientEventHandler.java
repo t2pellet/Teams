@@ -36,21 +36,26 @@ public class ClientEventHandler {
         ticks += 1;
     }
 
+    private static boolean doPing(String msg, String player, String team) {
+        if (msg.contains(player + " ") || msg.equals(player)) {
+            return true;
+        } else return team != null && (msg.contains(team + " ") || msg.equals(team));
+    }
+
     @SubscribeEvent
     public static void onChatMessage(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
-            String message = event.getMessage().getString();
-            int messageStart = message.indexOf(">");
-            String senderName = message.substring(1, messageStart);
             if (!TeamConfig.disablePing) {
                 String playerName = Minecraft.getInstance().player.getGameProfile().getName();
                 String teamName = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
-                if (lastMessageReceived.contains(playerName) || (teamName != null && lastMessageReceived.contains(teamName))) {
+                if (doPing(lastMessageReceived, playerName, teamName)) {
                     event.getMessage().setStyle(new Style().setBold(true));
                     Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
                 }
             }
             if (!TeamConfig.disablePrefix && !TeamConfig.prefixServerSide) {
+                String message = event.getMessage().getString();
+                String senderName = message.substring(1, message.indexOf(">"));
                 UUID senderUID = nametoIdMap.get(senderName);
                 if (SaveData.teamMap.containsKey(senderUID)) {
                     StringTextComponent newMessage = new StringTextComponent("[" + SaveData.teamMap.get(senderUID) + "] " + message);
