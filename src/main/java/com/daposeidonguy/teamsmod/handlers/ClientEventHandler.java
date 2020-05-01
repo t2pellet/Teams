@@ -5,15 +5,12 @@ import com.daposeidonguy.teamsmod.client.gui.ToastInvite;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -25,52 +22,42 @@ import java.util.UUID;
 public class ClientEventHandler {
 
     public static Map<String, Pair<String, Long>> chatMap = new HashMap<>();
+    public static String lastMessage;
     public static boolean displayHud = true;
-    public static boolean displayCompass = true;
     public static long ticks = 0;
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
+    public static Map<String, UUID> nametoIdMap = new HashMap<>();
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         ticks += 1;
     }
 
+    private boolean doPing(String msg, String player, String team) {
+        if (msg.contains(player + " ") || msg.equals(player)) {
+            return true;
+        } else return team != null && (msg.contains(team + " ") || msg.equals(team));
+    }
+
     @SubscribeEvent
     public void onChatMessage(ClientChatReceivedEvent event) {
-        int len = event.getMessage().getUnformattedText().length();
         if (event.getType() == ChatType.CHAT) {
-            int slice = event.getMessage().getUnformattedText().indexOf(">");
-            if (slice == -1) {
-                return;
+            if (!ConfigHandler.client.disablePing) {
+                String myName = Minecraft.getMinecraft().player.getDisplayNameString();
+                String myTeam = SaveData.teamMap.get(Minecraft.getMinecraft().player.getUniqueID());
+                if (doPing(lastMessage, myName, myTeam)) {
+                    event.getMessage().setStyle(event.getMessage().getStyle().setBold(true));
+                    Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
+                }
             }
-            slice += 1;
-            if (0 < slice && slice < len) {
-                String senderName = event.getMessage().getUnformattedText().substring(1, slice - 1);
-                String receivedText = event.getMessage().getUnformattedText().substring(slice + 1);
-                if (!ConfigHandler.client.disableChatBubble) {
-                    Pair<String, Long> chatMessage = Pair.of(receivedText, ticks);
-                    chatMap.put(senderName, chatMessage);
-                }
-                if (!ConfigHandler.client.disablePrefix) {
-                    UUID senderUID = FMLClientHandler.instance().getWorldClient().getPlayerEntityByName(senderName).getUniqueID();
-                    if (SaveData.teamMap.containsKey(senderUID)) {
-                        TextComponentString newMessage = new TextComponentString("[" + SaveData.teamMap.get(senderUID) + "]" + " <" + senderName + "> " + receivedText);
-                        newMessage.setStyle(event.getMessage().getStyle());
-                        event.setMessage(newMessage);
-                    }
-                }
-                if (!ConfigHandler.client.disablePing) {
-                    EntityPlayerSP clientPlayer = FMLClientHandler.instance().getClientPlayerEntity();
-                    String teamName = SaveData.teamMap.get(clientPlayer.getUniqueID());
-                    String clientName = clientPlayer.getDisplayNameString();
-                    if (receivedText.contains(clientName) || (teamName != null && receivedText.contains(teamName))) {
-                        Style bold = new Style();
-                        bold.setBold(true);
-                        TextComponentString newMessage = new TextComponentString(event.getMessage().getUnformattedText());
-                        newMessage.setStyle(bold);
-                        event.setMessage(newMessage);
-                        clientPlayer.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 5.0F);
-                    }
+            if (!ConfigHandler.client.disablePrefix && !ConfigHandler.server.prefixServerSide) {
+                String message = event.getMessage().getUnformattedText();
+                String senderName = message.substring(1, message.indexOf(">"));
+                String teamName = SaveData.teamMap.get(nametoIdMap.get(senderName));
+                if (teamName != null) {
+                    TextComponentString newMessage = new TextComponentString("[" + teamName + "] " + message);
+                    newMessage.setStyle(event.getMessage().getStyle());
+                    event.setMessage(newMessage);
                 }
             }
         }

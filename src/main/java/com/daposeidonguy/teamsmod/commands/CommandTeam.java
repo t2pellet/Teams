@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.commands;
 
+import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.network.MessageInvite;
 import com.daposeidonguy.teamsmod.network.MessageSaveData;
@@ -103,10 +104,14 @@ public class CommandTeam implements ICommand {
                 case "kick":
                     try {
                         String playerName = args[1];
-                        UUID uid = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
-                        if (SaveData.teamMap.containsKey(uid)) {
+                        UUID uid = ClientEventHandler.nametoIdMap.get(playerName);
+                        String toLeave = SaveData.teamMap.get(uid);
+                        if (toLeave != null) {
                             sender.sendMessage(new TextComponentString("Removing that player from your team!"));
                             data.removePlayer((EntityPlayer) sender, uid);
+                            if (SaveData.teamsMap.get(toLeave).isEmpty()) {
+                                data.removeTeam(toLeave);
+                            }
                         }
                     } catch (Exception ex) {
                         sender.sendMessage(new TextComponentString("Must enter a valid playername to remove from your team: /team remove <playername>").setStyle(new Style().setColor(TextFormatting.RED)));

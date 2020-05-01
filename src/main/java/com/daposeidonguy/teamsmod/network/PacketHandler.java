@@ -16,6 +16,7 @@ public class PacketHandler {
         PacketHandler.INSTANCE.registerMessage(MessageGui.MessageHandler.class, MessageGui.class, 4, side);
         PacketHandler.INSTANCE.registerMessage(MessageHealth.MessageHandler.class, MessageHealth.class, 5, side);
         PacketHandler.INSTANCE.registerMessage(MessageDeath.MessageHandler.class, MessageDeath.class, 6, side);
+        PacketHandler.INSTANCE.registerMessage(MessageChat.MessageHandler.class, MessageChat.class, 7, side);
     }
 
 }

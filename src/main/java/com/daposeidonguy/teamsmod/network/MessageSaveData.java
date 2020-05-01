@@ -78,7 +78,9 @@ public class MessageSaveData implements IMessage {
                         AbstractClientPlayer p = (AbstractClientPlayer) FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(id);
                         name = tagCompound.getString("Team Name");
                         if (p != null) {
+                            System.out.println("Got message");
                             ClientEventHandler.idtoNameMap.put(id, p.getDisplayNameString());
+                            ClientEventHandler.nametoIdMap.put(p.getDisplayNameString(), id);
                         }
                         SaveData.teamMap.put(id, name);
                         uuidList.add(id);

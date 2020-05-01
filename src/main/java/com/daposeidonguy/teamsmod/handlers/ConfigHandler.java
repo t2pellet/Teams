@@ -33,5 +33,9 @@ public class ConfigHandler {
         public boolean noOpRemoveTeam;
         @Config.Comment({"Prevents usage of the inventor transfer feature"})
         public boolean disableInventoryTransfer;
+        @Config.Comment({"Make prefixes handled serverside"})
+        public boolean prefixServerSide;
+        @Config.Comment({"Disable prefixes. Only works if prefixServerSide = true"})
+        public boolean disablePrefix;
     }
 }

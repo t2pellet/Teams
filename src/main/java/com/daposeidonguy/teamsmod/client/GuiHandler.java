@@ -8,15 +8,23 @@ import com.daposeidonguy.teamsmod.client.gui.team.GuiTeamManager;
 import com.daposeidonguy.teamsmod.client.gui.team.GuiTransferPlayers;
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
 import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
+import com.daposeidonguy.teamsmod.inventory.ContainerTransfer;
+import com.daposeidonguy.teamsmod.inventory.GuiTransfer;
+import com.daposeidonguy.teamsmod.network.MessageGui;
+import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -124,6 +132,19 @@ public class GuiHandler {
                     break;
                 case Integer.MIN_VALUE + 3:
                     FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransferPlayers());
+                    break;
+                case Integer.MIN_VALUE + 9:
+                    EntityPlayerSP p = FMLClientHandler.instance().getClientPlayerEntity();
+                    FMLClientHandler.instance().getClient().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    if (!ConfigHandler.server.disableInventoryTransfer) {
+                        FMLClientHandler.instance().getClient().displayGuiScreen(new GuiTransfer(new ContainerTransfer(FMLClientHandler.instance().getClientPlayerEntity().inventory, event.getButton().displayString), FMLClientHandler.instance().getClientPlayerEntity().inventory));
+                        if (p != null && p.getEntityWorld().isRemote) {
+                            PacketHandler.INSTANCE.sendToServer(new MessageGui(p.getUniqueID(), event.getButton().displayString));
+                        }
+                    } else {
+                        FMLClientHandler.instance().getClientPlayerEntity().sendMessage(new TextComponentString("That feature is disabled"));
+                        FMLClientHandler.instance().getClient().displayGuiScreen(null);
+                    }
             }
         }
     }
@@ -143,13 +164,15 @@ public class GuiHandler {
                 int offsety = 0;
                 int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
-
                 //Iterate through players in team (up to 4 of them)
                 while (uuidIterator.hasNext() && count < 4) {
                     UUID uid = uuidIterator.next();
                     //Dont render players own health and hunger
-                    if (!uid.equals(id) && (FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(uid) != null)) {
+                    if (!uid.equals(id)) {
                         NetworkPlayerInfo info = Minecraft.getMinecraft().player.connection.getPlayerInfo(uid);
+                        if (info == null) {
+                            return;
+                        }
                         int health;
                         try {
                             health = healthMap.get(uid);

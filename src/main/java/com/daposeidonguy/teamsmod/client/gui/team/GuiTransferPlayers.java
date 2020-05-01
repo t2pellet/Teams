@@ -1,13 +1,11 @@
 package com.daposeidonguy.teamsmod.client.gui.team;
 
-import com.daposeidonguy.teamsmod.client.gui.GuiScrollable;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.GuiScrollingList;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ public class GuiTransferPlayers extends GuiScreen {
     private static final int HEIGHT = 165;
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
     private int guiTop, guiLeft;
-    private GuiScrollingList buttonscrollist;
 
 
     @Override
@@ -46,17 +43,18 @@ public class GuiTransferPlayers extends GuiScreen {
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
             UUID uid = teamIterator.next();
-            if (mc.world.getPlayerEntityByUUID(uid) != null) {
-                String team = mc.world.getPlayerEntityByUUID(uid).getDisplayNameString();
-                if (team != mc.player.getDisplayNameString()) {
-                    GuiButton button = new GuiButton(Integer.MIN_VALUE + 9, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, team);
-                    scrollList.add(button);
-                    yoffset += 25;
+            if (uid.equals(mc.player.getUniqueID())) {
+                if (teamIterator.hasNext()) {
+                    uid = teamIterator.next();
+                } else {
+                    return;
                 }
             }
+            String otherP = mc.getConnection().getPlayerInfo(uid).getGameProfile().getName();
+            GuiButton button = new GuiButton(Integer.MIN_VALUE + 9, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, otherP);
+            addButton(button);
+            yoffset += 25;
         }
-
-        buttonscrollist = new GuiScrollable(mc, 242, 100, this.guiTop + 25, this.guiTop + 125, guiLeft + 3, 25, this, scrollList);
     }
 
     @Override
@@ -66,7 +64,5 @@ public class GuiTransferPlayers extends GuiScreen {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
         mc.fontRenderer.drawString("Player List", guiLeft + WIDTH / 2 - mc.fontRenderer.getStringWidth("Player List") / 2, guiTop + 10, Color.BLACK.getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
-        buttonscrollist.drawScreen(mouseX, mouseY, partialTicks);
     }
-
 }
