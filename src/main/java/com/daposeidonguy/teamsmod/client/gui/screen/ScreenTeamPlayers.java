@@ -10,18 +10,18 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.UsernameCache;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class GuiTeamPlayers extends Screen {
+public class ScreenTeamPlayers extends Screen {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 165;
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
     private int guiTop, guiLeft;
     private String name;
 
-    public GuiTeamPlayers(ITextComponent name) {
+    public ScreenTeamPlayers(ITextComponent name) {
         super(name);
         this.name = name.getString();
     }
@@ -34,7 +34,7 @@ public class GuiTeamPlayers extends Screen {
 
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back", (pressable) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+            minecraft.displayGuiScreen(new ScreenTeamList(new StringTextComponent("Team List")));
         }));
     }
 

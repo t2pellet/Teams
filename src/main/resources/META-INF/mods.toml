@@ -3,12 +3,13 @@ loaderVersion="[31,)"
 [[mods]]
     modId="teamsmod"
     version="1.5"
-    displayName="Teams"
-    credits="Inspired by the teams in Aether 2 for 1.7.10. Thanks to potat10125 for helping test things. Thanks to jabelar for his examplemod that helped me out in some places"
-    authors="daPoseidonGuy"
+    displayName="Teams\n"
+    credits="Inspired by the teams in Aether 2 for 1.7.10. Thanks to potat10125 for helping test things. Thanks to jabelar for his examplemod that helped me out in some places\n"
+    authors="daPoseidonGuy\n"
     description='''
     Teams mod enables functional teams in minecraft encouraging social play
 
     Provides a GUI to see status of nearby teammates
     Provides advancement syncing, item transfer and other miscellaneous features
+
     '''

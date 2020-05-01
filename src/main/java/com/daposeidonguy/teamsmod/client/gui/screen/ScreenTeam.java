@@ -10,10 +10,10 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.awt.Color;
+import java.awt.*;
 
 
-public class GuiTeam extends Screen {
+public class ScreenTeam extends Screen {
 
     private static final int WIDTH = 250;
     private static final int HEIGHT = 165;
@@ -21,7 +21,7 @@ public class GuiTeam extends Screen {
     private static final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
     private int guiTop, guiLeft;
 
-    public GuiTeam(ITextComponent title) {
+    public ScreenTeam(ITextComponent title) {
         super(title);
     }
 
@@ -34,18 +34,18 @@ public class GuiTeam extends Screen {
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 40, 120, 20, "Create/Manage Team", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
             if (SaveData.teamMap.containsKey(minecraft.player.getUniqueID())) {
-                minecraft.displayGuiScreen(new GuiTeamManager.GuiTeamEditor(new StringTextComponent(SaveData.teamMap.get(minecraft.player.getUniqueID()))));
+                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamEditor(new StringTextComponent(SaveData.teamMap.get(minecraft.player.getUniqueID()))));
             } else {
-                minecraft.displayGuiScreen(new GuiTeamManager.GuiTeamCreator(new StringTextComponent("Creator")));
+                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamCreator(new StringTextComponent("Creator")));
             }
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "List Teams", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new GuiTeamList(new StringTextComponent("Team List")));
+            minecraft.displayGuiScreen(new ScreenTeamList(new StringTextComponent("Team List")));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Transfer Items", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new GuiTransferPlayers(new StringTextComponent("Transfer Item")));
+            minecraft.displayGuiScreen(new ScreenTransferPlayers(new StringTextComponent("Transfer Item")));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Close menu", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
@@ -58,7 +58,7 @@ public class GuiTeam extends Screen {
         renderBackground();
         Minecraft.getInstance().getTextureManager().bindTexture(BACKGROUND);
         blit(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
-        GuiTeam.fontRenderer.drawString("Teams GUI", guiLeft + WIDTH / 2 - GuiTeam.fontRenderer.getStringWidth("Teams GUI") / 2, guiTop + 10, Color.BLACK.getRGB());
+        ScreenTeam.fontRenderer.drawString("Teams GUI", guiLeft + WIDTH / 2 - ScreenTeam.fontRenderer.getStringWidth("Teams GUI") / 2, guiTop + 10, Color.BLACK.getRGB());
         super.render(mouseX, mouseY, partialTicks);
     }
 }

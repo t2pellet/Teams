@@ -9,13 +9,13 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
 
-public class GuiTransfer extends ContainerScreen<ContainerTransfer> {
+public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
     private PlayerInventory playerInv;
     private ContainerTransfer container;
 
-    public GuiTransfer(ContainerTransfer inventorySlotsIn, PlayerInventory playerInv, ITextComponent title) {
+    public ScreenTransfer(ContainerTransfer inventorySlotsIn, PlayerInventory playerInv, ITextComponent title) {
         super(inventorySlotsIn, playerInv, title);
         this.container = inventorySlotsIn;
         this.playerInv = playerInv;

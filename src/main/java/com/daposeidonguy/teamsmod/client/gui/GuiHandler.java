@@ -3,7 +3,7 @@ package com.daposeidonguy.teamsmod.client.gui;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.daposeidonguy.teamsmod.client.gui.overlay.OverlayTeam;
-import com.daposeidonguy.teamsmod.client.gui.screen.GuiTeam;
+import com.daposeidonguy.teamsmod.client.gui.screen.ScreenTeam;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -86,24 +86,24 @@ public class GuiHandler {
                 if (TeamConfig.useAlternatePosition) {
                     guiButtonImage = new ImageButton(4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
                         Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                     });
                 } else {
                     guiButtonImage = new ImageButton(guiInventory.getGuiLeft() + 152, guiInventory.getGuiTop() + 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
                         Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                     });
                 }
             } else {
                 if (TeamConfig.useAlternatePosition) {
                     guiButtonImage = new ImageButton(2, 2, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
                         Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                     });
                 } else {
                     guiButtonImage = new ImageButton(guiInventory.getGuiLeft() + 155, guiInventory.getGuiTop() + 5, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
                         Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                     });
                 }
             }
@@ -113,13 +113,13 @@ public class GuiHandler {
             if (!TeamConfig.smallIcon) {
                 guiButtonImage = new ImageButton(4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
                     Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                    Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                 });
 
             } else {
                 guiButtonImage = new ImageButton(2, 2, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
                     Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                    Minecraft.getInstance().displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
                 });
             }
             event.addWidget(guiButtonImage);

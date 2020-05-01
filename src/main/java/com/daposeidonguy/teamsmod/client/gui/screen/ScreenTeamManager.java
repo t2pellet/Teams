@@ -10,11 +10,11 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class GuiTeamManager {
+public class ScreenTeamManager {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 165;
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
@@ -55,7 +55,7 @@ public class GuiTeamManager {
             }));
             this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back", (pressable) -> {
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                minecraft.displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                minecraft.displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
             }));
         }
 
@@ -123,7 +123,7 @@ public class GuiTeamManager {
             this.addButton(this.button);
             this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back", (pressable) -> {
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                minecraft.displayGuiScreen(new GuiTeam(new StringTextComponent("Team")));
+                minecraft.displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
             }));
         }
 
