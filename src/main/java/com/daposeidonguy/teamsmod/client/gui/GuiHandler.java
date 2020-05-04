@@ -2,6 +2,7 @@ package com.daposeidonguy.teamsmod.client.gui;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
+import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.overlay.OverlayTeam;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenTeam;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
@@ -18,8 +19,6 @@ import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -81,25 +80,21 @@ public class GuiHandler {
             if (!TeamConfig.smallIcon) {
                 if (TeamConfig.useAlternatePosition) {
                     guiButtonImage = new ImageButton(4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
-                        Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                     });
                 } else {
                     guiButtonImage = new ImageButton(guiInventory.getGuiLeft() + 152, guiInventory.getGuiTop() + 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
-                        Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                     });
                 }
             } else {
                 if (TeamConfig.useAlternatePosition) {
                     guiButtonImage = new ImageButton(2, 2, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
-                        Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                     });
                 } else {
                     guiButtonImage = new ImageButton(guiInventory.getGuiLeft() + 155, guiInventory.getGuiTop() + 5, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
-                        Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                        Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                     });
                 }
             }
@@ -108,14 +103,12 @@ public class GuiHandler {
             ImageButton guiButtonImage;
             if (!TeamConfig.smallIcon) {
                 guiButtonImage = new ImageButton(4, 4, 20, 18, 0, 0, 18, new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png"), (pressable) -> {
-                    Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                 });
 
             } else {
                 guiButtonImage = new ImageButton(2, 2, 15, 14, 0, 0, 13, new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png"), (pressable) -> {
-                    Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
+                    Minecraft.getInstance().displayGuiScreen(new ScreenTeam());
                 });
             }
             event.addWidget(guiButtonImage);
@@ -143,10 +136,7 @@ public class GuiHandler {
         } catch (NullPointerException ex) {
             hunger = 20;
         }
-        String name = ClientEventHandler.idtoNameMap.get(uuid);
-        if (name == null) {
-            name = info.getGameProfile().getName();
-        }
+        String name = ClientUtils.getOnlineUsernameFromUUID(uuid);
         ResourceLocation skin = info.getLocationSkin();
         new OverlayTeam(mc, offsety, health, hunger, name, skin);
         return true;

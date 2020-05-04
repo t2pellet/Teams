@@ -1,12 +1,11 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.awt.*;
@@ -16,8 +15,8 @@ import java.util.UUID;
 public class ScreenHud extends ScreenPages {
 
 
-    protected ScreenHud(ITextComponent titleIn) {
-        super(titleIn);
+    protected ScreenHud(ScreenBase parent) {
+        super(new StringTextComponent("hudmanager"), parent);
     }
 
     @Override
@@ -41,8 +40,7 @@ public class ScreenHud extends ScreenPages {
                 }
             }
             GameProfile otherP = minecraft.player.connection.getPlayerInfo(uid).getGameProfile();
-            Button button = new Button(guiLeft + WIDTH / 2 - 62, guiTop + yoffset, 124, 20, otherP.getName() + ": " + GuiHandler.priorityPlayers.contains(otherP.getId()), btn -> {
-                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
+            Button button = new Button(guiLeft + WIDTH / 2 - 62, guiTop + yOffset, 124, 20, otherP.getName() + ": " + GuiHandler.priorityPlayers.contains(otherP.getId()), btn -> {
                 boolean isPriority = GuiHandler.priorityPlayers.contains(otherP.getId());
                 if (isPriority) {
                     GuiHandler.priorityPlayers.remove(otherP.getId());
@@ -52,7 +50,7 @@ public class ScreenHud extends ScreenPages {
                 btn.setMessage(otherP.getName() + ": " + !isPriority);
             });
             this.addButton(button);
-            yoffset += 25;
+            yOffset += 25;
         }
     }
 

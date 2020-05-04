@@ -1,10 +1,9 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
+import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.awt.*;
@@ -12,8 +11,8 @@ import java.util.Iterator;
 
 public class ScreenTeamList extends ScreenPages {
 
-    protected ScreenTeamList(ITextComponent title) {
-        super(title);
+    protected ScreenTeamList(ScreenBase parent) {
+        super(new StringTextComponent("teamlist"), parent);
     }
 
     @Override
@@ -23,12 +22,11 @@ public class ScreenTeamList extends ScreenPages {
         Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
         while (teamIterator.hasNext()) {
             String team = teamIterator.next();
-            Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, team, (pressable) -> {
-                minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-                minecraft.displayGuiScreen(new ScreenTeamPlayers(new StringTextComponent(team)));
+            Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, team, (pressable) -> {
+                minecraft.displayGuiScreen(new ScreenTeamPlayers(this, team));
             });
             addButton(button);
-            yoffset += 25;
+            yOffset += 25;
         }
     }
 

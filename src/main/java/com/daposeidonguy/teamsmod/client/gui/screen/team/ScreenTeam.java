@@ -1,68 +1,46 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
+import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.awt.*;
 
 
-public class ScreenTeam extends Screen {
+public class ScreenTeam extends ScreenBase {
 
-    private static final int WIDTH = 250;
-    private static final int HEIGHT = 165;
-    private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
-    private static final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-    private int guiTop, guiLeft;
-
-    public ScreenTeam(ITextComponent title) {
-        super(title);
+    public ScreenTeam() {
+        super(new StringTextComponent("team"), null);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.guiLeft = (this.width - WIDTH) / 2;
-        this.guiTop = (this.height - HEIGHT) / 2;
-
-        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 25, 120, 20, "Create/Manage Team", (button) -> {
-            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            if (SaveData.teamMap.containsKey(minecraft.player.getUniqueID())) {
-                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamEditor(new StringTextComponent(SaveData.teamMap.get(minecraft.player.getUniqueID()))));
+        this.goBack.setMessage("Close menu");
+        boolean inTeam = SaveData.teamMap.containsKey(minecraft.player.getUniqueID());
+        String editorText = inTeam ? "Manage Team" : "Create Team";
+        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 25, 120, 20, editorText, (button) -> {
+            if (inTeam) {
+                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamEditor(this, SaveData.teamMap.get(minecraft.player.getUniqueID())));
             } else {
-                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamCreator(new StringTextComponent("Creator")));
+                minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamCreator(this));
             }
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 50, 120, 20, "List Teams", (button) -> {
-            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new ScreenTeamList(new StringTextComponent("Team List")));
+            minecraft.displayGuiScreen(new ScreenTeamList(this));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 75, 120, 20, "Transfer Items", (button) -> {
-            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new ScreenTransferPlayers(new StringTextComponent("Transfer Item")));
+            minecraft.displayGuiScreen(new ScreenTransferPlayers(this));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Configure HUD", (button) -> {
-            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(new ScreenHud(new StringTextComponent("Configre HUD")));
-        }));
-        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Close menu", (button) -> {
-            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-            minecraft.displayGuiScreen(null);
+            minecraft.displayGuiScreen(new ScreenHud(this));
         }));
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        renderBackground();
-        Minecraft.getInstance().getTextureManager().bindTexture(BACKGROUND);
-        blit(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
-        ScreenTeam.fontRenderer.drawString("Teams GUI", guiLeft + WIDTH / 2 - ScreenTeam.fontRenderer.getStringWidth("Teams GUI") / 2, guiTop + 10, Color.BLACK.getRGB());
         super.render(mouseX, mouseY, partialTicks);
+        minecraft.fontRenderer.drawString("Teams GUI", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Teams GUI") / 2, guiTop + 10, Color.BLACK.getRGB());
     }
 }
