@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.client.gui.screen;
 
+import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenTeam;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;

@@ -1,5 +1,6 @@
-package com.daposeidonguy.teamsmod.client.gui.screen;
+package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
+import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.SoundEvents;

@@ -10,7 +10,6 @@ public class ConfigBaker {
 
     @SubscribeEvent
     public static void configEvent(ModConfig.ModConfigEvent event) {
-        TeamsMod.logger.debug("Config changed");
         if (event.getConfig().getSpec() == ConfigHolder.CLIENT_SPEC) {
             ConfigBaker.bakeClient();
         } else if (event.getConfig().getSpec() == ConfigHolder.SERVER_SPEC) {

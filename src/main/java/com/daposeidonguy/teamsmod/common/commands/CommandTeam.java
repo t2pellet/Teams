@@ -32,64 +32,50 @@ import java.util.UUID;
 
 public class CommandTeam {
 
+    private static String[] aliases = {"teamsmod", "teams", "t"};
+
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        dispatcher.register(Commands.literal("teamsmod")
-                .then(Commands.literal("create")
-                        .then(Commands.argument("teamName", StringArgumentType.word())
-                                .executes(ctx -> {
-                                    return teamCreate(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName"));
-                                })))
-                .then(Commands.literal("list")
-                        .executes(ctx -> {
-                            return teamList(server, ctx.getSource());
-                        }))
-                .then(Commands.literal("info")
-                        .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
-                                .executes(ctx -> {
-                                    return teamInfo(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName"));
-                                })))
-                .then(Commands.literal("player")
-                        .then(Commands.argument("playerName", EntityArgument.player())
-                                .executes(ctx -> {
-                                    return teamPlayer(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName());
-                                })))
-                .then(Commands.literal("invite")
-                        .then(Commands.argument("playerName", EntityArgument.player())
-                                .executes(ctx -> {
-                                    return teamInvite(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName());
-                                })))
-                .then(Commands.literal("accept")
-                        .executes(ctx -> {
-                            return teamAccept(server, ctx.getSource());
-                        }))
-                .then(Commands.literal("kick")
-                        .then(Commands.argument("playerName", EntityArgument.player())
-                                .executes(ctx -> {
-                                    return teamKick(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName());
-                                })))
-                .then(Commands.literal("leave")
-                        .executes(ctx -> {
-                            return teamLeave(server, ctx.getSource());
-                        }))
-                .then(Commands.literal("remove")
-                        .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
-                                .executes(ctx -> {
-                                    return teamRemove(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName"));
-                                })))
-                .executes(ctx -> {
-                    ctx.getSource().sendFeedback(new StringTextComponent("Teams Commands: " +
-                            "\n/team create <name> : creates team with the name <name>" +
-                            "\n/team list : lists all created teams" +
-                            "\n/team info <name> : lists all players in the team with name <name>" +
-                            "\n/team player <name> : prints the team of the player with name <name>" +
-                            "\n/team invite <name> : invites player with name <name> to your team" +
-                            "\n/team accept : accepts invitation to team" +
-                            "\n/team kick <name> : kicks player with name <name> from your team" +
-                            "\n/team leave : leaves your team" +
-                            "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>"), false);
-                    return 0;
-                }));
+        for (String alias : aliases) {
+            dispatcher.register(Commands.literal(alias)
+                    .then(Commands.literal("create")
+                            .then(Commands.argument("teamName", StringArgumentType.word())
+                                    .executes(ctx -> teamCreate(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
+                    .then(Commands.literal("list")
+                            .executes(ctx -> teamList(server, ctx.getSource())))
+                    .then(Commands.literal("info")
+                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
+                                    .executes(ctx -> teamInfo(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
+                    .then(Commands.literal("player")
+                            .then(Commands.argument("playerName", EntityArgument.player())
+                                    .executes(ctx -> teamPlayer(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName()))))
+                    .then(Commands.literal("invite")
+                            .then(Commands.argument("playerName", EntityArgument.player())
+                                    .executes(ctx -> teamInvite(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName()))))
+                    .then(Commands.literal("accept")
+                            .executes(ctx -> teamAccept(server, ctx.getSource())))
+                    .then(Commands.literal("kick")
+                            .then(Commands.argument("playerName", EntityArgument.player())
+                                    .executes(ctx -> teamKick(server, ctx.getSource(), EntityArgument.getPlayer(ctx, "playerName").getGameProfile().getName()))))
+                    .then(Commands.literal("leave")
+                            .executes(ctx -> teamLeave(server, ctx.getSource())))
+                    .then(Commands.literal("remove")
+                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
+                                    .executes(ctx -> teamRemove(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
+                    .executes(ctx -> {
+                        ctx.getSource().sendFeedback(new StringTextComponent("Teams Commands: " +
+                                "\n/team create <name> : creates team with the name <name>" +
+                                "\n/team list : lists all created teams" +
+                                "\n/team info <name> : lists all players in the team with name <name>" +
+                                "\n/team player <name> : prints the team of the player with name <name>" +
+                                "\n/team invite <name> : invites player with name <name> to your team" +
+                                "\n/team accept : accepts invitation to team" +
+                                "\n/team kick <name> : kicks player with name <name> from your team" +
+                                "\n/team leave : leaves your team" +
+                                "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>"), false);
+                        return 0;
+                    }));
+        }
     }
 
     private static int teamCreate(MinecraftServer server, CommandSource sender, String name) throws CommandSyntaxException {
@@ -110,7 +96,7 @@ public class CommandTeam {
 
     private static int teamList(MinecraftServer server, CommandSource sender) {
         int len = 1;
-        SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
+        SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         sender.sendFeedback(new StringTextComponent("List of teams:"), false);
         Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
         while (teamIterator.hasNext()) {
@@ -121,7 +107,7 @@ public class CommandTeam {
     }
 
     private static int teamInfo(MinecraftServer server, CommandSource sender, String teamName) throws CommandException {
-        SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
+        SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         int len = 1;
         if (!SaveData.teamsMap.containsKey(teamName)) {
             throw new CommandException(new StringTextComponent("Enter valid team"));
@@ -140,7 +126,7 @@ public class CommandTeam {
     }
 
     private static int teamPlayer(MinecraftServer server, CommandSource sender, String playerName) {
-        SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
+        SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (SaveData.teamMap.containsKey(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
             String playerTeam = SaveData.teamMap.get(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
             sender.sendFeedback(new StringTextComponent(playerName + " is in the following team:"), false);
@@ -153,7 +139,7 @@ public class CommandTeam {
     }
 
     private static int teamInvite(MinecraftServer server, CommandSource sender, String playerName) throws CommandSyntaxException {
-        SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
+        SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         ServerPlayerEntity newPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(playerName);
         PlayerEntity oldPlayer = sender.asPlayer();
         if (SaveData.teamMap.containsKey(oldPlayer.getUniqueID())) {

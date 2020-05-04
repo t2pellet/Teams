@@ -1,15 +1,11 @@
 package com.daposeidonguy.teamsmod.common.inventory;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -25,7 +21,6 @@ public class SlotTransfer extends Slot {
     @Override
     public void onSlotChanged() {
         if (EffectiveSide.get().isServer() && getHasStack()) {
-            TeamsMod.logger.debug("SLOT CHANGED PROPER");
             ItemStack stack = getStack();
             ItemStack stack1 = stack.copy();
             stack.setCount(0);

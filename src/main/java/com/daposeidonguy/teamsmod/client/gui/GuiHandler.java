@@ -3,7 +3,7 @@ package com.daposeidonguy.teamsmod.client.gui;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.daposeidonguy.teamsmod.client.gui.overlay.OverlayTeam;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenTeam;
+import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenTeam;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -20,40 +20,36 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+@Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GuiHandler {
     public static Map<UUID, Integer> hungerMap = new HashMap<>();
     public static Map<UUID, Integer> healthMap = new HashMap<>();
+    public static List<UUID> priorityPlayers = new ArrayList<>();
 
-
-    public static GuiHandler instance() {
-        return new GuiHandler();
-    }
-
-    private void renderChat(EntityRendererManager renderManager, PlayerEntity player, String text, MatrixStack stack, IRenderTypeBuffer buffer, int light) {
+    private static void renderChat(EntityRendererManager renderManager, PlayerEntity player, String text, MatrixStack stack, IRenderTypeBuffer buffer, int light) {
         double d0 = renderManager.squareDistanceTo(player);
-        if (!(d0 > 4096.0D)) {
+        if (!(d0 > 2048.0D)) {
             boolean flag = !player.isDiscrete();
-            float f = player.getHeight() + 0.75F;
+            float f = player.getHeight() + 0.85F;
             stack.push();
-            stack.translate(0.0D, (double)f, 0.0D);
+            stack.translate(0.0D, (double) f, 0.0D);
             stack.rotate(renderManager.getCameraOrientation());
             stack.scale(-0.025F, -0.025F, 0.025F);
             Matrix4f matrix4f = stack.getLast().getMatrix();
             float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
-            int j = (int)(f1 * 255.0F) << 24;
+            int j = (int) (f1 * 255.0F) << 24;
             FontRenderer fontrenderer = renderManager.getFontRenderer();
-            float f2 = (float)(-fontrenderer.getStringWidth(text) / 2);
+            float f2 = (float) (-fontrenderer.getStringWidth(text) / 2);
             fontrenderer.renderString(text, f2, 0, 553648127, false, matrix4f, buffer, flag, j, light);
             if (flag) {
                 fontrenderer.renderString(text, f2, 0, -1, false, matrix4f, buffer, false, 0, light);
@@ -63,7 +59,7 @@ public class GuiHandler {
     }
 
     @SubscribeEvent
-    public void renderPlayer(RenderPlayerEvent.Pre event) {
+    public static void renderPlayer(RenderPlayerEvent.Pre event) {
         String playerName = event.getPlayer().getGameProfile().getName();
         String localName = Minecraft.getInstance().player.getGameProfile().getName();
         if (!localName.equals(playerName) && ClientEventHandler.chatMap.containsKey(playerName)) {
@@ -78,7 +74,7 @@ public class GuiHandler {
     }
 
     @SubscribeEvent
-    public void showGuiButton(GuiScreenEvent.InitGuiEvent.Post event) {
+    public static void showGuiButton(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.getGui() instanceof InventoryScreen) {
             InventoryScreen guiInventory = (InventoryScreen) event.getGui();
             ImageButton guiButtonImage;
@@ -126,50 +122,66 @@ public class GuiHandler {
         }
     }
 
+    private static boolean renderPlayerHUD(UUID uuid, int offsety) {
+        Minecraft mc = Minecraft.getInstance();
+        NetworkPlayerInfo info = mc.player.connection.getPlayerInfo(uuid);
+        if (info == null) {
+            return false;
+        }
+        int health;
+        try {
+            health = healthMap.get(uuid);
+        } catch (NullPointerException ex) {
+            health = 20;
+        }
+        if (health < 0) {
+            return false;
+        }
+        int hunger;
+        try {
+            hunger = hungerMap.get(uuid);
+        } catch (NullPointerException ex) {
+            hunger = 20;
+        }
+        String name = ClientEventHandler.idtoNameMap.get(uuid);
+        if (name == null) {
+            name = info.getGameProfile().getName();
+        }
+        ResourceLocation skin = info.getLocationSkin();
+        new OverlayTeam(mc, offsety, health, hunger, name, skin);
+        return true;
+    }
+
     @SubscribeEvent
-    public void renderHUDEvent(RenderGameOverlayEvent.Post event) {
+    public static void renderHUDEvent(RenderGameOverlayEvent.Post event) {
         //Check if clientside and HUD is enabled
         if (EffectiveSide.get().isClient() &&
                 !TeamConfig.disableTeamsHUD &&
                 ClientEventHandler.displayHud &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            Minecraft mc = Minecraft.getInstance();
-            UUID id = mc.player.getUniqueID();
+            UUID id = Minecraft.getInstance().player.getUniqueID();
             String team = SaveData.teamMap.get(id);
             if (team != null) {
                 int offsety = 0;
                 int count = 0;
-                Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
-                //Iterate through players in storage (up to 4 of them)
-                while (uuidIterator.hasNext() && count < 4) {
-                    UUID uid = uuidIterator.next();
-                    //Dont render players own health and hunger
-                    if (!uid.equals(id)) {
-                        NetworkPlayerInfo info = mc.player.connection.getPlayerInfo(uid);
-                        if (info == null) {
-                            return;
+                Iterator<UUID> priorityIterator = priorityPlayers.iterator();
+                while (priorityIterator.hasNext() && count < 4) {
+                    UUID uuid = priorityIterator.next();
+                    renderPlayerHUD(uuid, offsety);
+                    offsety += 46;
+                    count += 1;
+                }
+                Iterator<UUID> teamIterator = SaveData.teamsMap.get(team).iterator();
+                while (teamIterator.hasNext() && count < 4) {
+                    UUID uuid = teamIterator.next();
+                    if (!priorityPlayers.contains(uuid)) {
+                        if (!uuid.equals(id)) {
+                            if (renderPlayerHUD(uuid, offsety)) {
+                                offsety += 46;
+                                count += 1;
+                            }
                         }
-                        int health;
-                        try {
-                            health = healthMap.get(uid);
-                        } catch (NullPointerException ex) {
-                            health = 20;
-                        }
-                        int hunger;
-                        try {
-                            hunger = hungerMap.get(uid);
-                        } catch (NullPointerException ex) {
-                            hunger = 20;
-                        }
-                        String name = ClientEventHandler.idtoNameMap.get(uid);
-                        if (name == null) {
-                            name = info.getGameProfile().getName();
-                        }
-                        ResourceLocation skin = info.getLocationSkin();
-                        new OverlayTeam(mc, offsety, health, hunger, name, skin);
-                        offsety += 46;
-                        count += 1;
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.daposeidonguy.teamsmod.client.KeyBindings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.gui.toasts.ToastGui;
+import net.minecraft.util.text.LanguageMap;
 
 import java.awt.*;
 
@@ -31,7 +32,8 @@ public class ToastInvite implements IToast {
         RenderSystem.color3f(1.0F, 1.0F, 1.0F);
         toastGui.blit(0, 0, 0, 64, 160, 32);
         toastGui.getMinecraft().fontRenderer.drawString("Invited to storage: " + this.teamName, 22, 7, Color.WHITE.getRGB());
-        toastGui.getMinecraft().fontRenderer.drawString("Press " + KeyBindings.accept.getKeyDescription() + " to accept", 22, 18, -16777216);
+        String keyName = "\"" + LanguageMap.getInstance().translateKey(KeyBindings.accept.getTranslationKey()) + "\"";
+        toastGui.getMinecraft().fontRenderer.drawString("Press " + keyName + " to accept", 22, 18, -16777216);
 
         return delta - this.firstDrawTime < 15000L && this.teamName != null ? IToast.Visibility.SHOW : IToast.Visibility.HIDE;
     }

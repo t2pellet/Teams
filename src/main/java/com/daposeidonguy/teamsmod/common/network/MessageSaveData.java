@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
+import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
@@ -78,6 +79,17 @@ public class MessageSaveData {
                     uuidList.add(id);
                 }
                 SaveData.teamsMap.put(teamName, uuidList);
+            }
+            String myTeam = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
+            if (myTeam == null) {
+                GuiHandler.priorityPlayers.clear();
+            } else {
+                for (UUID uuid : SaveData.teamsMap.get(myTeam)) {
+                    String theirTeam = SaveData.teamMap.get(uuid);
+                    if (theirTeam == null || !theirTeam.equals(myTeam)) {
+                        GuiHandler.priorityPlayers.remove(uuid);
+                    }
+                }
             }
         }));
         ctx.get().setPacketHandled(true);

@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.client.gui.screen;
+package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,7 @@ public class ScreenTeam extends Screen {
         this.guiLeft = (this.width - WIDTH) / 2;
         this.guiTop = (this.height - HEIGHT) / 2;
 
-        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 40, 120, 20, "Create/Manage Team", (button) -> {
+        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 25, 120, 20, "Create/Manage Team", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
             if (SaveData.teamMap.containsKey(minecraft.player.getUniqueID())) {
                 minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamEditor(new StringTextComponent(SaveData.teamMap.get(minecraft.player.getUniqueID()))));
@@ -39,13 +39,17 @@ public class ScreenTeam extends Screen {
                 minecraft.displayGuiScreen(new ScreenTeamManager.GuiTeamCreator(new StringTextComponent("Creator")));
             }
         }));
-        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "List Teams", (button) -> {
+        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 50, 120, 20, "List Teams", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
             minecraft.displayGuiScreen(new ScreenTeamList(new StringTextComponent("Team List")));
         }));
-        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Transfer Items", (button) -> {
+        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 75, 120, 20, "Transfer Items", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
             minecraft.displayGuiScreen(new ScreenTransferPlayers(new StringTextComponent("Transfer Item")));
+        }));
+        this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Configure HUD", (button) -> {
+            minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
+            minecraft.displayGuiScreen(new ScreenHud(new StringTextComponent("Configre HUD")));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Close menu", (button) -> {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);

@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.client.gui.screen;
+package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
@@ -62,7 +62,7 @@ public class ScreenTeamPlayers extends Screen {
                     try {
                         playerName = minecraft.getConnection().getPlayerInfo(uid).getGameProfile().getName();
                     } catch (Exception ex) {
-                        playerName = "Unmet player";
+                        playerName = "Offline player";
                     }
                 }
             }

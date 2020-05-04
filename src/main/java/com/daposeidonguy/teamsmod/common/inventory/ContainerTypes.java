@@ -7,13 +7,12 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid=TeamsMod.MODID,bus= Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ContainerTypes {
     public static ContainerType<ContainerTransfer> containerTypeTransfer;
 
     @SubscribeEvent
     public static void register(RegistryEvent.Register<ContainerType<?>> event) {
-        TeamsMod.logger.debug("REGISTERING CONTAINER TYPE");
         ContainerTypes.containerTypeTransfer = IForgeContainerType.create(ContainerTransfer::new);
         containerTypeTransfer.setRegistryName("transfer");
         event.getRegistry().register(containerTypeTransfer);

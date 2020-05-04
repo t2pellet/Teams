@@ -1,6 +1,8 @@
-package com.daposeidonguy.teamsmod.client.gui.screen;
+package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
+import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -40,7 +42,7 @@ public class ScreenTeamManager {
 
 
             this.text = new TextFieldWidget(minecraft.fontRenderer, guiLeft + WIDTH / 2 - 60, guiTop + 45, 120, 20, "");
-            this.text.setFocused2(true);
+            this.setFocused(text);
 
             this.button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + 70, 120, 20, "Invite Player", (pressable) -> {
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
@@ -57,6 +59,20 @@ public class ScreenTeamManager {
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
                 minecraft.displayGuiScreen(new ScreenTeam(new StringTextComponent("Team")));
             }));
+
+            Iterator<AbstractClientPlayerEntity> playerIterator = minecraft.world.getPlayers().iterator();
+            String clientName = minecraft.player.getGameProfile().getName();
+            int yoffset = 15;
+            while (playerIterator.hasNext()) {
+                AbstractClientPlayerEntity p = playerIterator.next();
+                UUID uid = p.getUniqueID();
+                String playerName = p.getGameProfile().getName();
+                if (/*playerName != clientName && !SaveData.teamMap.containsKey(uid)*/true) {
+                    int width = minecraft.fontRenderer.getStringWidth(playerName);
+                    addButton(new ClearButton(guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, 0, 0, 0, playerName, btn -> this.text.setText(btn.getMessage())));
+                    yoffset += 15;
+                }
+            }
         }
 
         @Override
@@ -67,26 +83,15 @@ public class ScreenTeamManager {
             minecraft.fontRenderer.drawString("Team Manager: " + name, guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Team Manager: " + name) / 2, guiTop + 10, Color.BLACK.getRGB());
             minecraft.fontRenderer.drawString("Enter Name", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Enter Name") / 2, guiTop + 35, Color.GRAY.getRGB());
             minecraft.fontRenderer.drawString("Eligible Players:", guiLeft + WIDTH + 42 - minecraft.fontRenderer.getStringWidth("Eligible Players:") / 2, guiTop + 35, Color.WHITE.getRGB());
-            Iterator<AbstractClientPlayerEntity> uuidIterator = minecraft.world.getPlayers().iterator();
-            int yoffset = 15;
-            while (uuidIterator.hasNext()) {
-                String clientName = minecraft.player.getGameProfile().getName();
-                AbstractClientPlayerEntity p = uuidIterator.next();
-                UUID uid = p.getUniqueID();
-                String playerName = p.getGameProfile().getName();
-                if (playerName != clientName && !SaveData.teamMap.containsKey(uid)) {
-                    minecraft.fontRenderer.drawString(playerName, guiLeft + WIDTH + 42 - minecraft.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
-                    yoffset += 15;
-                }
-            }
             this.text.render(mouseX, mouseY, partialTicks);
             super.render(mouseX, mouseY, partialTicks);
         }
 
         @Override
-        public boolean charTyped(char typedChar, int keyCode) {
-            this.text.charTyped(typedChar, keyCode);
-            return super.charTyped(typedChar, keyCode);
+        public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {
+            String entry = this.text.getText();
+            super.resize(p_resize_1_, p_resize_2_, p_resize_3_);
+            this.text.setText(entry);
         }
 
         @Override
@@ -113,7 +118,7 @@ public class ScreenTeamManager {
             this.guiTop = (this.height - HEIGHT) / 2;
 
             this.text = new TextFieldWidget(minecraft.fontRenderer, guiLeft + WIDTH / 2 - 60, guiTop + 50, 120, 20, "");
-            this.text.setFocused2(true);
+            this.setFocused(text);
 
             this.button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + 75, 120, 20, "Create Team", (pressable) -> {
                 minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
@@ -149,9 +154,10 @@ public class ScreenTeamManager {
         }
 
         @Override
-        public boolean charTyped(char typedChar, int keyCode) {
-            this.text.charTyped(typedChar, keyCode);
-            return super.charTyped(typedChar, keyCode);
+        public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {
+            String entry = this.text.getText();
+            super.resize(p_resize_1_, p_resize_2_, p_resize_3_);
+            this.text.setText(entry);
         }
 
         @Override

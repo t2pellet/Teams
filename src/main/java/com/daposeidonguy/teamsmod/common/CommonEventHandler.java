@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -25,6 +26,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.util.Iterator;
 import java.util.UUID;
 
+@Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEventHandler {
 
     public static int ticks = 0;
@@ -60,7 +62,6 @@ public class CommonEventHandler {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             String teamName = SaveData.teamMap.get(event.getEntity().getUniqueID());
             if (teamName != null) {
-                TeamsMod.logger.debug("Updating HUD");
                 int health = (int) (event.getEntityLiving().getHealth() - event.getAmount());
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), health));
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
@@ -78,7 +79,9 @@ public class CommonEventHandler {
                     UUID uuid = uuidIterator.next();
                     if (!event.getEntity().getUniqueID().equals(uuid)) {
                         ServerPlayerEntity playerMP = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(uuid);
-                        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> playerMP), new MessageDeath());
+                        if (playerMP != null) {
+                            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> playerMP), new MessageDeath());
+                        }
                     }
                 }
             }
@@ -132,7 +135,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.getPlayer().getEntityWorld().isRemote) {
+        if (!event.getPlayer().getEntityWorld().isRemote && !ServerLifecycleHooks.getCurrentServer().isSinglePlayer()) {
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         }
     }

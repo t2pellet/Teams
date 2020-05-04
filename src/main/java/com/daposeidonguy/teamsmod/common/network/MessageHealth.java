@@ -1,6 +1,5 @@
 package com.daposeidonguy.teamsmod.common.network;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -37,7 +36,6 @@ public class MessageHealth {
             } catch (IllegalArgumentException ex) {
                 return;
             }
-            TeamsMod.logger.debug("Received MessageHealth");
             GuiHandler.healthMap.put(uid, tag.getInt("health"));
         });
         ctx.get().setPacketHandled(true);
