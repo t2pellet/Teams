@@ -17,7 +17,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,11 +51,6 @@ public class TeamsMod {
     public void serverStart(FMLServerStartingEvent event) {
         CommandTeam.register(event.getCommandDispatcher());
         data = SaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
-    }
-
-    @SubscribeEvent
-    public void serverStop(FMLServerStoppedEvent event) {
-        event.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().save();
     }
 
 }

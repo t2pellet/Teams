@@ -14,7 +14,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -68,12 +67,6 @@ public class ClientEventHandler {
                 }
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void onLeaveServer(WorldEvent.Unload event) {
-        SaveData.teamsMap.clear();
-        SaveData.teamMap.clear();
     }
 
     @SubscribeEvent

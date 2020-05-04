@@ -7,10 +7,8 @@ import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
@@ -118,13 +116,10 @@ public class CommonEventHandler {
     }
 
     @SubscribeEvent
-    public static void playerJoin(EntityJoinWorldEvent event) {
-        if (EffectiveSide.get().isServer() && event.getEntity() instanceof PlayerEntity) {
-            SaveData.get(event.getEntity().getServer().getWorld(DimensionType.OVERWORLD));
+    public static void playerLogIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!event.getPlayer().getEntityWorld().isRemote) {
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-        }
-        if (EffectiveSide.get().isServer() && !TeamConfig.disableAchievementSync) {
-            if (event.getEntity() instanceof PlayerEntity) {
+            if (!TeamConfig.disableAchievementSync) {
                 if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
                     String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
                     SaveData.syncPlayers(team, (ServerPlayerEntity) event.getEntity());
@@ -135,7 +130,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.getPlayer().getEntityWorld().isRemote && !ServerLifecycleHooks.getCurrentServer().isSinglePlayer()) {
+        if (!event.getPlayer().getEntityWorld().isRemote) {
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         }
     }
