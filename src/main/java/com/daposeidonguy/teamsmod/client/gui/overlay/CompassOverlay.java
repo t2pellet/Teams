@@ -56,7 +56,14 @@ public class CompassOverlay extends AbstractGui {
                     GL11.glScalef(0.25F, 0.25F, 0.25F);
                     int x = (int) (4 * (getWidth() / 2 - WIDTH / 4 + renderFactor * WIDTH / 2 + 41));
                     int y = (int) (4 * ((getHeight() * 0.01) + 12));
-                    blit(x, y, 32, 32, 32, 32);
+                    if (1 - Math.abs(renderFactor) < 0.6) {
+                        GL11.glEnable(GL11.GL_BLEND);
+                        GL11.glColor4f(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
+                        blit(x, y, 32, 32, 32, 32);
+                        GL11.glDisable(GL11.GL_BLEND);
+                    } else {
+                        blit(x, y, 32, 32, 32, 32);
+                    }
                     GL11.glPopMatrix();
                 }
             }
