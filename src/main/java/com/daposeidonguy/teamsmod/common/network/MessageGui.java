@@ -3,7 +3,6 @@ package com.daposeidonguy.teamsmod.common.network;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.inventory.InterfaceTransfer;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -13,24 +12,15 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class MessageGui {
+public class MessageGui extends AbstractMessage {
 
-    private CompoundNBT tag = new CompoundNBT();
-
-    public MessageGui() {
+    protected MessageGui(PacketBuffer buf) {
+        super(buf);
     }
 
     public MessageGui(UUID id, String name) {
         tag.putString("id", id.toString());
         tag.putString("name", name);
-    }
-
-    public MessageGui(PacketBuffer buf) {
-        tag = buf.readCompoundTag();
-    }
-
-    public void encode(PacketBuffer buf) {
-        buf.writeCompoundTag(tag);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {

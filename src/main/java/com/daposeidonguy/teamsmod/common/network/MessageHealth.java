@@ -1,31 +1,21 @@
 package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class MessageHealth {
+public class MessageHealth extends AbstractMessage {
 
-    private CompoundNBT tag = new CompoundNBT();
-
-    public MessageHealth() {
+    protected MessageHealth(PacketBuffer buf) {
+        super(buf);
     }
 
     public MessageHealth(UUID id, int health) {
         tag.putString("id", id.toString());
         tag.putInt("health", health);
-    }
-
-    public MessageHealth(PacketBuffer buf) {
-        tag = buf.readCompoundTag();
-    }
-
-    public void encode(PacketBuffer buf) {
-        buf.writeCompoundTag(tag);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {

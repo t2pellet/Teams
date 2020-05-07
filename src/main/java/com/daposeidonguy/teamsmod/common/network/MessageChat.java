@@ -2,30 +2,20 @@ package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageChat {
+public class MessageChat extends AbstractMessage {
 
-    private CompoundNBT tag = new CompoundNBT();
-
-    public MessageChat() {
+    protected MessageChat(PacketBuffer buf) {
+        super(buf);
     }
 
     public MessageChat(String username, String message) {
         tag.putString("username", username);
         tag.putString("message", message);
-    }
-
-    public MessageChat(PacketBuffer buf) {
-        tag = buf.readCompoundTag();
-    }
-
-    public void encode(PacketBuffer buf) {
-        buf.writeCompoundTag(tag);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {

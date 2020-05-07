@@ -9,15 +9,13 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageDeath {
+public class MessageDeath extends AbstractMessage {
+
+    protected MessageDeath(PacketBuffer buf) {
+        super(buf);
+    }
 
     public MessageDeath() {
-    }
-
-    public MessageDeath(PacketBuffer buf) {
-    }
-
-    public void encode(PacketBuffer buf) {
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {

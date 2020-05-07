@@ -10,33 +10,22 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageInvite {
+public class MessageInvite extends AbstractMessage {
 
-    private String teamName;
-
-    public MessageInvite() {
+    protected MessageInvite(PacketBuffer buf) {
+        super(buf);
     }
 
     public MessageInvite(String teamName) {
-        this.teamName = teamName;
-    }
-
-    public MessageInvite(PacketBuffer buf) {
-        teamName = buf.readString();
-    }
-
-    public void encode(PacketBuffer buf) {
-        buf.writeString(teamName);
+        tag.putString("teamName", teamName);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            displayToast();
-        }));
+        ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> displayToast()));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void displayToast() {
-        Minecraft.getInstance().getToastGui().add(new ToastInvite(teamName));
+    private void displayToast() {
+        Minecraft.getInstance().getToastGui().add(new ToastInvite(tag.getString("teamName")));
     }
 }
