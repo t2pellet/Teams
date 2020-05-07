@@ -6,7 +6,9 @@ import com.daposeidonguy.teamsmod.common.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTypes;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -47,6 +49,7 @@ public class TeamsMod {
 
     @SubscribeEvent
     public void serverStart(FMLServerStartingEvent event) {
+        SaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
         CommandTeam.register(event.getCommandDispatcher());
     }
 
