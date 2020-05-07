@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod;
 
 import com.daposeidonguy.teamsmod.client.KeyBindings;
+import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
 import com.daposeidonguy.teamsmod.common.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
@@ -45,6 +46,7 @@ public class TeamsMod {
     private void clientSetup(FMLClientSetupEvent event) {
         KeyBindings.register();
         ScreenManager.registerFactory(ContainerTypes.containerTypeTransfer, ScreenTransfer::new);
+        GuiHandler.persistentChatGUI.setAccessible(true);
     }
 
     @SubscribeEvent

@@ -11,7 +11,7 @@ public abstract class AbstractMessage {
     CompoundNBT tag = new CompoundNBT();
 
     /* Decodes PacketBuffer buf into CompoundNBT tag */
-    public AbstractMessage(PacketBuffer buf) {
+    protected AbstractMessage(PacketBuffer buf) {
         tag = buf.readCompoundTag();
     }
 

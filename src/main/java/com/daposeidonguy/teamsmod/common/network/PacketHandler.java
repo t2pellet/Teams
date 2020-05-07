@@ -17,12 +17,13 @@ public class PacketHandler {
     public static void register() {
         int id = 0;
         INSTANCE.registerMessage(id++, MessageDeath.class, MessageDeath::encode, MessageDeath::new, MessageDeath::onMessage);
-        INSTANCE.registerMessage(id++, MessageGui.class, MessageGui::encode, MessageGui::new, MessageGui::onMessage);
+        INSTANCE.registerMessage(id++, MessageGuiTransfer.class, MessageGuiTransfer::encode, MessageGuiTransfer::new, MessageGuiTransfer::onMessage);
         INSTANCE.registerMessage(id++, MessageHealth.class, MessageHealth::encode, MessageHealth::new, MessageHealth::onMessage);
         INSTANCE.registerMessage(id++, MessageHunger.class, MessageHunger::encode, MessageHunger::new, MessageHunger::onMessage);
         INSTANCE.registerMessage(id++, MessageSaveData.class, MessageSaveData::encode, MessageSaveData::new, MessageSaveData::onMessage);
         INSTANCE.registerMessage(id++, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
-        INSTANCE.registerMessage(id, MessageChat.class, MessageChat::encode, MessageChat::new, MessageChat::onMessage);
+        INSTANCE.registerMessage(id++, MessageNewChat.class, MessageNewChat::encode, MessageNewChat::new, MessageNewChat::onMessage);
+        INSTANCE.registerMessage(id++, MessageTeamChat.class, MessageTeamChat::encode, MessageTeamChat::new, MessageTeamChat::onMessage);
     }
 
 }

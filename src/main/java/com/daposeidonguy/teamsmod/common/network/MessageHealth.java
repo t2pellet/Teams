@@ -7,6 +7,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/* Sent/received to update client health maps */
 public class MessageHealth extends AbstractMessage {
 
     protected MessageHealth(PacketBuffer buf) {

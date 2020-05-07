@@ -9,6 +9,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/* Sent/received when a player dies */
 public class MessageDeath extends AbstractMessage {
 
     protected MessageDeath(PacketBuffer buf) {
@@ -19,11 +20,9 @@ public class MessageDeath extends AbstractMessage {
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            ctx.get().enqueueWork(() -> {
-                Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 5.0F);
-            });
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 5.0F);
+        }));
         ctx.get().setPacketHandled(true);
     }
 

@@ -1,9 +1,11 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.util.SoundEvents;
@@ -25,8 +27,8 @@ import java.util.UUID;
 public class ClientEventHandler {
 
     //Chat
-    public static Map<String, com.mojang.datafixers.util.Pair<String, Long>> chatMap = new HashMap<>();
-    public static String lastMessageReceived;
+    public static Pair<UUID, String> lastMessageReceived;
+    public static boolean lastMessageTeam = false;
     //Util
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
     public static Map<String, UUID> nametoIdMap = new HashMap<>();
@@ -40,17 +42,10 @@ public class ClientEventHandler {
     }
 
     /* Appends prefix to message (depending on config) and plays sound and emboldens message if pinged */
+    /* Also handles team messages (removes incoming message from teams chat, ensures messages otherwise added to both chats) */
     @SubscribeEvent
-    public static void onChatMessage(ClientChatReceivedEvent event) {
+    public static void onChatReceived(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
-            if (!TeamConfig.disablePing) {
-                String playerName = Minecraft.getInstance().player.getGameProfile().getName();
-                String teamName = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
-                if (doPing(lastMessageReceived, playerName, teamName)) {
-                    event.getMessage().setStyle(new Style().setBold(true));
-                    Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
-                }
-            }
             if (!TeamConfig.disablePrefix && !TeamConfig.prefixServerSide) {
                 String message = event.getMessage().getString();
                 String senderName = message.substring(1, message.indexOf(">"));
@@ -61,11 +56,53 @@ public class ClientEventHandler {
                     event.setMessage(newMessage);
                 }
             }
+            String senderTeam = SaveData.teamMap.get(ClientEventHandler.lastMessageReceived.getFirst());
+            String myTeam = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
+            boolean doPing = doPing(lastMessageReceived.getSecond(), Minecraft.getInstance().player.getGameProfile().getName(), myTeam);
+            if (doPing) {
+                event.getMessage().setStyle(new Style().setBold(true));
+            }
+            handleTeamChat(event, senderTeam, myTeam);
+            if (doPing && (!lastMessageTeam || (lastMessageTeam && myTeam != null && senderTeam.equals(myTeam)))) {
+                Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
+            }
+        } else if (GuiHandler.displayTeamChat) {
+            GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
+        }
+    }
+
+    /* Handles cancellation and forwarding of incoming chat messages to the appropriate chat GUI (team or global) */
+    private static void handleTeamChat(ClientChatReceivedEvent event, String senderTeam, String myTeam) {
+        if (GuiHandler.displayTeamChat) {
+            if (lastMessageTeam) {
+                if (!senderTeam.equals(myTeam)) {
+                    event.setCanceled(true);
+                }
+            } else {
+                GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
+                if (senderTeam == null || !senderTeam.equals(myTeam)) {
+                    event.setCanceled(true);
+                }
+            }
+        } else {
+            if (lastMessageTeam) {
+                event.setCanceled(true);
+                if (senderTeam != null && myTeam != null && senderTeam.equals(myTeam)) {
+                    GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
+                }
+            } else {
+                if (senderTeam != null && myTeam != null && senderTeam.equals(myTeam)) {
+                    GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
+                }
+            }
         }
     }
 
     /* Returns true if player should be "pinged", and false otherwise */
     private static boolean doPing(String msg, String player, String team) {
+        if (TeamConfig.disablePing) {
+            return false;
+        }
         boolean mentionsPlayer = msg.contains(" " + player) || msg.contains(player + " ") || msg.equals(player);
         if (team == null) {
             return mentionsPlayer;

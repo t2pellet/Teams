@@ -5,7 +5,7 @@ import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTransfer;
-import com.daposeidonguy.teamsmod.common.network.MessageGui;
+import com.daposeidonguy.teamsmod.common.network.MessageGuiTransfer;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.widget.button.Button;
@@ -42,7 +42,7 @@ public class ScreenTransferPlayers extends ScreenPages {
                         if (!TeamConfig.disableInventoryTransfer) {
                             minecraft.displayGuiScreen(new ScreenTransfer(new ContainerTransfer(0, minecraft.player.inventory, otherP), minecraft.player.inventory, new StringTextComponent("transfer")));
                             if (EffectiveSide.get().isClient()) {
-                                PacketHandler.INSTANCE.sendToServer(new MessageGui(minecraft.player.getUniqueID(), otherP));
+                                PacketHandler.INSTANCE.sendToServer(new MessageGuiTransfer(minecraft.player.getUniqueID(), otherP));
                             }
                         } else {
                             minecraft.player.sendMessage(new StringTextComponent("That feature is disabled"));

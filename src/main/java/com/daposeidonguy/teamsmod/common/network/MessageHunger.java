@@ -7,6 +7,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/* Sent/received to update client hunger maps */
 public class MessageHunger extends AbstractMessage {
 
     protected MessageHunger(PacketBuffer buf) {

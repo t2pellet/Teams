@@ -19,6 +19,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.*;
 import java.util.function.Supplier;
 
+/* Sent received to update team save data and configuration data */
 public class MessageSaveData extends AbstractMessage {
 
     protected MessageSaveData(PacketBuffer buf) {

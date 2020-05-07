@@ -53,7 +53,7 @@ public class ScreenTeamManager {
                 String playerName = ClientUtils.getOnlineUsernameFromUUID(uid);
                 if (playerName != clientName && !SaveData.teamMap.containsKey(uid)) {
                     int width = minecraft.fontRenderer.getStringWidth(playerName);
-                    addButton(new ClearButton(guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, 0, 0, 0, playerName, btn -> this.text.setText(btn.getMessage())));
+                    addButton(new ClearButton(guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, playerName, btn -> this.text.setText(btn.getMessage())));
                     yoffset += 15;
                 }
             }

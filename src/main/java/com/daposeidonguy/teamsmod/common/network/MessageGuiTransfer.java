@@ -12,13 +12,14 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class MessageGui extends AbstractMessage {
+/* Sent/received when a player opens Item Transfer GUI */
+public class MessageGuiTransfer extends AbstractMessage {
 
-    protected MessageGui(PacketBuffer buf) {
+    protected MessageGuiTransfer(PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageGui(UUID id, String name) {
+    public MessageGuiTransfer(UUID id, String name) {
         tag.putString("id", id.toString());
         tag.putString("name", name);
     }

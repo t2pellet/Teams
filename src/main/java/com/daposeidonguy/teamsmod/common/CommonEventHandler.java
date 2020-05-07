@@ -75,6 +75,7 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void playerLogIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (EffectiveSide.get().isServer()) {
+            event.getPlayer().getPersistentData().putBoolean("teamChat", false);
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageSaveData(SaveData.teamsMap));
             if (!TeamConfig.disableAchievementSync) {
@@ -99,7 +100,8 @@ public class CommonEventHandler {
     /* Sends Chat packet to all players and sets prefix (if set in config) when ServerChatEvent fires */
     @SubscribeEvent
     public static void onPlayerChat(ServerChatEvent event) {
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageChat(event.getPlayer().getGameProfile().getName(), event.getMessage()));
+        boolean teamChat = event.getPlayer().getPersistentData().getBoolean("teamChat");
+        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageNewChat(event.getPlayer().getGameProfile().getName(), event.getMessage(), teamChat));
         if (TeamConfig.prefixServerSide && !TeamConfig.disablePrefixServer) {
             String teamName = SaveData.teamMap.get(event.getPlayer().getUniqueID());
             if (teamName != null) {

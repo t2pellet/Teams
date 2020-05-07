@@ -10,6 +10,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/* Sent to player invited to a team */
 public class MessageInvite extends AbstractMessage {
 
     protected MessageInvite(PacketBuffer buf) {
@@ -22,6 +23,7 @@ public class MessageInvite extends AbstractMessage {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> displayToast()));
+        ctx.get().setPacketHandled(true);
     }
 
     @OnlyIn(Dist.CLIENT)
