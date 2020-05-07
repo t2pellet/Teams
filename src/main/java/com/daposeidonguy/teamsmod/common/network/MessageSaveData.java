@@ -2,6 +2,7 @@ package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.client.ClientEventHandler;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
@@ -43,12 +44,16 @@ public class MessageSaveData extends AbstractMessage {
             tagList.add(tagCompound);
         }
         tag.put("Teams", tagList);
+        tag.putBoolean("prefixServerSide", TeamConfig.prefixServerSide);
+        tag.putBoolean("disablePrefixServer", TeamConfig.disablePrefixServer);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             SaveData.teamsMap.clear();
             SaveData.teamMap.clear();
+            TeamConfig.prefixServerSide = tag.getBoolean("prefixServerSide");
+            TeamConfig.disablePrefixServer = tag.getBoolean("disablePrefixServer");
             updateTeams(tag.getList("Teams", Constants.NBT.TAG_COMPOUND).iterator());
             updatePriorityPlayers(SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID()));
         }));

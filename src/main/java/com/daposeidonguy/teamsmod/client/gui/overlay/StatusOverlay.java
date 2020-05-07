@@ -27,18 +27,18 @@ public class StatusOverlay extends AbstractGui {
         while (priorityIterator.hasNext() && count < 4) {
             UUID playerUUID = priorityIterator.next();
             if (!playerUUID.equals(mc.player.getUniqueID())) {
-                renderHUDElement(priorityIterator.next());
+                renderHUDElement(playerUUID);
+                count++;
+                offsetY += 46;
             }
-            count++;
-            offsetY += 46;
         }
         while (teamIterator.hasNext() && count < 4) {
             UUID playerUUID = teamIterator.next();
-            if (!playerUUID.equals(mc.player.getUniqueID())) {
-                renderHUDElement(teamIterator.next());
+            if (!playerUUID.equals(mc.player.getUniqueID()) && !GuiHandler.priorityPlayers.contains(playerUUID)) {
+                renderHUDElement(playerUUID);
+                count++;
+                offsetY += 46;
             }
-            count++;
-            offsetY += 46;
         }
     }
 
