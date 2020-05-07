@@ -55,7 +55,7 @@ public class StatusOverlay extends AbstractGui {
         if (info != null) {
             String playerName = info.getGameProfile().getName();
             ResourceLocation skinLoc = info.getLocationSkin();
-            int health = GuiHandler.healthMap.containsKey(playerUUID) ? Math.max(GuiHandler.healthMap.get(playerUUID) + 1, 20) : 20;
+            int health = GuiHandler.healthMap.containsKey(playerUUID) ? Math.min(GuiHandler.healthMap.get(playerUUID) + 1, 20) : 20;
             int hunger = GuiHandler.hungerMap.containsKey(playerUUID) ? GuiHandler.hungerMap.get(playerUUID) : 20;
 
             mc.getTextureManager().bindTexture(new ResourceLocation(TeamsMod.MODID, "textures/gui/icon.png"));

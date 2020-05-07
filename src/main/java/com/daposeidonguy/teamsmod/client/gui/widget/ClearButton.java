@@ -8,7 +8,7 @@ import java.awt.*;
 /* Button with no background */
 public class ClearButton extends Button {
 
-    public ClearButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, String message, IPressable onPressIn) {
+    public ClearButton(int xIn, int yIn, int widthIn, int heightIn, String message, IPressable onPressIn) {
         super(xIn, yIn, widthIn, heightIn, message, onPressIn);
     }
 
