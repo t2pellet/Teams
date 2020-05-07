@@ -27,8 +27,11 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEventHandler {
 
+    // Events related to handling the health and hunger maps
+
     public static int ticks = 0;
 
+    /* Updates tick counter and sends Hunger and Health packet every 250 ticks */
     @SubscribeEvent
     public static void tickEvent(TickEvent.ServerTickEvent event) {
         ticks += 1;
@@ -43,6 +46,57 @@ public class CommonEventHandler {
         }
     }
 
+    /* Sends Hunger and Health packet when a player is hurt */
+    @SubscribeEvent
+    public static void onPlayerDamage(LivingHurtEvent event) {
+        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
+            String teamName = SaveData.teamMap.get(event.getEntity().getUniqueID());
+            if (teamName != null) {
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), Math.round(event.getEntityLiving().getHealth() - event.getAmount())));
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
+            }
+        }
+    }
+
+    /* Sends Hunger and Health Packet when a player heals */
+    @SubscribeEvent
+    public static void onPlayerHeal(LivingHealEvent event) {
+        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
+            if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), (int) ((PlayerEntity) event.getEntity()).getHealth()));
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
+            }
+        }
+    }
+
+    // Events relating to updating team save data
+
+    /* Sends SaveData packet to all players and syncs players on the team of the logged in player on player login */
+    @SubscribeEvent
+    public static void playerLogIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (EffectiveSide.get().isServer()) {
+            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageSaveData(SaveData.teamsMap));
+            if (!TeamConfig.disableAchievementSync) {
+                if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
+                    String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
+                    SaveData.syncPlayers(team, (ServerPlayerEntity) event.getEntity());
+                }
+            }
+        }
+    }
+
+    /* Sends SaveData packet to all players on player logout */
+    @SubscribeEvent
+    public static void playerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (EffectiveSide.get().isServer()) {
+            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
+        }
+    }
+
+    // Miscellaneous events
+
+    /* Sends Chat packet to all players and sets prefix (if set in config) when ServerChatEvent fires */
     @SubscribeEvent
     public static void onPlayerChat(ServerChatEvent event) {
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageChat(event.getPlayer().getGameProfile().getName(), event.getMessage()));
@@ -55,21 +109,10 @@ public class CommonEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onPlayerDamage(LivingHurtEvent event) {
-        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
-            String teamName = SaveData.teamMap.get(event.getEntity().getUniqueID());
-            if (teamName != null) {
-                int health = (int) (event.getEntityLiving().getHealth() - event.getAmount());
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), health));
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
-            }
-        }
-    }
-
+    /* Sends MessageDeath packet to all players on the dead players team when LivingDeathEvent fires */
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof PlayerEntity && !event.getEntity().getEntityWorld().isRemote) {
+        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
             if (team != null) {
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
@@ -86,16 +129,7 @@ public class CommonEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onPlayerHeal(LivingHealEvent event) {
-        if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
-            if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), (int) ((PlayerEntity) event.getEntity()).getHealth()));
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
-            }
-        }
-    }
-
+    /* Cancels damage and knockback when friendly fire occurs (depending on config) */
     @SubscribeEvent
     public static void playerHitPlayer(LivingAttackEvent event) {
         if (!TeamConfig.enableFriendlyFire && event.getSource().getTrueSource() instanceof PlayerEntity && event.getEntityLiving() instanceof PlayerEntity) {
@@ -115,26 +149,7 @@ public class CommonEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void playerLogIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.getPlayer().getEntityWorld().isRemote) {
-            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-            if (!TeamConfig.disableAchievementSync) {
-                if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
-                    String team = SaveData.teamMap.get(event.getEntity().getUniqueID());
-                    SaveData.syncPlayers(team, (ServerPlayerEntity) event.getEntity());
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.getPlayer().getEntityWorld().isRemote) {
-            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-        }
-    }
-
+    /* Syncs advancement among teammates when AdvancementEvent fires */
     @SubscribeEvent
     public static void achievementGet(AdvancementEvent event) {
         if (!TeamConfig.disableAchievementSync) {

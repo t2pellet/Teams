@@ -42,6 +42,7 @@ public class SaveData extends WorldSavedData {
         return data;
     }
 
+    /* Syncs advancements of all players in a team */
     public static void syncPlayers(String team, ServerPlayerEntity player) {
         if (EffectiveSide.get().isServer() && player != null) {
             for (Advancement adv : ServerLifecycleHooks.getCurrentServer().getAdvancementManager().getAllAdvancements()) {
@@ -65,6 +66,7 @@ public class SaveData extends WorldSavedData {
         }
     }
 
+    /* Adds a team */
     public void addTeam(String name, PlayerEntity player) {
         List<UUID> tempList = new ArrayList<>();
         tempList.add(player.getUniqueID());
@@ -73,6 +75,7 @@ public class SaveData extends WorldSavedData {
         markDirty();
     }
 
+    /* Adds a player to a team */
     public void addPlayer(PlayerEntity p, UUID uid) {
         String name = teamMap.get(p.getUniqueID());
         teamsMap.get(name).add(uid);
@@ -80,6 +83,7 @@ public class SaveData extends WorldSavedData {
         markDirty();
     }
 
+    /* Removes a player from a team */
     public void removePlayer(PlayerEntity p, UUID uid) {
         String name = teamMap.get(p.getUniqueID());
         teamsMap.get(name).remove(uid);
@@ -87,6 +91,7 @@ public class SaveData extends WorldSavedData {
         markDirty();
     }
 
+    /* Removes a team*/
     public void removeTeam(String name) {
         Iterator<UUID> uuidIterator = teamsMap.get(name).iterator();
         while (uuidIterator.hasNext()) {

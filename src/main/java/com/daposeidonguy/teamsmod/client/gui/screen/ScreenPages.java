@@ -18,13 +18,12 @@ public class ScreenPages extends ScreenBase {
     protected ScreenPages(ITextComponent titleIn, ScreenBase parent) {
         super(titleIn, parent);
         page = 0;
-        yOffset = 25;
     }
 
     @Override
     protected void init() {
         super.init();
-
+        yOffset = 25;
         prevPage = new ImageButton(guiLeft + 10, guiTop + 72, 13, 20, 34, 6, 32, BUTTONS, press -> {
             if (press.visible) {
                 for (Widget button : this.buttons) {

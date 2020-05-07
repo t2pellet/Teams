@@ -18,14 +18,12 @@ public class ScreenTeamList extends ScreenPages {
     @Override
     public void init() {
         super.init();
-
         Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
         while (teamIterator.hasNext()) {
             String team = teamIterator.next();
-            Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, team, (pressable) -> {
+            addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, team, (pressable) -> {
                 minecraft.displayGuiScreen(new ScreenTeamPlayers(this, team));
-            });
-            addButton(button);
+            }));
             yOffset += 25;
         }
     }

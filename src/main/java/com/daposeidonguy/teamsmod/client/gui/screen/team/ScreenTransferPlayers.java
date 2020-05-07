@@ -38,7 +38,7 @@ public class ScreenTransferPlayers extends ScreenPages {
             if (!uid.equals(minecraft.player.getUniqueID())) {
                 if (minecraft.getConnection().getPlayerInfo(uid) != null) {
                     String otherP = minecraft.getConnection().getPlayerInfo(uid).getGameProfile().getName();
-                    Button button = new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, otherP, (pressable) -> {
+                    addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, otherP, (pressable) -> {
                         if (!TeamConfig.disableInventoryTransfer) {
                             minecraft.displayGuiScreen(new ScreenTransfer(new ContainerTransfer(0, minecraft.player.inventory, otherP), minecraft.player.inventory, new StringTextComponent("transfer")));
                             if (EffectiveSide.get().isClient()) {
@@ -48,8 +48,7 @@ public class ScreenTransferPlayers extends ScreenPages {
                             minecraft.player.sendMessage(new StringTextComponent("That feature is disabled"));
                             minecraft.displayGuiScreen(null);
                         }
-                    });
-                    this.addButton(button);
+                    }));
                     yOffset += 25;
                 }
             }

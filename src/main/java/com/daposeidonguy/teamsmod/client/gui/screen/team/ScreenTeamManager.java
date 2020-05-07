@@ -24,7 +24,7 @@ public class ScreenTeamManager {
 
 
         public GuiTeamEditor(ScreenBase parent, String name) {
-            super(new StringTextComponent("teameditor"), new ScreenTeam());
+            super(new StringTextComponent("teameditor"), parent);
             this.name = name;
         }
 

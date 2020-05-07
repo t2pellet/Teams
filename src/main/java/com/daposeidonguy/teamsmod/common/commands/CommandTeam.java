@@ -32,8 +32,21 @@ import java.util.UUID;
 
 public class CommandTeam {
 
+    /* Provides autocomplete suggestion list of teams */
+    private static final SuggestionProvider<CommandSource> TEAM_SUGGESTIONS = SuggestionProviders.register(new ResourceLocation("teams"), (ctx, builder) -> {
+        Set<String> teamSet = SaveData.teamsMap.keySet();
+        if (teamSet.isEmpty()) {
+            return Suggestions.empty();
+        }
+        for (String team : teamSet) {
+            builder.suggest(team);
+        }
+        return builder.buildFuture();
+    });
+
     private static String[] aliases = {"teamsmod", "teams", "t"};
 
+    /* Constructs and registers the team commands */
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         for (String alias : aliases) {
@@ -44,7 +57,7 @@ public class CommandTeam {
                     .then(Commands.literal("list")
                             .executes(ctx -> teamList(server, ctx.getSource())))
                     .then(Commands.literal("info")
-                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
+                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TEAM_SUGGESTIONS)
                                     .executes(ctx -> teamInfo(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
                     .then(Commands.literal("player")
                             .then(Commands.argument("playerName", EntityArgument.player())
@@ -60,7 +73,7 @@ public class CommandTeam {
                     .then(Commands.literal("leave")
                             .executes(ctx -> teamLeave(server, ctx.getSource())))
                     .then(Commands.literal("remove")
-                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TeamCompletionProvider.TEAMS)
+                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(TEAM_SUGGESTIONS)
                                     .executes(ctx -> teamRemove(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
                     .executes(ctx -> {
                         ctx.getSource().sendFeedback(new StringTextComponent("Teams Commands: " +
@@ -73,71 +86,72 @@ public class CommandTeam {
                                 "\n/team kick <name> : kicks player with name <name> from your team" +
                                 "\n/team leave : leaves your team" +
                                 "\n/team remove <name> : ADMIN ONLY - deletes the team with name <name>"), false);
-                        return 0;
+                        return Command.SINGLE_SUCCESS;
                     }));
         }
     }
 
-    private static int teamCreate(MinecraftServer server, CommandSource sender, String name) throws CommandSyntaxException {
+    /* Creates a team with name teamName and adds the command sender to the team */
+    private static int teamCreate(MinecraftServer server, CommandSource sender, String teamName) throws CommandSyntaxException {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         PlayerEntity player = sender.asPlayer();
-        if (SaveData.teamsMap.containsKey(name)) {
+        if (SaveData.teamsMap.containsKey(teamName)) {
             throw new CommandException(new StringTextComponent("Team name already exists"));
-        } else if (name.contains(">") || name.contains("<")) {
+        } else if (teamName.contains(">") || teamName.contains("<")) {
             throw new CommandException(new StringTextComponent("Team name cannot contain '<' or '>'"));
         } else if (SaveData.teamMap.containsKey(player.getUniqueID())) {
             throw new CommandException(new StringTextComponent("You're already in a team! Leave it first"));
         }
-        sender.sendFeedback(new StringTextComponent("Created team: " + name), false);
-        data.addTeam(name, player);
+        sender.sendFeedback(new StringTextComponent("Created team: " + teamName), false);
+        data.addTeam(teamName, player);
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         return Command.SINGLE_SUCCESS;
     }
 
+    /* Sends the list of teams in the server to the command sender */
     private static int teamList(MinecraftServer server, CommandSource sender) {
-        int len = 1;
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         sender.sendFeedback(new StringTextComponent("List of teams:"), false);
         Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
         while (teamIterator.hasNext()) {
-            len++;
             sender.sendFeedback(new StringTextComponent(teamIterator.next()), false);
         }
-        return len;
+        return Command.SINGLE_SUCCESS;
     }
 
+    /* Sends information about the team "teamName" to the command sender */
     private static int teamInfo(MinecraftServer server, CommandSource sender, String teamName) throws CommandException {
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
-        int len = 1;
         if (!SaveData.teamsMap.containsKey(teamName)) {
             throw new CommandException(new StringTextComponent("Enter valid team"));
         }
         sender.sendFeedback(new StringTextComponent("Players in Team: "), false);
         Iterator<UUID> uuidIterator = SaveData.teamsMap.get(teamName).iterator();
         while (uuidIterator.hasNext()) {
-            len++;
             UUID id = uuidIterator.next();
             GameProfile profile = server.getPlayerProfileCache().getProfileByUUID(id);
             if (profile != null) {
                 sender.sendFeedback(new StringTextComponent(profile.getName()), false);
             }
         }
-        return len;
+        return Command.SINGLE_SUCCESS;
     }
 
+    /* Sends the team of the player "playerName" to the command sender */
     private static int teamPlayer(MinecraftServer server, CommandSource sender, String playerName) {
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (SaveData.teamMap.containsKey(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
             String playerTeam = SaveData.teamMap.get(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
             sender.sendFeedback(new StringTextComponent(playerName + " is in the following team:"), false);
             sender.sendFeedback(new StringTextComponent(playerTeam), false);
-            return 2;
+            return Command.SINGLE_SUCCESS;
         } else {
             sender.sendFeedback(new StringTextComponent(playerName + " is not in a team"), false);
-            return 1;
+            return 0;
         }
     }
 
+    /* Sends an invite to the player "playerName" to join the team of the command sender */
     private static int teamInvite(MinecraftServer server, CommandSource sender, String playerName) throws CommandSyntaxException {
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         ServerPlayerEntity newPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(playerName);
@@ -151,23 +165,22 @@ public class CommandTeam {
             oldPlayer.sendMessage(new StringTextComponent("You have invited: " + newPlayer.getGameProfile().getName() + " to your team"));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> newPlayer), new MessageInvite(teamName));
             newPlayer.sendMessage(new StringTextComponent("You have been invited to join the team: " + teamName + ". Type /teamsmod accept to accept"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         } else {
-            throw new CommandException(new StringTextComponent("Failed to Invite : Either the player is invalid or you are not in a team!"));
+            throw new CommandException(new StringTextComponent("Failed to invite " + newPlayer.getGameProfile().getName() + " to your team"));
         }
     }
 
+    /* Accepts most recent team invite */
     private static int teamAccept(MinecraftServer server, CommandSource sender) throws CommandSyntaxException {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         ServerPlayerEntity invitee = sender.asPlayer();
         ServerPlayerEntity inviter = server.getPlayerList().getPlayerByUUID(UUID.fromString(invitee.getPersistentData().getString("invitedby")));
         UUID uid = invitee.getUniqueID();
-        int len = 1;
         if (inviter == null) {
             throw new CommandException(new StringTextComponent("You have not been invited to a team"));
         } else if (SaveData.teamMap.containsKey(uid)) {
             sender.sendFeedback(new StringTextComponent("Removing you from your old team..."), false);
-            len++;
             data.removePlayer(invitee, uid);
         }
         data.addPlayer(inviter, uid);
@@ -184,9 +197,10 @@ public class CommandTeam {
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         sender.sendFeedback(new StringTextComponent("Joined " + inviter.getGameProfile().getName() + "'s team"), false);
         inviter.sendMessage(new StringTextComponent(invitee.getGameProfile().getName() + " has joined your team!"));
-        return len;
+        return Command.SINGLE_SUCCESS;
     }
 
+    /* Kicks player "playerName" from the team of the command sender */
     private static int teamKick(MinecraftServer server, CommandSource sender, String playerName) throws CommandSyntaxException {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         UUID uid = server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
@@ -202,9 +216,10 @@ public class CommandTeam {
             throw new CommandException(new StringTextComponent("Must enter player name on your team"));
         }
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
+    /* Removes the command sender from their team */
     private static int teamLeave(MinecraftServer server, CommandSource sender) throws CommandSyntaxException {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         PlayerEntity p = sender.asPlayer();
@@ -218,9 +233,10 @@ public class CommandTeam {
             data.removeTeam(toLeave);
         }
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
+    /* Removes the team "teamName" from the server */
     private static int teamRemove(MinecraftServer server, CommandSource sender, String teamName) throws CommandSyntaxException {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (TeamConfig.noOpRemoveTeam || server.isSinglePlayer() || sender.asPlayer().hasPermissionLevel(server.getOpPermissionLevel())) {
@@ -230,21 +246,8 @@ public class CommandTeam {
             sender.sendFeedback(new StringTextComponent("The team \"" + teamName + "\" has been removed"), false);
             data.removeTeam(teamName);
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
         throw new CommandException(new StringTextComponent("You do not have permission to use this command"));
-    }
-
-    private static class TeamCompletionProvider {
-        public static final SuggestionProvider<CommandSource> TEAMS = SuggestionProviders.register(new ResourceLocation("teams"), (ctx, builder) -> {
-            Set<String> teamSet = SaveData.teamsMap.keySet();
-            if (teamSet.isEmpty()) {
-                return Suggestions.empty();
-            }
-            for (String team : teamSet) {
-                builder.suggest(team);
-            }
-            return builder.buildFuture();
-        });
     }
 }

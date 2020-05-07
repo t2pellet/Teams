@@ -17,6 +17,7 @@ public class ConfigBaker {
         }
     }
 
+    /* Retrieves values from the client config */
     public static void bakeClient() {
         TeamConfig.smallIcon = ConfigHolder.CLIENT_CONFIG.smallIcon.get();
         TeamConfig.useAlternatePosition = ConfigHolder.CLIENT_CONFIG.useAlternatePosition.get();
@@ -26,6 +27,7 @@ public class ConfigBaker {
         TeamConfig.disableChatBubble = ConfigHolder.CLIENT_CONFIG.disableChatBubble.get();
     }
 
+    /* Retrieves values from the server config */
     public static void bakeServer() {
         TeamConfig.enableFriendlyFire = ConfigHolder.SERVER_CONFIG.enableFriendlyFire.get();
         TeamConfig.disableAchievementSync = ConfigHolder.SERVER_CONFIG.disableAchievementSync.get();

@@ -34,9 +34,10 @@ public class TeamConfig {
             useAlternatePosition = builder.comment("Use alternate position for teams GUI button").define("useAlternatePosition", false);
             disableTeamsHUD = builder.comment("Disable HUD display showing teammate health and hunger").define("disableTeamsHUD", false);
             builder.pop();
+
             builder.push("Chat");
-            disablePing = builder.comment("Disable bold text and ping sound when your storage or playername is typed in chat").define("disablePing", false);
-            disablePrefix = builder.comment("Disable storage names as chat prefixes").define("disablePrefix", false);
+            disablePing = builder.comment("Disable bold text and ping sound when your team or playername is typed in chat").define("disablePing", false);
+            disablePrefix = builder.comment("Disable team names as chat prefixes").define("disablePrefix", false);
             disableChatBubble = builder.comment("Disable chat bubbles above player heads").define("disableChatBubble", false);
             builder.pop();
         }
@@ -57,6 +58,7 @@ public class TeamConfig {
             noOpRemoveTeam = builder.comment("Allow non-operators to delete teams").define("noOpRemoveTeam", false);
             disableInventoryTransfer = builder.comment("Disable the inventory transfer feature").define("disableInventoryTransfer", false);
             builder.pop();
+
             builder.push("Chat");
             prefixServerSide = builder.comment("Makes chat features handled serverside. Used if they don't work otherwise due to crossmod/plugin incompatibility").define("prefixServerSide", false);
             disablePrefix = builder.comment("Disable chat prefixes. Only applies if chatServerside = true").define("disablePrefix", false);

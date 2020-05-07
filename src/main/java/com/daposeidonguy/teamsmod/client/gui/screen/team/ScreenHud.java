@@ -1,10 +1,10 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
+import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -32,25 +32,22 @@ public class ScreenHud extends ScreenPages {
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
             UUID uid = teamIterator.next();
-            if (uid.equals(minecraft.player.getUniqueID())) {
-                if (teamIterator.hasNext()) {
-                    uid = teamIterator.next();
-                } else {
-                    return;
+            if (!uid.equals(minecraft.player.getUniqueID())) {
+                String playerName = ClientUtils.getOnlineUsernameFromUUID(uid);
+                if (playerName != null) {
+                    Button button = new Button(guiLeft + WIDTH / 2 - 62, guiTop + yOffset, 124, 20, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {
+                        boolean isPriority = GuiHandler.priorityPlayers.contains(uid);
+                        if (isPriority) {
+                            GuiHandler.priorityPlayers.remove(uid);
+                        } else {
+                            GuiHandler.priorityPlayers.add(uid);
+                        }
+                        btn.setMessage(playerName + ": " + !isPriority);
+                    });
+                    this.addButton(button);
+                    yOffset += 25;
                 }
             }
-            GameProfile otherP = minecraft.player.connection.getPlayerInfo(uid).getGameProfile();
-            Button button = new Button(guiLeft + WIDTH / 2 - 62, guiTop + yOffset, 124, 20, otherP.getName() + ": " + GuiHandler.priorityPlayers.contains(otherP.getId()), btn -> {
-                boolean isPriority = GuiHandler.priorityPlayers.contains(otherP.getId());
-                if (isPriority) {
-                    GuiHandler.priorityPlayers.remove(otherP.getId());
-                } else {
-                    GuiHandler.priorityPlayers.add(otherP.getId());
-                }
-                btn.setMessage(otherP.getName() + ": " + !isPriority);
-            });
-            this.addButton(button);
-            yOffset += 25;
         }
     }
 

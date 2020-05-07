@@ -39,12 +39,7 @@ public class ClientEventHandler {
         ticks += 1;
     }
 
-    private static boolean doPing(String msg, String player, String team) {
-        if (msg.contains(player + " ") || msg.equals(player)) {
-            return true;
-        } else return team != null && (msg.contains(team + " ") || msg.equals(team));
-    }
-
+    /* Appends prefix to message (depending on config) and plays sound and emboldens message if pinged */
     @SubscribeEvent
     public static void onChatMessage(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
@@ -69,11 +64,23 @@ public class ClientEventHandler {
         }
     }
 
+    /* Returns true if player should be "pinged", and false otherwise */
+    private static boolean doPing(String msg, String player, String team) {
+        boolean mentionsPlayer = msg.contains(" " + player) || msg.contains(player + " ") || msg.equals(player);
+        if (team == null) {
+            return mentionsPlayer;
+        } else {
+            boolean mentionsTeam = msg.contains(" " + team) || msg.contains(team + " ") || msg.equals(team);
+            return mentionsPlayer || mentionsTeam;
+        }
+    }
+
+    /* Handles keybinded dynamic toggling of certain features */
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (KeyBindings.hud.isPressed()) {
+        if (KeyBindings.showHud.isPressed()) {
             displayHud = !displayHud;
-        } else if (KeyBindings.accept.isPressed()) {
+        } else if (KeyBindings.acceptInvite.isPressed()) {
             ToastInvite toast = Minecraft.getInstance().getToastGui().getToast(ToastInvite.class, IToast.NO_TOKEN);
             if (toast != null) {
                 toast.accepted = true;

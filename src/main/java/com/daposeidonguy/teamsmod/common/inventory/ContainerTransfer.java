@@ -13,7 +13,7 @@ public class ContainerTransfer extends Container {
     private Inventory inventory;
     private String name;
 
-    public ContainerTransfer(int windowID, PlayerInventory playerInv, PacketBuffer extraData) {
+    ContainerTransfer(int windowID, PlayerInventory playerInv, PacketBuffer extraData) {
         this(windowID, playerInv, extraData.readString());
     }
 
@@ -29,7 +29,6 @@ public class ContainerTransfer extends Container {
                 addSlot(new Slot(playerInv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-
         for (int k = 0; k < 9; k++) {
             addSlot(new Slot(playerInv, k, 8 + k * 18, 142));
         }
@@ -57,13 +56,11 @@ public class ContainerTransfer extends Container {
             } else if (!this.mergeItemStack(itemstack1, 0, containerSlots, false)) {
                 return ItemStack.EMPTY;
             }
-
             if (itemstack1.getCount() == 0) {
                 slot.putStack(ItemStack.EMPTY);
             } else {
                 slot.onSlotChanged();
             }
-
             if (itemstack1.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }

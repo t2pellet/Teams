@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ClientUtils {
 
-    // returns null if player is offline
+    /* Returns username of player given UUID if online, null otherwise */
     public static String getOnlineUsernameFromUUID(UUID uuid) {
         String playerName = ClientEventHandler.idtoNameMap.get(uuid);
         if (playerName == null) {
@@ -27,6 +27,7 @@ public class ClientUtils {
         return playerName;
     }
 
+    /* Returns username of player given UUID */
     public static String getUsernameFromUUID(UUID uuid) {
         String playerName = getOnlineUsernameFromUUID(uuid);
         if (playerName == null) {

@@ -5,6 +5,7 @@ import net.minecraft.client.gui.widget.button.Button;
 
 import java.awt.*;
 
+/* Button with no background */
 public class ClearButton extends Button {
 
     public ClearButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, String message, IPressable onPressIn) {
