@@ -76,7 +76,9 @@ public class MessageSaveData extends AbstractMessage {
                 SaveData.teamMap.put(id, teamName);
                 uuidList.add(id);
             }
-            SaveData.teamsMap.put(teamName, uuidList);
+            if (!uuidList.isEmpty() && teamName != null && teamName != "") {
+                SaveData.teamsMap.put(teamName, uuidList);
+            }
         }
     }
 

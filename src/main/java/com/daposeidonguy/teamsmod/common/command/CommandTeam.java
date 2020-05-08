@@ -77,15 +77,15 @@ public class CommandTeam {
                                     .executes(ctx -> teamRemove(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
                     .executes(ctx -> {
                         ctx.getSource().sendFeedback(new StringTextComponent("Teams Commands: " +
-                                "\n/command create <name> : creates command with the name <name>" +
-                                "\n/command list : lists all created teams" +
-                                "\n/command info <name> : lists all players in the command with name <name>" +
-                                "\n/command player <name> : prints the command of the player with name <name>" +
-                                "\n/command invite <name> : invites player with name <name> to your command" +
-                                "\n/command accept : accepts invitation to command" +
-                                "\n/command kick <name> : kicks player with name <name> from your command" +
-                                "\n/command leave : leaves your command" +
-                                "\n/command remove <name> : ADMIN ONLY - deletes the command with name <name>"), false);
+                                "\n/teamsmod create <name> : creates command with the name <name>" +
+                                "\n/teamsmod list : lists all created team" +
+                                "\n/teamsmod info <name> : lists all players in the team with name <name>" +
+                                "\n/teamsmod player <name> : prints the team of the player with name <name>" +
+                                "\n/teamsmod invite <name> : invites player with name <name> to your team" +
+                                "\n/teamsmod accept : accepts invitation to team" +
+                                "\n/teamsmod kick <name> : kicks player with name <name> from your team" +
+                                "\n/teamsmod leave : leaves your team" +
+                                "\n/teamsmod remove <name> : ADMIN ONLY - deletes the team with name <name>"), false);
                         return Command.SINGLE_SUCCESS;
                     }));
         }
@@ -100,9 +100,9 @@ public class CommandTeam {
         } else if (teamName.contains(">") || teamName.contains("<")) {
             throw new CommandException(new StringTextComponent("Team name cannot contain '<' or '>'"));
         } else if (SaveData.teamMap.containsKey(player.getUniqueID())) {
-            throw new CommandException(new StringTextComponent("You're already in a command! Leave it first"));
+            throw new CommandException(new StringTextComponent("You're already in a team! Leave it first"));
         }
-        sender.sendFeedback(new StringTextComponent("Created command: " + teamName), false);
+        sender.sendFeedback(new StringTextComponent("Created team: " + teamName), false);
         data.addTeam(teamName, player);
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         return Command.SINGLE_SUCCESS;
@@ -123,7 +123,7 @@ public class CommandTeam {
     private static int teamInfo(MinecraftServer server, CommandSource sender, String teamName) throws CommandException {
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (!SaveData.teamsMap.containsKey(teamName)) {
-            throw new CommandException(new StringTextComponent("Enter valid command"));
+            throw new CommandException(new StringTextComponent("Enter valid team"));
         }
         sender.sendFeedback(new StringTextComponent("Players in Team: "), false);
         Iterator<UUID> uuidIterator = SaveData.teamsMap.get(teamName).iterator();
@@ -142,11 +142,11 @@ public class CommandTeam {
         SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (SaveData.teamMap.containsKey(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId())) {
             String playerTeam = SaveData.teamMap.get(server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId());
-            sender.sendFeedback(new StringTextComponent(playerName + " is in the following command:"), false);
+            sender.sendFeedback(new StringTextComponent(playerName + " is in the following team:"), false);
             sender.sendFeedback(new StringTextComponent(playerTeam), false);
             return Command.SINGLE_SUCCESS;
         } else {
-            sender.sendFeedback(new StringTextComponent(playerName + " is not in a command"), false);
+            sender.sendFeedback(new StringTextComponent(playerName + " is not in a team"), false);
             return 0;
         }
     }
@@ -159,15 +159,15 @@ public class CommandTeam {
         if (SaveData.teamMap.containsKey(oldPlayer.getUniqueID())) {
             String teamName = SaveData.teamMap.get(oldPlayer.getUniqueID());
             if (SaveData.teamsMap.get(teamName).contains(newPlayer.getUniqueID())) {
-                throw new CommandException(new StringTextComponent("That player is already on your command!"));
+                throw new CommandException(new StringTextComponent("That player is already on your team!"));
             }
             newPlayer.getPersistentData().putString("invitedby", oldPlayer.getCachedUniqueIdString());
-            oldPlayer.sendMessage(new StringTextComponent("You have invited: " + newPlayer.getGameProfile().getName() + " to your command"));
+            oldPlayer.sendMessage(new StringTextComponent("You have invited: " + newPlayer.getGameProfile().getName() + " to your team"));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> newPlayer), new MessageInvite(teamName));
-            newPlayer.sendMessage(new StringTextComponent("You have been invited to join the command: " + teamName + ". Type /teamsmod accept to accept"));
+            newPlayer.sendMessage(new StringTextComponent("You have been invited to join the team: " + teamName + ". Type /teamsmod accept to accept"));
             return Command.SINGLE_SUCCESS;
         } else {
-            throw new CommandException(new StringTextComponent("Failed to invite " + newPlayer.getGameProfile().getName() + " to your command"));
+            throw new CommandException(new StringTextComponent("Failed to invite " + newPlayer.getGameProfile().getName() + " to your team"));
         }
     }
 
@@ -178,9 +178,9 @@ public class CommandTeam {
         ServerPlayerEntity inviter = server.getPlayerList().getPlayerByUUID(UUID.fromString(invitee.getPersistentData().getString("invitedby")));
         UUID uid = invitee.getUniqueID();
         if (inviter == null) {
-            throw new CommandException(new StringTextComponent("You have not been invited to a command"));
+            throw new CommandException(new StringTextComponent("You have not been invited to a team"));
         } else if (SaveData.teamMap.containsKey(uid)) {
-            sender.sendFeedback(new StringTextComponent("Removing you from your old command..."), false);
+            sender.sendFeedback(new StringTextComponent("Removing you from your old team..."), false);
             data.removePlayer(invitee, uid);
         }
         data.addPlayer(inviter, uid);
@@ -195,8 +195,8 @@ public class CommandTeam {
             }
         }
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
-        sender.sendFeedback(new StringTextComponent("Joined " + inviter.getGameProfile().getName() + "'s command"), false);
-        inviter.sendMessage(new StringTextComponent(invitee.getGameProfile().getName() + " has joined your command!"));
+        sender.sendFeedback(new StringTextComponent("Joined " + inviter.getGameProfile().getName() + "'s team"), false);
+        inviter.sendMessage(new StringTextComponent(invitee.getGameProfile().getName() + " has joined your team!"));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -205,15 +205,15 @@ public class CommandTeam {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         UUID uid = server.getPlayerProfileCache().getGameProfileForUsername(playerName).getId();
         if (SaveData.teamMap.containsKey(uid)) {
-            sender.sendFeedback(new StringTextComponent("Removing that player from your command!"), false);
+            sender.sendFeedback(new StringTextComponent("Removing that player from your team!"), false);
             String toLeave = SaveData.teamMap.get(uid);
             data.removePlayer(sender.asPlayer(), uid);
-            server.getPlayerList().getPlayerByUUID(uid).sendMessage(new StringTextComponent("You have been kicked from your command"));
+            server.getPlayerList().getPlayerByUUID(uid).sendMessage(new StringTextComponent("You have been kicked from your team"));
             if (SaveData.teamsMap.get(toLeave).isEmpty()) {
                 data.removeTeam(toLeave);
             }
         } else {
-            throw new CommandException(new StringTextComponent("Must enter player name on your command"));
+            throw new CommandException(new StringTextComponent("Must enter player name on your team"));
         }
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
         return Command.SINGLE_SUCCESS;
@@ -224,11 +224,11 @@ public class CommandTeam {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         PlayerEntity p = sender.asPlayer();
         if (!SaveData.teamMap.containsKey(p.getUniqueID())) {
-            throw new CommandException(new StringTextComponent("You're not in a command"));
+            throw new CommandException(new StringTextComponent("You're not in a team"));
         }
         String toLeave = SaveData.teamMap.get(p.getUniqueID());
         data.removePlayer(p, p.getUniqueID());
-        p.sendMessage(new StringTextComponent("You left your command"));
+        p.sendMessage(new StringTextComponent("You left your team"));
         if (SaveData.teamsMap.get(toLeave).isEmpty()) {
             data.removeTeam(toLeave);
         }
@@ -241,9 +241,9 @@ public class CommandTeam {
         SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD));
         if (TeamConfig.noOpRemoveTeam || server.isSinglePlayer() || sender.asPlayer().hasPermissionLevel(server.getOpPermissionLevel())) {
             if (!SaveData.teamsMap.containsKey(teamName)) {
-                throw new CommandException(new StringTextComponent("The command \"" + teamName + "\" doesn't exist"));
+                throw new CommandException(new StringTextComponent("The team \"" + teamName + "\" doesn't exist"));
             }
-            sender.sendFeedback(new StringTextComponent("The command \"" + teamName + "\" has been removed"), false);
+            sender.sendFeedback(new StringTextComponent("The team \"" + teamName + "\" has been removed"), false);
             data.removeTeam(teamName);
             PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(SaveData.teamsMap));
             return Command.SINGLE_SUCCESS;

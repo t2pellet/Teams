@@ -5,7 +5,7 @@ import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.overlay.CompassOverlay;
 import com.daposeidonguy.teamsmod.client.gui.overlay.StatusOverlay;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenTeam;
-import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
+import com.daposeidonguy.teamsmod.client.gui.widget.ChatButton;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
@@ -14,7 +14,6 @@ import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IngameGui;
@@ -42,21 +41,19 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class GuiHandler {
 
-    public static Minecraft mc = Minecraft.getInstance();
     public static Map<UUID, Integer> hungerMap = new HashMap<>();
     public static Map<UUID, Integer> healthMap = new HashMap<>();
     public static Map<String, Pair<String, Long>> chatMap = new HashMap<>();
     public static List<UUID> priorityPlayers = new ArrayList<>();
     public static boolean displayTeamChat = false;
-    public static NewChatGui backupChatGUI = new NewChatGui(mc);
+    public static NewChatGui backupChatGUI = new NewChatGui(ClientUtils.mc);
     public static Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
-
 
     /* Displays chat bubbles */
     @SubscribeEvent
     public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
         String playerName = event.getPlayer().getGameProfile().getName();
-        String localName = mc.player.getGameProfile().getName();
+        String localName = ClientUtils.mc.player.getGameProfile().getName();
         if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName)) {
             String text = GuiHandler.chatMap.get(playerName).getFirst();
             long tick = GuiHandler.chatMap.get(playerName).getSecond();
@@ -79,7 +76,7 @@ public class GuiHandler {
             stack.rotate(renderManager.getCameraOrientation());
             stack.scale(-0.025F, -0.025F, 0.025F);
             Matrix4f matrix4f = stack.getLast().getMatrix();
-            float f1 = mc.gameSettings.getTextBackgroundOpacity(0.25F);
+            float f1 = ClientUtils.mc.gameSettings.getTextBackgroundOpacity(0.25F);
             int j = (int) (f1 * 255.0F) << 24;
             FontRenderer fontrenderer = renderManager.getFontRenderer();
             float f2 = (float) (-fontrenderer.getStringWidth(text) / 2);
@@ -103,7 +100,7 @@ public class GuiHandler {
             int renderHeight = TeamConfig.smallIcon ? 14 : 18;
             ResourceLocation renderLoc = TeamConfig.smallIcon ? new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png") : new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png");
             ImageButton guiButtonImage = new ImageButton(renderX, renderY, renderWidth, renderHeight, 0, 0, renderHeight, renderLoc, press -> {
-                mc.displayGuiScreen(new ScreenTeam());
+                ClientUtils.mc.displayGuiScreen(new ScreenTeam());
             });
             event.addWidget(guiButtonImage);
         }
@@ -113,51 +110,20 @@ public class GuiHandler {
     @SubscribeEvent
     public static void onChatScreen(GuiScreenEvent.InitGuiEvent.Post event) throws IllegalAccessException {
         if (event.getGui() instanceof ChatScreen) {
-            MainWindow window = mc.getMainWindow();
-            int buttonWidth1 = mc.fontRenderer.getStringWidth("Showing Server Chat");
-            int buttonWidth2 = mc.fontRenderer.getStringWidth("Showing Team Chat");
-            String myTeam = SaveData.teamMap.get(mc.player.getUniqueID());
+            MainWindow window = ClientUtils.mc.getMainWindow();
+            String myTeam = SaveData.teamMap.get(ClientUtils.mc.player.getUniqueID());
             if (myTeam != null) {
-                ClearButton button = chatToggleButton(window, buttonWidth1, buttonWidth2);
+                int defaultWidth = ClientUtils.mc.fontRenderer.getStringWidth("Display: Server Chat");
+                ChatButton button = new ChatButton((int) (window.getScaledWidth() * 0.99 - defaultWidth), (int) (window.getScaledHeight() * 0.89), defaultWidth, 10);
                 event.addWidget(button);
             } else if (displayTeamChat) {
                 displayTeamChat = false;
-                NewChatGui oldGui = (NewChatGui) persistentChatGUI.get(mc.ingameGUI);
-                persistentChatGUI.set(mc.ingameGUI, backupChatGUI);
+                NewChatGui oldGui = (NewChatGui) persistentChatGUI.get(ClientUtils.mc.ingameGUI);
+                persistentChatGUI.set(ClientUtils.mc.ingameGUI, backupChatGUI);
                 backupChatGUI = oldGui;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(mc.player.getUniqueID(), displayTeamChat));
+                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientUtils.mc.player.getUniqueID(), displayTeamChat));
             }
         }
-    }
-
-    /* Returns button to switch chat screens */
-    private static ClearButton chatToggleButton(MainWindow window, int buttonWidth1, int buttonWidth2) {
-        ClearButton button = new ClearButton((int) (window.getScaledWidth() * 0.99 - buttonWidth1), (int) (window.getScaledHeight() * 0.90), buttonWidth1, 10, "Showing Server Chat", btn -> {
-            try {
-                NewChatGui oldGui = (NewChatGui) persistentChatGUI.get(mc.ingameGUI);
-                persistentChatGUI.set(mc.ingameGUI, backupChatGUI);
-                backupChatGUI = oldGui;
-                displayTeamChat = !displayTeamChat;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(mc.player.getUniqueID(), displayTeamChat));
-            } catch (IllegalAccessException ex) {
-                ex.printStackTrace();
-            }
-            if (displayTeamChat) {
-                btn.setMessage("Showing Team Chat");
-                btn.setWidth(buttonWidth2);
-                btn.x = (int) (window.getScaledWidth() * 0.99 - buttonWidth2);
-            } else {
-                btn.setMessage("Showing Server Chat");
-                btn.setWidth(buttonWidth1);
-                btn.x = (int) (window.getScaledWidth() * 0.99 - buttonWidth1);
-            }
-        });
-        if (displayTeamChat) {
-            button.setMessage("Showing Team Chat");
-            button.setWidth(buttonWidth2);
-            button.x = (int) (window.getScaledWidth() * 0.99 - buttonWidth2);
-        }
-        return button;
     }
 
     /* Render HUD elements */
@@ -169,11 +135,11 @@ public class GuiHandler {
                 KeyBindHandler.doDisplayHud &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            UUID id = mc.player.getUniqueID();
+            UUID id = ClientUtils.mc.player.getUniqueID();
             String team = SaveData.teamMap.get(id);
             if (team != null) {
-                new StatusOverlay(mc, team);
-                new CompassOverlay(mc, team);
+                new StatusOverlay(ClientUtils.mc, team);
+                new CompassOverlay(ClientUtils.mc, team);
             }
         }
     }

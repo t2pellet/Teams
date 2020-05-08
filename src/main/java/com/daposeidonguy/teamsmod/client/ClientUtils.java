@@ -3,6 +3,7 @@ package com.daposeidonguy.teamsmod.client;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.UsernameCache;
@@ -23,6 +24,8 @@ public class ClientUtils {
 
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
     public static Map<String, UUID> nametoIdMap = new HashMap<>();
+    public static Minecraft mc = Minecraft.getInstance();
+    public static MainWindow window = ClientUtils.mc.getMainWindow();
     public static long ticks = 0;
 
     @SubscribeEvent

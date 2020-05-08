@@ -3,7 +3,6 @@ package com.daposeidonguy.teamsmod.common.network.messages;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -27,15 +26,11 @@ public class MessageTeamChat extends AbstractMessage {
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (EffectiveSide.get().isServer()) {
-                Iterable<ServerWorld> worlds = ServerLifecycleHooks.getCurrentServer().getWorlds();
-                for (ServerWorld world : worlds) {
-                    PlayerEntity playerEntity = world.getPlayerByUuid(tag.getUniqueId("uuid"));
+                PlayerEntity playerEntity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(tag.getUniqueId("uuid"));
                     if (playerEntity != null) {
-                        CompoundNBT playerData = world.getPlayerByUuid(tag.getUniqueId("uuid")).getPersistentData();
+                        CompoundNBT playerData = playerEntity.getPersistentData();
                         playerData.putBoolean("teamChat", tag.getBoolean("teamChat"));
-                        break;
                     }
-                }
             }
         });
         ctx.get().setPacketHandled(true);

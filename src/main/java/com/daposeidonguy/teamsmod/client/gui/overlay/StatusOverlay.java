@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public class StatusOverlay extends AbstractGui {
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(teamName).iterator();
         while (priorityIterator.hasNext() && count < 4) {
             UUID playerUUID = priorityIterator.next();
-            if (!playerUUID.equals(mc.player.getUniqueID())) {
+            if (!playerUUID.equals(mc.player.getUniqueID()) && ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerUUID) != null) {
                 renderHUDElement(playerUUID);
                 count++;
                 offsetY += 46;
@@ -34,7 +35,9 @@ public class StatusOverlay extends AbstractGui {
         }
         while (teamIterator.hasNext() && count < 4) {
             UUID playerUUID = teamIterator.next();
-            if (!playerUUID.equals(mc.player.getUniqueID()) && !GuiHandler.priorityPlayers.contains(playerUUID)) {
+            if (!playerUUID.equals(mc.player.getUniqueID()) &&
+                    !GuiHandler.priorityPlayers.contains(playerUUID) &&
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerUUID) != null) {
                 renderHUDElement(playerUUID);
                 count++;
                 offsetY += 46;
