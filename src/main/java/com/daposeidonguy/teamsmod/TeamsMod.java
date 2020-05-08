@@ -42,7 +42,7 @@ public class TeamsMod {
     }
 
     @SubscribeEvent
-    public static void serverStart(FMLServerStartingEvent event) {
+    public void serverStart(FMLServerStartingEvent event) {
         CommandTeam.register(event.getCommandDispatcher());
     }
 
