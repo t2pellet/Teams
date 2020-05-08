@@ -36,7 +36,7 @@ public class SaveDataEvents {
 
     /* Gets savedata when the server starts */
     @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
+    public static void serverStart(FMLServerStartingEvent event) {
         SaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
     }
 
