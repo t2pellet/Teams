@@ -9,9 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class GuiHud extends Gui {
+public class GuiStatus extends Gui {
 
-    public GuiHud(Minecraft mc, int offsety, int health, int hunger, String name, ResourceLocation loc) {
+    public GuiStatus(Minecraft mc, int offsety, int health, int hunger, String name, ResourceLocation loc) {
         ScaledResolution resolution = new ScaledResolution(mc);
         int width = resolution.getScaledWidth();
         int height = resolution.getScaledHeight();

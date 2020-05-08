@@ -1,7 +1,8 @@
 package com.daposeidonguy.teamsmod.client;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.gui.GuiHud;
+import com.daposeidonguy.teamsmod.client.gui.GuiCompass;
+import com.daposeidonguy.teamsmod.client.gui.GuiStatus;
 import com.daposeidonguy.teamsmod.client.gui.team.GuiTeam;
 import com.daposeidonguy.teamsmod.client.gui.team.GuiTeamList;
 import com.daposeidonguy.teamsmod.client.gui.team.GuiTeamManager;
@@ -161,6 +162,7 @@ public class GuiHandler {
             UUID id = mc.player.getUniqueID();
             String team = SaveData.teamMap.get(id);
             if (team != null) {
+                new GuiCompass(mc, team);
                 int offsety = 0;
                 int count = 0;
                 Iterator<UUID> uuidIterator = SaveData.teamsMap.get(team).iterator();
@@ -190,7 +192,7 @@ public class GuiHandler {
                             name = info.getGameProfile().getName();
                         }
                         ResourceLocation skin = info.getLocationSkin();
-                        new GuiHud(mc, offsety, health, hunger, name, skin);
+                        new GuiStatus(mc, offsety, health, hunger, name, skin);
                         offsety += 46;
                         count += 1;
                     }

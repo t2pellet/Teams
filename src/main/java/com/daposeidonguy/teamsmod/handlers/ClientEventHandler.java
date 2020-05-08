@@ -10,7 +10,6 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -33,22 +32,28 @@ public class ClientEventHandler {
         ticks += 1;
     }
 
-    private boolean doPing(String msg, String player, String team) {
-        if (msg.contains(player + " ") || msg.equals(player)) {
-            return true;
-        } else return team != null && (msg.contains(team + " ") || msg.equals(team));
+    /* Returns true if player should be "pinged", and false otherwise */
+    private static boolean doPing(String msg, String player, String team) {
+        if (ConfigHandler.client.disablePing) {
+            return false;
+        }
+        boolean mentionsPlayer = msg.contains(" " + player) || msg.contains(player + " ") || msg.equals(player);
+        if (team == null) {
+            return mentionsPlayer;
+        } else {
+            boolean mentionsTeam = msg.contains(" " + team) || msg.contains(team + " ") || msg.equals(team);
+            return mentionsPlayer || mentionsTeam;
+        }
     }
 
     @SubscribeEvent
     public void onChatMessage(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
-            if (!ConfigHandler.client.disablePing) {
-                String myName = Minecraft.getMinecraft().player.getDisplayNameString();
-                String myTeam = SaveData.teamMap.get(Minecraft.getMinecraft().player.getUniqueID());
-                if (doPing(lastMessage, myName, myTeam)) {
-                    event.getMessage().setStyle(event.getMessage().getStyle().setBold(true));
-                    Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
-                }
+            String myName = Minecraft.getMinecraft().player.getDisplayNameString();
+            String myTeam = SaveData.teamMap.get(Minecraft.getMinecraft().player.getUniqueID());
+            if (doPing(lastMessage, myName, myTeam)) {
+                event.getMessage().setStyle(event.getMessage().getStyle().setBold(true));
+                Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
             if (!ConfigHandler.client.disablePrefix && !ConfigHandler.server.prefixServerSide) {
                 String message = event.getMessage().getUnformattedText();
@@ -61,12 +66,6 @@ public class ClientEventHandler {
                 }
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onLeaveServer(WorldEvent.Unload event) {
-        SaveData.teamsMap.clear();
-        SaveData.teamMap.clear();
     }
 
     @SubscribeEvent

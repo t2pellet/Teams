@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.network;
 
 import com.daposeidonguy.teamsmod.handlers.ClientEventHandler;
+import com.daposeidonguy.teamsmod.handlers.ConfigHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -47,6 +48,8 @@ public class MessageSaveData implements IMessage {
             tagList.appendTag(tagCompound);
         }
         tagTeam.setTag("Teams", tagList);
+        tagTeam.setBoolean("prefixServerSide", ConfigHandler.server.prefixServerSide);
+        tagTeam.setBoolean("disablePrefix", ConfigHandler.server.disablePrefix);
     }
 
     @Override
@@ -87,6 +90,8 @@ public class MessageSaveData implements IMessage {
                     }
                     SaveData.teamsMap.put(name, uuidList);
                 }
+                ConfigHandler.server.prefixServerSide = message.tagTeam.getBoolean("prefixServerSide");
+                ConfigHandler.server.disablePrefix = message.tagTeam.getBoolean("disablePrefix");
             });
             return null;
         }

@@ -121,11 +121,11 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!FMLCommonHandler.instance().getSide().isServer()) {
-            SaveData.get(FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld());
+        if (!event.player.getEntityWorld().isRemote) {
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
+            PacketHandler.INSTANCE.sendTo(new MessageSaveData(SaveData.teamsMap), (EntityPlayerMP) event.player);
         }
-        if (!FMLCommonHandler.instance().getSide().isServer() && !ConfigHandler.server.disableAchievementSync) {
+        if (!event.player.getEntityWorld().isRemote && !ConfigHandler.server.disableAchievementSync) {
             if (SaveData.teamMap.containsKey(event.player.getUniqueID())) {
                 String team = SaveData.teamMap.get(event.player.getUniqueID());
                 SaveData.syncPlayers(team, (EntityPlayerMP) event.player);
@@ -135,7 +135,7 @@ public class CommonEventHandler {
 
     @SubscribeEvent
     public static void playerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.player.getEntityWorld().isRemote) {
+        if (!event.player.getEntityWorld().isRemote && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
             PacketHandler.INSTANCE.sendToAll(new MessageSaveData(SaveData.teamsMap));
         }
     }
