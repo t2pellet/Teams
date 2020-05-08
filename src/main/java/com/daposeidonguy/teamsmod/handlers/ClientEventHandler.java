@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -55,15 +54,8 @@ public class ClientEventHandler {
                 event.getMessage().setStyle(event.getMessage().getStyle().setBold(true));
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
-            if (!ConfigHandler.client.disablePrefix && !ConfigHandler.server.prefixServerSide) {
-                String message = event.getMessage().getUnformattedText();
-                String senderName = message.substring(1, message.indexOf(">"));
-                String teamName = SaveData.teamMap.get(nametoIdMap.get(senderName));
-                if (teamName != null) {
-                    TextComponentString newMessage = new TextComponentString("[" + teamName + "] " + message);
-                    newMessage.setStyle(event.getMessage().getStyle());
-                    event.setMessage(newMessage);
-                }
+            if (ConfigHandler.client.disablePrefix) {
+                event.setMessage(event.getMessage().getSiblings().get(0));
             }
         }
     }

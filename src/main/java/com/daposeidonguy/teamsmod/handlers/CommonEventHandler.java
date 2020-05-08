@@ -46,7 +46,7 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void onChat(ServerChatEvent event) {
         PacketHandler.INSTANCE.sendToAll(new MessageChat(event.getPlayer().getDisplayNameString(), event.getMessage()));
-        if (ConfigHandler.server.prefixServerSide && !ConfigHandler.server.disablePrefix) {
+        if (!ConfigHandler.server.disablePrefix) {
             String teamName = SaveData.teamMap.get(event.getPlayer().getUniqueID());
             if (teamName != null) {
                 TextComponentString prefix = new TextComponentString("[" + teamName + "] ");
