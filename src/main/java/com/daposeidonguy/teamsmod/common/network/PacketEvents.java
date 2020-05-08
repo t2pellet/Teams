@@ -63,7 +63,7 @@ public class PacketEvents {
     public static void onPlayerHeal(LivingHealEvent event) {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             if (SaveData.teamMap.containsKey(event.getEntity().getUniqueID())) {
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), (int) ((PlayerEntity) event.getEntity()).getHealth()));
+                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHealth(event.getEntity().getUniqueID(), Math.round(((PlayerEntity) event.getEntity()).getHealth() + event.getAmount())));
                 PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageHunger(event.getEntity().getUniqueID(), ((PlayerEntity) event.getEntity()).getFoodStats().getFoodLevel()));
             }
         }

@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -27,7 +26,7 @@ public class StatusOverlay extends AbstractGui {
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(teamName).iterator();
         while (priorityIterator.hasNext() && count < 4) {
             UUID playerUUID = priorityIterator.next();
-            if (!playerUUID.equals(mc.player.getUniqueID()) && ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerUUID) != null) {
+            if (!playerUUID.equals(mc.player.getUniqueID()) && mc.world.getPlayerByUuid(playerUUID) != null) {
                 renderHUDElement(playerUUID);
                 count++;
                 offsetY += 46;
@@ -35,9 +34,9 @@ public class StatusOverlay extends AbstractGui {
         }
         while (teamIterator.hasNext() && count < 4) {
             UUID playerUUID = teamIterator.next();
-            if (!playerUUID.equals(mc.player.getUniqueID()) &&
-                    !GuiHandler.priorityPlayers.contains(playerUUID) &&
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerUUID) != null) {
+            if (!playerUUID.equals(mc.player.getUniqueID())
+                    && !GuiHandler.priorityPlayers.contains(playerUUID)
+                    && mc.world.getPlayerByUuid(playerUUID) != null) {
                 renderHUDElement(playerUUID);
                 count++;
                 offsetY += 46;
@@ -58,7 +57,7 @@ public class StatusOverlay extends AbstractGui {
         if (info != null) {
             String playerName = info.getGameProfile().getName();
             ResourceLocation skinLoc = info.getLocationSkin();
-            int health = GuiHandler.healthMap.containsKey(playerUUID) ? Math.min(GuiHandler.healthMap.get(playerUUID) + 1, 20) : 20;
+            int health = GuiHandler.healthMap.containsKey(playerUUID) ? GuiHandler.healthMap.get(playerUUID) + 1 : 20;
             int hunger = GuiHandler.hungerMap.containsKey(playerUUID) ? GuiHandler.hungerMap.get(playerUUID) : 20;
 
             mc.getTextureManager().bindTexture(new ResourceLocation(TeamsMod.MODID, "textures/gui/icon.png"));
