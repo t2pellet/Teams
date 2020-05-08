@@ -33,7 +33,6 @@ public class ConfigBaker {
         TeamConfig.disableAchievementSync = ConfigHolder.SERVER_CONFIG.disableAchievementSync.get();
         TeamConfig.disableInventoryTransfer = ConfigHolder.SERVER_CONFIG.disableInventoryTransfer.get();
         TeamConfig.noOpRemoveTeam = ConfigHolder.SERVER_CONFIG.noOpRemoveTeam.get();
-        TeamConfig.prefixServerSide = ConfigHolder.SERVER_CONFIG.prefixServerSide.get();
         TeamConfig.disablePrefixServer = ConfigHolder.SERVER_CONFIG.disablePrefix.get();
     }
 }

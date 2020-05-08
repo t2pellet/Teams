@@ -17,7 +17,6 @@ public class TeamConfig {
     public static boolean disableAchievementSync;
     public static boolean noOpRemoveTeam;
     public static boolean disableInventoryTransfer;
-    public static boolean prefixServerSide;
     public static boolean disablePrefixServer;
 
     public static class ClientConfig {
@@ -48,7 +47,6 @@ public class TeamConfig {
         final ForgeConfigSpec.BooleanValue disableAchievementSync;
         final ForgeConfigSpec.BooleanValue noOpRemoveTeam;
         final ForgeConfigSpec.BooleanValue disableInventoryTransfer;
-        final ForgeConfigSpec.BooleanValue prefixServerSide;
         final ForgeConfigSpec.BooleanValue disablePrefix;
 
         ServerConfig(final ForgeConfigSpec.Builder builder) {
@@ -60,7 +58,6 @@ public class TeamConfig {
             builder.pop();
 
             builder.push("Chat");
-            prefixServerSide = builder.comment("Makes chat features handled serverside. Used if they don't work otherwise due to crossmod/plugin incompatibility").define("prefixServerSide", false);
             disablePrefix = builder.comment("Disable chat prefixes. Only applies if chatServerside = true").define("disablePrefix", false);
             builder.pop();
         }

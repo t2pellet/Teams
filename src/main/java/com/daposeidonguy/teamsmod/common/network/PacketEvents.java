@@ -74,7 +74,7 @@ public class PacketEvents {
     public static void onPlayerChat(ServerChatEvent event) {
         boolean teamChat = event.getPlayer().getPersistentData().getBoolean("teamChat");
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageNewChat(event.getPlayer().getGameProfile().getName(), event.getMessage(), teamChat));
-        if (TeamConfig.prefixServerSide && !TeamConfig.disablePrefixServer) {
+        if (!TeamConfig.disablePrefixServer) {
             String teamName = SaveData.teamMap.get(event.getPlayer().getUniqueID());
             if (teamName != null) {
                 StringTextComponent prefix = new StringTextComponent("[" + teamName + "] ");

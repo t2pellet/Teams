@@ -1,20 +1,16 @@
 package com.daposeidonguy.teamsmod.client.chat;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.UUID;
 
 /* Handles events related to chat features */
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -25,15 +21,8 @@ public class ChatEvents {
     @SubscribeEvent
     public static void onChatReceived(ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
-            if (!TeamConfig.disablePrefix && !TeamConfig.prefixServerSide) {
-                String message = event.getMessage().getString();
-                String senderName = message.substring(1, message.indexOf(">"));
-                UUID senderUID = ClientUtils.nametoIdMap.get(senderName);
-                if (SaveData.teamMap.containsKey(senderUID)) {
-                    StringTextComponent newMessage = new StringTextComponent("[" + SaveData.teamMap.get(senderUID) + "] " + message);
-                    newMessage.setStyle(event.getMessage().getStyle());
-                    event.setMessage(newMessage);
-                }
+            if (TeamConfig.disablePrefix) {
+                event.setMessage(event.getMessage().getSiblings().get(0));
             }
             String senderTeam = SaveData.teamMap.get(ChatHandler.lastMessageReceived.getFirst());
             String myTeam = SaveData.teamMap.get(Minecraft.getInstance().player.getUniqueID());
