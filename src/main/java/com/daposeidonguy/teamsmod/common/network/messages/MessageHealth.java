@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import net.minecraft.network.PacketBuffer;
@@ -7,16 +7,16 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/* Sent/received to update client hunger maps */
-public class MessageHunger extends AbstractMessage {
+/* Sent/received to update client health maps */
+public class MessageHealth extends AbstractMessage {
 
-    protected MessageHunger(PacketBuffer buf) {
+    public MessageHealth(PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageHunger(UUID id, int health) {
+    public MessageHealth(UUID id, int health) {
         tag.putString("id", id.toString());
-        tag.putInt("hunger", health);
+        tag.putInt("health", health);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
@@ -27,8 +27,9 @@ public class MessageHunger extends AbstractMessage {
             } catch (IllegalArgumentException ex) {
                 return;
             }
-            GuiHandler.hungerMap.put(uid, tag.getInt("hunger"));
+            GuiHandler.healthMap.put(uid, tag.getInt("health"));
         });
         ctx.get().setPacketHandled(true);
     }
+
 }

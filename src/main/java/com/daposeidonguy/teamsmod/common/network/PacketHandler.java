@@ -1,10 +1,14 @@
 package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.common.network.messages.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+/* Registers network messages */
+@Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PacketHandler {
 
     private static final String PROTOCOL_VERSION = "2";

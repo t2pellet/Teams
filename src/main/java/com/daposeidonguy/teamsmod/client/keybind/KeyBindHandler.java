@@ -1,12 +1,13 @@
-package com.daposeidonguy.teamsmod.client;
+package com.daposeidonguy.teamsmod.client.keybind;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import org.lwjgl.glfw.GLFW;
 
-public class KeyBindings {
+public class KeyBindHandler {
 
+    public static boolean doDisplayHud = true;
     public static KeyBinding showHud;
     public static KeyBinding acceptInvite;
 

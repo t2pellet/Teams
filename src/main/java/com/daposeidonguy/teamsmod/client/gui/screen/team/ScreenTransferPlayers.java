@@ -5,8 +5,8 @@ import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTransfer;
-import com.daposeidonguy.teamsmod.common.network.MessageGuiTransfer;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.messages.MessageGuiTransfer;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
@@ -29,7 +29,7 @@ public class ScreenTransferPlayers extends ScreenPages {
         String name = SaveData.teamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("You are not in a team!"));
+            minecraft.player.sendMessage(new StringTextComponent("You are not in a command!"));
             return;
         }
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();

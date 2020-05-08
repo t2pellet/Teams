@@ -1,15 +1,13 @@
 package com.daposeidonguy.teamsmod;
 
-import com.daposeidonguy.teamsmod.client.KeyBindings;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
-import com.daposeidonguy.teamsmod.common.commands.CommandTeam;
+import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
+import com.daposeidonguy.teamsmod.common.command.CommandTeam;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTypes;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
-import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -43,16 +41,16 @@ public class TeamsMod {
         PacketHandler.register();
     }
 
+    @SubscribeEvent
+    public static void serverStart(FMLServerStartingEvent event) {
+        CommandTeam.register(event.getCommandDispatcher());
+    }
+
     private void clientSetup(FMLClientSetupEvent event) {
-        KeyBindings.register();
+        KeyBindHandler.register();
         ScreenManager.registerFactory(ContainerTypes.containerTypeTransfer, ScreenTransfer::new);
         GuiHandler.persistentChatGUI.setAccessible(true);
     }
 
-    @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
-        SaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
-        CommandTeam.register(event.getCommandDispatcher());
-    }
 
 }

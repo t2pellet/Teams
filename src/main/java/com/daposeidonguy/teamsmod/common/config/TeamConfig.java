@@ -36,8 +36,8 @@ public class TeamConfig {
             builder.pop();
 
             builder.push("Chat");
-            disablePing = builder.comment("Disable bold text and ping sound when your team or playername is typed in chat").define("disablePing", false);
-            disablePrefix = builder.comment("Disable team names as chat prefixes").define("disablePrefix", false);
+            disablePing = builder.comment("Disable bold text and ping sound when your command or playername is typed in chat").define("disablePing", false);
+            disablePrefix = builder.comment("Disable command names as chat prefixes").define("disablePrefix", false);
             disableChatBubble = builder.comment("Disable chat bubbles above player heads").define("disableChatBubble", false);
             builder.pop();
         }

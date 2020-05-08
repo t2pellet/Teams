@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -11,10 +11,10 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/* Sent/received when a player cycles between team and server chat */
+/* Sent/received when a player cycles between command and server chat */
 public class MessageTeamChat extends AbstractMessage {
 
-    protected MessageTeamChat(PacketBuffer buf) {
+    public MessageTeamChat(PacketBuffer buf) {
         super(buf);
     }
 
@@ -24,7 +24,7 @@ public class MessageTeamChat extends AbstractMessage {
     }
 
     @Override
-    void onMessage(Supplier<NetworkEvent.Context> ctx) {
+    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (EffectiveSide.get().isServer()) {
                 Iterable<ServerWorld> worlds = ServerLifecycleHooks.getCurrentServer().getWorlds();

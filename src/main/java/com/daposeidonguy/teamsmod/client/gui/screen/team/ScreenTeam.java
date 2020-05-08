@@ -11,7 +11,7 @@ import java.awt.*;
 public class ScreenTeam extends ScreenBase {
 
     public ScreenTeam() {
-        super(new StringTextComponent("team"), null);
+        super(new StringTextComponent("command"), null);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ScreenTeam extends ScreenBase {
             minecraft.displayGuiScreen(new ScreenTransferPlayers(this));
         }));
         this.addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + 100, 120, 20, "Configure HUD", btn -> {
-            minecraft.displayGuiScreen(new ScreenHud(this));
+            minecraft.displayGuiScreen(new ScreenHudConfig(this));
         }));
     }
 

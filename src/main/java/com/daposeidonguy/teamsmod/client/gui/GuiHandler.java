@@ -1,14 +1,15 @@
 package com.daposeidonguy.teamsmod.client.gui;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientEventHandler;
+import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.overlay.CompassOverlay;
 import com.daposeidonguy.teamsmod.client.gui.overlay.StatusOverlay;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenTeam;
 import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
+import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.MessageTeamChat;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
@@ -59,7 +60,7 @@ public class GuiHandler {
         if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName)) {
             String text = GuiHandler.chatMap.get(playerName).getFirst();
             long tick = GuiHandler.chatMap.get(playerName).getSecond();
-            if ((ClientEventHandler.ticks - tick) < 200) {
+            if ((ClientUtils.ticks - tick) < 200) {
                 renderBubbleHelper(event.getRenderer().getRenderManager(), event.getPlayer(), text, event.getMatrixStack(), event.getBuffers(), event.getLight());
             } else {
                 GuiHandler.chatMap.remove(playerName);
@@ -165,7 +166,7 @@ public class GuiHandler {
         //Check if clientside and HUD is enabled
         if (EffectiveSide.get().isClient() &&
                 !TeamConfig.disableTeamsHUD &&
-                ClientEventHandler.displayHud &&
+                KeyBindHandler.doDisplayHud &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             UUID id = mc.player.getUniqueID();

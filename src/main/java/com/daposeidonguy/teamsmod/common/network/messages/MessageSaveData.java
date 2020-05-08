@@ -1,6 +1,6 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
-import com.daposeidonguy.teamsmod.client.ClientEventHandler;
+import com.daposeidonguy.teamsmod.client.ClientUtils;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.SaveData;
@@ -19,10 +19,10 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.*;
 import java.util.function.Supplier;
 
-/* Sent received to update team save data and configuration data */
+/* Sent received to update command save data and configuration data */
 public class MessageSaveData extends AbstractMessage {
 
-    protected MessageSaveData(PacketBuffer buf) {
+    public MessageSaveData(PacketBuffer buf) {
         super(buf);
     }
 
@@ -75,8 +75,8 @@ public class MessageSaveData extends AbstractMessage {
                 NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(id);
                 if (playerInfo != null) {
                     String playerName = playerInfo.getGameProfile().getName();
-                    ClientEventHandler.idtoNameMap.put(id, playerName);
-                    ClientEventHandler.nametoIdMap.put(playerName, id);
+                    ClientUtils.idtoNameMap.put(id, playerName);
+                    ClientUtils.nametoIdMap.put(playerName, id);
                 }
                 SaveData.teamMap.put(id, teamName);
                 uuidList.add(id);

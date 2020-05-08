@@ -12,10 +12,10 @@ import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class ScreenHud extends ScreenPages {
+public class ScreenHudConfig extends ScreenPages {
 
 
-    protected ScreenHud(ScreenBase parent) {
+    protected ScreenHudConfig(ScreenBase parent) {
         super(new StringTextComponent("hudmanager"), parent);
     }
 
@@ -26,7 +26,7 @@ public class ScreenHud extends ScreenPages {
         String name = SaveData.teamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("You are not in a team!"));
+            minecraft.player.sendMessage(new StringTextComponent("You are not in a command!"));
             return;
         }
         Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();

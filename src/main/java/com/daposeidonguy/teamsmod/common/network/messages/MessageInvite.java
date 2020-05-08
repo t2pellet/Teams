@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import net.minecraft.client.Minecraft;
@@ -10,10 +10,10 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/* Sent to player invited to a team */
+/* Sent to player invited to a command */
 public class MessageInvite extends AbstractMessage {
 
-    protected MessageInvite(PacketBuffer buf) {
+    public MessageInvite(PacketBuffer buf) {
         super(buf);
     }
 

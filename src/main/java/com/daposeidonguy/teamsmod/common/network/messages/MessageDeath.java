@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /* Sent/received when a player dies */
 public class MessageDeath extends AbstractMessage {
 
-    protected MessageDeath(PacketBuffer buf) {
+    public MessageDeath(PacketBuffer buf) {
         super(buf);
     }
 

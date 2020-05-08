@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.inventory.InterfaceTransfer;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /* Sent/received when a player opens Item Transfer GUI */
 public class MessageGuiTransfer extends AbstractMessage {
 
-    protected MessageGuiTransfer(PacketBuffer buf) {
+    public MessageGuiTransfer(PacketBuffer buf) {
         super(buf);
     }
 

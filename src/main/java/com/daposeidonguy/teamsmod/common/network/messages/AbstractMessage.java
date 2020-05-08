@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.network;
+package com.daposeidonguy.teamsmod.common.network.messages;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -11,7 +11,7 @@ public abstract class AbstractMessage {
     CompoundNBT tag = new CompoundNBT();
 
     /* Decodes PacketBuffer buf into CompoundNBT tag */
-    protected AbstractMessage(PacketBuffer buf) {
+    public AbstractMessage(PacketBuffer buf) {
         tag = buf.readCompoundTag();
     }
 
@@ -20,10 +20,10 @@ public abstract class AbstractMessage {
     }
 
     /* Encodes CompoundNBT tag into PacketBuffer buf */
-    void encode(PacketBuffer buf) {
+    public void encode(PacketBuffer buf) {
         buf.writeCompoundTag(tag);
     }
 
     /* Handles logic for when the message is received, given context ctx */
-    abstract void onMessage(Supplier<NetworkEvent.Context> ctx);
+    public abstract void onMessage(Supplier<NetworkEvent.Context> ctx);
 }
