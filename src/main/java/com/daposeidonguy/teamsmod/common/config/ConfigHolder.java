@@ -5,9 +5,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class ConfigHolder {
     public static final ForgeConfigSpec CLIENT_SPEC;
-    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ForgeConfigSpec COMMON_SPEC;
     static final TeamConfig.ClientConfig CLIENT_CONFIG;
-    static final TeamConfig.ServerConfig SERVER_CONFIG;
+    static final TeamConfig.CommonConfig COMMON_CONFIG;
 
     static {
         {
@@ -16,9 +16,9 @@ public class ConfigHolder {
             CLIENT_SPEC = specPair.getRight();
         }
         {
-            final Pair<TeamConfig.ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(TeamConfig.ServerConfig::new);
-            SERVER_CONFIG = specPair.getLeft();
-            SERVER_SPEC = specPair.getRight();
+            final Pair<TeamConfig.CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(TeamConfig.CommonConfig::new);
+            COMMON_CONFIG = specPair.getLeft();
+            COMMON_SPEC = specPair.getRight();
         }
     }
 }

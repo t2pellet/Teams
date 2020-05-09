@@ -2,10 +2,18 @@ package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.network.messages.*;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+
+import java.util.Iterator;
+import java.util.UUID;
 
 /* Registers network messages */
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -28,6 +36,24 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
         INSTANCE.registerMessage(id++, MessageNewChat.class, MessageNewChat::encode, MessageNewChat::new, MessageNewChat::onMessage);
         INSTANCE.registerMessage(id++, MessageTeamChat.class, MessageTeamChat::encode, MessageTeamChat::new, MessageTeamChat::onMessage);
+        INSTANCE.registerMessage(id++, MessageConfig.class, MessageConfig::encode, MessageConfig::new, MessageConfig::onMessage);
+    }
+
+    public static void sendToTeam(ServerPlayerEntity player, AbstractMessage message) {
+        String teamName = StorageHandler.uuidToTeamMap.get(player.getUniqueID());
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (teamName != null) {
+            Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
+            while (teamIterator.hasNext()) {
+                UUID playerId = teamIterator.next();
+                if (!playerId.equals(player.getUniqueID())) {
+                    ServerPlayerEntity teamPlayer = server.getPlayerList().getPlayerByUUID(playerId);
+                    if (teamPlayer != null) {
+                        INSTANCE.send(PacketDistributor.PLAYER.with(() -> teamPlayer), message);
+                    }
+                }
+            }
+        }
     }
 
 }

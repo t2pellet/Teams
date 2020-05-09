@@ -11,9 +11,12 @@ public class ScreenBase extends Screen {
 
     protected static final int WIDTH = 250;
     protected static final int HEIGHT = 165;
+    protected static final int BUTTON_WIDTH = 120;
+    protected static final int BUTTON_HEIGHT = 20;
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/demo_background.png");
 
     protected int guiTop, guiLeft;
+    protected int BUTTON_CENTERED_X;
     protected Button goBack;
     protected ScreenBase parent;
 
@@ -27,10 +30,8 @@ public class ScreenBase extends Screen {
         super.init();
         this.guiLeft = (this.width - WIDTH) / 2;
         this.guiTop = (this.height - HEIGHT) / 2;
-
-        goBack = new Button(guiLeft + WIDTH / 2 - 60, guiTop + 130, 120, 20, "Go back", (pressable) -> {
-            minecraft.displayGuiScreen(parent);
-        });
+        this.BUTTON_CENTERED_X = guiLeft + (WIDTH - BUTTON_WIDTH) / 2;
+        goBack = new Button(BUTTON_CENTERED_X, guiTop + 130, BUTTON_WIDTH, BUTTON_HEIGHT, "Go back", btn -> minecraft.displayGuiScreen(parent));
         children.add(goBack);
     }
 

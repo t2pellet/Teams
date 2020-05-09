@@ -25,8 +25,9 @@ public class TeamsMod {
 
     public static final String MODID = "teamsmod";
     public static Logger logger = LogManager.getLogger(MODID);
-
+    public static boolean doneSetup = false;
     private static TeamsMod instance;
+
 
     public TeamsMod() {
         instance = this;
@@ -34,16 +35,12 @@ public class TeamsMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::clientSetup);
         MinecraftForge.EVENT_BUS.register(this);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.SERVER_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         PacketHandler.register();
-    }
-
-    @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
-        CommandTeam.register(event.getCommandDispatcher());
+        doneSetup = true;
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
@@ -51,6 +48,12 @@ public class TeamsMod {
         ScreenManager.registerFactory(ContainerTypes.containerTypeTransfer, ScreenTransfer::new);
         GuiHandler.persistentChatGUI.setAccessible(true);
     }
+
+    @SubscribeEvent
+    public void serverStart(FMLServerStartingEvent event) {
+        CommandTeam.register(event.getCommandDispatcher());
+    }
+
 
 
 }

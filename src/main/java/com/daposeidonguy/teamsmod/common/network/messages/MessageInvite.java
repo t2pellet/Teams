@@ -10,7 +10,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/* Sent to player invited to a command */
+/* Sent to player invited to a team */
 public class MessageInvite extends AbstractMessage {
 
     public MessageInvite(PacketBuffer buf) {

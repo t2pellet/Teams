@@ -10,7 +10,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/* Sent/received when a player cycles between command and server chat */
+/* Sent/received when a player cycles between team and server chat */
 public class MessageTeamChat extends AbstractMessage {
 
     public MessageTeamChat(PacketBuffer buf) {

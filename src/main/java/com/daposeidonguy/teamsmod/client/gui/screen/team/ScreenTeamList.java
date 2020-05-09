@@ -2,7 +2,7 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
-import com.daposeidonguy.teamsmod.common.storage.SaveData;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -18,10 +18,10 @@ public class ScreenTeamList extends ScreenPages {
     @Override
     public void init() {
         super.init();
-        Iterator<String> teamIterator = SaveData.teamsMap.keySet().iterator();
+        Iterator<String> teamIterator = StorageHandler.teamToUuidsMap.keySet().iterator();
         while (teamIterator.hasNext()) {
             String team = teamIterator.next();
-            addButton(new Button(guiLeft + WIDTH / 2 - 60, guiTop + yOffset, 120, 20, team, (pressable) -> {
+            addButton(new Button(BUTTON_CENTERED_X, guiTop + yOffset, BUTTON_WIDTH, BUTTON_HEIGHT, team, (pressable) -> {
                 minecraft.displayGuiScreen(new ScreenTeamPlayers(this, team));
             }));
             yOffset += 25;

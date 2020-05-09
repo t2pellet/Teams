@@ -16,37 +16,36 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.*;
 
-public class SaveData extends WorldSavedData {
+public class StorageHandler extends WorldSavedData {
 
-    public static final String NAME = TeamsMod.MODID;
-    public static Map<UUID, String> teamMap = new HashMap<>(); // UUID to storage Name
-    public static Map<String, List<UUID>> teamsMap = new HashMap<>(); //Team name to list of UUIDs
+    public static Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
+    public static Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
+    public static Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
 
-
-    public SaveData() {
-        super(NAME);
+    public StorageHandler() {
+        super(TeamsMod.MODID);
     }
 
-    public SaveData(String name) {
+    public StorageHandler(String name) {
         super(name);
         markDirty();
     }
 
-    public static SaveData get(ServerWorld world) {
+    public static StorageHandler get(ServerWorld world) {
         DimensionSavedDataManager storage = world.getSavedData();
-        SaveData data = storage.getOrCreate(() -> new SaveData(), NAME);
+        StorageHandler data = storage.getOrCreate(() -> new StorageHandler(), TeamsMod.MODID);
         if (data == null) {
-            data = new SaveData();
+            data = new StorageHandler();
             storage.set(data);
         }
         return data;
     }
 
-    /* Syncs advancements of all players in a command */
+    /* Syncs advancements of all players in a team */
     public static void syncPlayers(String team, ServerPlayerEntity player) {
         if (EffectiveSide.get().isServer() && player != null) {
             for (Advancement adv : ServerLifecycleHooks.getCurrentServer().getAdvancementManager().getAllAdvancements()) {
-                Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+                Iterator<UUID> uuidIterator = teamToUuidsMap.get(team).iterator();
                 while (uuidIterator.hasNext()) {
                     UUID id = uuidIterator.next();
                     ServerPlayerEntity teammate = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(id);
@@ -66,83 +65,102 @@ public class SaveData extends WorldSavedData {
         }
     }
 
-    /* Adds a command */
+    /* Adds a team */
     public void addTeam(String name, PlayerEntity player) {
         List<UUID> tempList = new ArrayList<>();
         tempList.add(player.getUniqueID());
-        teamsMap.put(name, tempList);
-        teamMap.put(player.getUniqueID(), name);
+        teamToUuidsMap.put(name, tempList);
+        uuidToTeamMap.put(player.getUniqueID(), name);
+        Map<String, Boolean> newSettingsMap = new HashMap<>();
+        newSettingsMap.put("disableAdvancementSync", false);
+        newSettingsMap.put("enableFriendlyFire", false);
+        teamSettingsMap.put(name, newSettingsMap);
         markDirty();
     }
 
-    /* Adds a player to a command */
+    /* Adds a player to a team */
     public void addPlayer(PlayerEntity p, UUID uid) {
-        String name = teamMap.get(p.getUniqueID());
-        teamsMap.get(name).add(uid);
-        teamMap.put(uid, name);
+        String name = uuidToTeamMap.get(p.getUniqueID());
+        teamToUuidsMap.get(name).add(uid);
+        uuidToTeamMap.put(uid, name);
         markDirty();
     }
 
-    /* Removes a player from a command */
+    /* Removes a player from a team */
     public void removePlayer(PlayerEntity p, UUID uid) {
-        String name = teamMap.get(p.getUniqueID());
-        teamsMap.get(name).remove(uid);
-        teamMap.remove(uid);
+        String name = uuidToTeamMap.get(p.getUniqueID());
+        teamToUuidsMap.get(name).remove(uid);
+        uuidToTeamMap.remove(uid);
         markDirty();
     }
 
-    /* Removes a command*/
+    /* Removes a team*/
     public void removeTeam(String name) {
-        Iterator<UUID> uuidIterator = teamsMap.get(name).iterator();
+        Iterator<UUID> uuidIterator = teamToUuidsMap.get(name).iterator();
         while (uuidIterator.hasNext()) {
             UUID id = uuidIterator.next();
-            teamMap.remove(id);
+            uuidToTeamMap.remove(id);
         }
-        teamsMap.remove(name);
+        teamToUuidsMap.remove(name);
+        teamSettingsMap.remove(name);
         markDirty();
     }
 
     @Override
     public void read(CompoundNBT nbt) {
-        teamsMap.clear();
-        teamMap.clear();
-        String name = "";
+        teamToUuidsMap.clear();
+        uuidToTeamMap.clear();
+        teamSettingsMap.clear();
+        String teamName;
         Iterator<INBT> tagList = nbt.getList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
         while (tagList.hasNext()) {
-            CompoundNBT tagCompound = (CompoundNBT) tagList.next();
-            Iterator<INBT> playerTagListIterator = tagCompound.getList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
+            CompoundNBT teamTag = (CompoundNBT) tagList.next();
+            Iterator<INBT> playerTagListIterator = teamTag.getList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
             List<UUID> uuidList = new ArrayList();
+            teamName = teamTag.getString("Team Name");
             while (playerTagListIterator.hasNext()) {
                 CompoundNBT playerTag = (CompoundNBT) playerTagListIterator.next();
                 UUID id = UUID.fromString(playerTag.getString("uuid"));
-                name = tagCompound.getString("Team Name");
-                teamMap.put(id, name);
+                uuidToTeamMap.put(id, teamName);
                 uuidList.add(id);
             }
-            teamsMap.put(name, uuidList);
+            teamToUuidsMap.put(teamName, uuidList);
+            CompoundNBT teamSettings = (CompoundNBT) teamTag.get("Settings");
+            Map<String, Boolean> settingsMap = new HashMap<>();
+            if (teamSettings == null) {
+                settingsMap.put("disableAdvancementSync", false);
+                settingsMap.put("enableFriendlyFire", false);
+            } else {
+                settingsMap.put("disableAdvancementSync", teamSettings.getBoolean("disableAdvancementSync"));
+                settingsMap.put("enableFriendlyFire", teamSettings.getBoolean("enableFriendlyFire"));
+            }
+            teamSettingsMap.put(teamName, settingsMap);
+
         }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         ListNBT tagList = new ListNBT();
-        Iterator<String> iteratorTeams = teamsMap.keySet().iterator();
+        Iterator<String> iteratorTeams = teamToUuidsMap.keySet().iterator();
         while (iteratorTeams.hasNext()) {
-            CompoundNBT tagCompound = new CompoundNBT();
+            CompoundNBT teamTag = new CompoundNBT();
             String team = iteratorTeams.next();
-            tagCompound.putString("Team Name", team);
-
-
+            teamTag.putString("Team Name", team);
             ListNBT playerListTag = new ListNBT();
-            Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
+            Iterator<UUID> uuidIterator = teamToUuidsMap.get(team).iterator();
             while (uuidIterator.hasNext()) {
                 UUID id = uuidIterator.next();
                 CompoundNBT playerTag = new CompoundNBT();
                 playerTag.putString("uuid", id.toString());
                 playerListTag.add(playerTag);
             }
-            tagCompound.put("Player List", playerListTag);
-            tagList.add(tagCompound);
+            teamTag.put("Player List", playerListTag);
+            CompoundNBT teamSettings = new CompoundNBT();
+            teamSettings.putBoolean("disableAdvancementSync", teamSettingsMap.get(team).get("disableAdvancementSync"));
+            teamSettings.putBoolean("enableFriendlyFire", teamSettingsMap.get(team).get("enableFriendlyFire"));
+            teamTag.put("Settings", teamSettings);
+            tagList.add(teamTag);
         }
         compound.put("Teams", tagList);
         return compound;

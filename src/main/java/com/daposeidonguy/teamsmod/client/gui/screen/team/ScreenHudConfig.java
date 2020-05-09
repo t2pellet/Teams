@@ -1,10 +1,10 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientUtils;
+import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
-import com.daposeidonguy.teamsmod.common.storage.SaveData;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -16,26 +16,26 @@ public class ScreenHudConfig extends ScreenPages {
 
 
     protected ScreenHudConfig(ScreenBase parent) {
-        super(new StringTextComponent("hudmanager"), parent);
+        super(new StringTextComponent("hudconfig"), parent);
     }
 
     @Override
     public void init() {
         super.init();
 
-        String name = SaveData.teamMap.get(minecraft.player.getUniqueID());
+        String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("You are not in a command!"));
+            minecraft.player.sendMessage(new StringTextComponent("You are not in a team!"));
             return;
         }
-        Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
+        Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
             UUID uid = teamIterator.next();
             if (!uid.equals(minecraft.player.getUniqueID())) {
-                String playerName = ClientUtils.getOnlineUsernameFromUUID(uid);
+                String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
                 if (playerName != null) {
-                    Button button = new Button(guiLeft + WIDTH / 2 - 62, guiTop + yOffset, 124, 20, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {
+                    Button button = new Button(BUTTON_CENTERED_X - 5, guiTop + yOffset, BUTTON_WIDTH + 10, BUTTON_HEIGHT, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {
                         boolean isPriority = GuiHandler.priorityPlayers.contains(uid);
                         if (isPriority) {
                             GuiHandler.priorityPlayers.remove(uid);

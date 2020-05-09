@@ -12,7 +12,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,21 +19,21 @@ import java.util.UUID;
 
 
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class ClientUtils {
+public class ClientHandler {
 
     public static Map<UUID, String> idtoNameMap = new HashMap<>();
     public static Map<String, UUID> nametoIdMap = new HashMap<>();
     public static Minecraft mc = Minecraft.getInstance();
-    public static MainWindow window = ClientUtils.mc.getMainWindow();
+    public static MainWindow window = ClientHandler.mc.getMainWindow();
     public static long ticks = 0;
 
     @SubscribeEvent
-    public static void onTick(TickEvent.ClientTickEvent event) {
+    public static void onTick(final TickEvent.ClientTickEvent event) {
         ticks += 1;
     }
 
     /* Returns username of player given UUID if online, null otherwise */
-    public static String getOnlineUsernameFromUUID(UUID uuid) {
+    public static String getOnlineUsernameFromUUID(final UUID uuid) {
         String playerName = idtoNameMap.get(uuid);
         if (playerName == null) {
             playerName = UsernameCache.getLastKnownUsername(uuid);
@@ -49,16 +48,16 @@ public class ClientUtils {
     }
 
     /* Returns username of player given UUID */
-    public static String getUsernameFromUUID(UUID uuid) {
+    public static String getUsernameFromUUID(final UUID uuid) {
         String playerName = getOnlineUsernameFromUUID(uuid);
         if (playerName == null) {
             String uuidString = uuid.toString().replace("-", "");
             String url = "https://api.mojang.com/user/profiles/" + uuidString + "/names";
             try {
-                String nameJson = IOUtils.toString(new URL(url), "UTF-8");
+                String nameJson = IOUtils.toString(new URL(url), "ANSI");
                 JsonArray jsonArray = new JsonParser().parse(nameJson).getAsJsonArray();
                 playerName = jsonArray.get(0).getAsJsonObject().get("name").getAsString();
-            } catch (IOException e) {
+            } catch (Exception ex) {
                 playerName = "Unknown player";
             }
         }

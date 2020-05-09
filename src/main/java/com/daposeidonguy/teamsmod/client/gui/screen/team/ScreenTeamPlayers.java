@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientUtils;
+import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
-import com.daposeidonguy.teamsmod.common.storage.SaveData;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.awt.*;
@@ -27,10 +27,10 @@ public class ScreenTeamPlayers extends ScreenBase {
         super.render(mouseX, mouseY, partialTicks);
         minecraft.fontRenderer.drawString("Team Players: " + name, guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Team Players: " + name) / 2, guiTop + 10, Color.BLACK.getRGB());
         int yoffset = 30;
-        Iterator<UUID> teamIterator = SaveData.teamsMap.get(name).iterator();
+        Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
             UUID uid = teamIterator.next();
-            String playerName = ClientUtils.getUsernameFromUUID(uid);
+            String playerName = ClientHandler.getUsernameFromUUID(uid);
             minecraft.fontRenderer.drawString(playerName, guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth(playerName) / 2, guiTop + yoffset, Color.GRAY.getRGB());
             yoffset += 15;
         }

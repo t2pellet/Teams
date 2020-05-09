@@ -10,6 +10,7 @@ public class KeyBindHandler {
     public static boolean doDisplayHud = true;
     public static KeyBinding showHud;
     public static KeyBinding acceptInvite;
+    public static KeyBinding switchChat;
 
     public static void register() {
         if (EffectiveSide.get().isClient()) {
@@ -17,6 +18,7 @@ public class KeyBindHandler {
             ClientRegistry.registerKeyBinding(showHud);
             acceptInvite = new KeyBinding("Accept Team Invite", GLFW.GLFW_KEY_RIGHT_BRACKET, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(acceptInvite);
+            switchChat = new KeyBinding("Switch Chat Tab", GLFW.GLFW_KEY_R, "key.categories.multiplayer");
         }
     }
 }
