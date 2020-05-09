@@ -1,6 +1,5 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
@@ -26,7 +25,6 @@ public class ScreenTransferList extends ScreenPages {
     @Override
     public void init() {
         super.init();
-        TeamsMod.logger.info("Server Transfer Disabled: " + ConfigHandler.serverDisableTransfer);
         String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);

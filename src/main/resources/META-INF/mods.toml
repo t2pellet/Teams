@@ -2,9 +2,9 @@ modLoader="javafml"
 loaderVersion="[31,)"
 [[mods]]
     modId="teamsmod"
-    version="1.7"
-    displayName="Teams\n"
-    credits="Thanks to jabelar and Cadiboo's example mods for providing some guidance. Thanks to potat10125 for helping test things\n"
+    version="1.8"
+    displayName="Teams"
+    credits="\nThanks to jabelar and Cadiboo's example mods for providing some guidance. Thanks to potat10125 for helping test things\n"
     authors="daPoseidonGuy\n"
     description='''
     Teams mod enables functional teams in minecraft encouraging social play

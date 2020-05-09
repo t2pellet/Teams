@@ -69,7 +69,6 @@ public class ChatEvents {
 
     /* Returns true if player should be "pinged", and false otherwise */
     private static boolean doPing(final String msg, final String player, final String team) {
-        TeamsMod.logger.info("Server Disable Ping: " + ConfigHandler.serverDisablePing);
         if (TeamConfig.disablePing || ConfigHandler.serverDisablePing) {
             return false;
         }

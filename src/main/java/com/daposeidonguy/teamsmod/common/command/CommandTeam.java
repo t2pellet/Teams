@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.common.command;
 
+import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageInvite;
@@ -32,6 +33,7 @@ public class CommandTeam {
 
     /* Constructs and registers the team command */
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
+        TeamsMod.logger.info("Registering commands...");
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         for (String alias : aliases) {
             dispatcher.register(Commands.literal(alias)

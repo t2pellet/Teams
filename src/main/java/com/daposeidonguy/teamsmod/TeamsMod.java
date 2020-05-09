@@ -30,27 +30,33 @@ public class TeamsMod {
 
 
     public TeamsMod() {
+        TeamsMod.logger.info("Teams: Initializing");
         instance = this;
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::clientSetup);
         MinecraftForge.EVENT_BUS.register(this);
+        TeamsMod.logger.info("Registering configs...");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        TeamsMod.logger.info("Teams: Common setup");
         PacketHandler.register();
         doneSetup = true;
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
+        TeamsMod.logger.info("Teams: Client setup");
         KeyBindHandler.register();
+        TeamsMod.logger.info("Registering container screens...");
         ScreenManager.registerFactory(ContainerTypes.containerTypeTransfer, ScreenTransfer::new);
         GuiHandler.persistentChatGUI.setAccessible(true);
     }
 
     @SubscribeEvent
     public void serverStart(FMLServerStartingEvent event) {
+        TeamsMod.logger.info("Teams: Server starting");
         CommandTeam.register(event.getCommandDispatcher());
     }
 

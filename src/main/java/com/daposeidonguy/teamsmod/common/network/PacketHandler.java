@@ -27,6 +27,7 @@ public class PacketHandler {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
+        TeamsMod.logger.info("Registering packets...");
         int id = 0;
         INSTANCE.registerMessage(id++, MessageDeath.class, MessageDeath::encode, MessageDeath::new, MessageDeath::onMessage);
         INSTANCE.registerMessage(id++, MessageGuiTransfer.class, MessageGuiTransfer::encode, MessageGuiTransfer::new, MessageGuiTransfer::onMessage);
