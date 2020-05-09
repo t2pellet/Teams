@@ -3,6 +3,7 @@ package com.daposeidonguy.teamsmod.client.gui.team;
 import com.daposeidonguy.teamsmod.team.SaveData;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -50,10 +51,13 @@ public class GuiTransferPlayers extends GuiScreen {
                     return;
                 }
             }
-            String otherP = mc.getConnection().getPlayerInfo(uid).getGameProfile().getName();
-            GuiButton button = new GuiButton(Integer.MIN_VALUE + 9, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, otherP);
-            addButton(button);
-            yoffset += 25;
+            NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(uid);
+            if (info != null) {
+                String otherP = info.getGameProfile().getName();
+                GuiButton button = new GuiButton(Integer.MIN_VALUE + 9, guiLeft + WIDTH / 2 - 60, guiTop + yoffset, 120, 20, otherP);
+                addButton(button);
+                yoffset += 25;
+            }
         }
     }
 

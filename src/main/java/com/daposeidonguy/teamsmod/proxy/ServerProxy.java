@@ -3,6 +3,7 @@ package com.daposeidonguy.teamsmod.proxy;
 import com.daposeidonguy.teamsmod.commands.CommandTeam;
 import com.daposeidonguy.teamsmod.network.PacketHandler;
 import com.daposeidonguy.teamsmod.team.SaveData;
+import net.minecraft.world.DimensionType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
@@ -27,7 +28,7 @@ public class ServerProxy {
 
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
-        SaveData.get(event.getServer().getEntityWorld());
+        SaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD.getId()));
         event.registerServerCommand(new CommandTeam());
     }
 

@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.DimensionType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
@@ -71,7 +72,7 @@ public class CommandTeam implements ICommand {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if (!sender.getEntityWorld().isRemote && args.length > 0) {
-            SaveData data = SaveData.get(sender.getEntityWorld());
+            SaveData data = SaveData.get(server.getWorld(DimensionType.OVERWORLD.getId()));
             switch (args[0]) {
                 case "create":
                     try {

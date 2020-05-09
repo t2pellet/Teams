@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -57,7 +56,6 @@ public class GuiCompass extends Gui {
                     GL11.glPushMatrix();
                     double x = (getWidth() / 2 - WIDTH / 4 + renderFactor * WIDTH / 2 + 41);
                     double y = ((getHeight() * 0.01) + 12);
-                    String distance = String.valueOf(Math.round(1000 * magnitude) / 1000) + "m";
                     GL11.glScalef(0.25F, 0.25F, 0.25F);
                     if (1 - Math.abs(renderFactor) < 0.6) {
                         GL11.glEnable(GL11.GL_BLEND);
@@ -68,7 +66,6 @@ public class GuiCompass extends Gui {
                         drawTexturedModalRect((int) (4 * x), (int) (4 * y), 32, 32, 32, 32);
                     }
                     GL11.glScalef(2.0F, 2.0F, 2.0F);
-                    drawCenteredString(mc.fontRenderer, distance, (int) (2 * x + 8.5), (int) (2 * y + 20), Color.WHITE.getRGB());
                     GL11.glPopMatrix();
                 }
             }

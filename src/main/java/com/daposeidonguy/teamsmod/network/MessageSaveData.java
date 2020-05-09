@@ -65,26 +65,27 @@ public class MessageSaveData implements IMessage {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 SaveData.teamsMap.clear();
                 SaveData.teamMap.clear();
-                String name = "";
+                String name;
                 Iterator<NBTBase> tagList = nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
                 while (tagList.hasNext()) {
                     NBTTagCompound tagCompound = (NBTTagCompound) tagList.next();
                     Iterator<NBTBase> playerTagListIterator = tagCompound.getTagList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
                     List<UUID> uuidList = new ArrayList();
+                    name = tagCompound.getString("Team Name");
                     while (playerTagListIterator.hasNext()) {
                         NBTTagCompound playerTag = (NBTTagCompound) playerTagListIterator.next();
                         UUID id = UUID.fromString(playerTag.getString("uuid"));
                         AbstractClientPlayer p = (AbstractClientPlayer) FMLClientHandler.instance().getWorldClient().getPlayerEntityByUUID(id);
-                        name = tagCompound.getString("Team Name");
                         if (p != null) {
-                            System.out.println("Got message");
                             ClientEventHandler.idtoNameMap.put(id, p.getDisplayNameString());
                             ClientEventHandler.nametoIdMap.put(p.getDisplayNameString(), id);
                         }
                         SaveData.teamMap.put(id, name);
                         uuidList.add(id);
                     }
-                    SaveData.teamsMap.put(name, uuidList);
+                    if (!uuidList.isEmpty() && name != "") {
+                        SaveData.teamsMap.put(name, uuidList);
+                    }
                 }
             });
             return null;

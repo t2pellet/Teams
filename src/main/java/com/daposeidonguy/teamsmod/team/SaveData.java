@@ -41,13 +41,14 @@ public class SaveData extends WorldSavedData {
         return data;
     }
 
+    /* Syncs advancements of all players in a team */
     public static void syncPlayers(String team, EntityPlayerMP player) {
-        if (!FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isRemote && player != null) {
+        if (player != null && !player.getEntityWorld().isRemote) {
             for (Advancement adv : FMLCommonHandler.instance().getMinecraftServerInstance().getAdvancementManager().getAdvancements()) {
                 Iterator<UUID> uuidIterator = teamsMap.get(team).iterator();
                 while (uuidIterator.hasNext()) {
                     UUID id = uuidIterator.next();
-                    EntityPlayerMP teammate = (EntityPlayerMP) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getPlayerEntityByUUID(id);
+                    EntityPlayerMP teammate = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(id);
                     if (teammate != null) {
                         if (teammate.getAdvancements().getProgress(adv).isDone()) {
                             for (String s : teammate.getAdvancements().getProgress(adv).getCompletedCriteria()) {

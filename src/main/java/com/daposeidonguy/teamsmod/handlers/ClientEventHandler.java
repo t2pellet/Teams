@@ -54,7 +54,7 @@ public class ClientEventHandler {
                 event.getMessage().setStyle(event.getMessage().getStyle().setBold(true));
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
-            if (ConfigHandler.client.disablePrefix) {
+            if (ConfigHandler.client.disablePrefix && !event.getMessage().getSiblings().isEmpty()) {
                 event.setMessage(event.getMessage().getSiblings().get(0));
             }
         }
