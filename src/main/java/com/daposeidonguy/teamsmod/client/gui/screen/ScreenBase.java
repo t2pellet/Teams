@@ -4,8 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+
+import java.awt.*;
 
 public class ScreenBase extends Screen {
 
@@ -31,7 +34,7 @@ public class ScreenBase extends Screen {
         this.guiLeft = (this.width - WIDTH) / 2;
         this.guiTop = (this.height - HEIGHT) / 2;
         this.BUTTON_CENTERED_X = guiLeft + (WIDTH - BUTTON_WIDTH) / 2;
-        goBack = new Button(BUTTON_CENTERED_X, guiTop + 130, BUTTON_WIDTH, BUTTON_HEIGHT, "Go back", btn -> minecraft.displayGuiScreen(parent));
+        goBack = new Button(BUTTON_CENTERED_X, guiTop + 130, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.button.back"), btn -> minecraft.displayGuiScreen(parent));
         children.add(goBack);
     }
 
@@ -49,6 +52,7 @@ public class ScreenBase extends Screen {
             }
         }
         this.goBack.render(mouseX, mouseY, partialTicks);
+        this.font.drawString(title.getFormattedText(), guiLeft + WIDTH / 2 - font.getStringWidth(title.getFormattedText()) / 2, guiTop + 10, Color.BLACK.getRGB());
     }
 
 

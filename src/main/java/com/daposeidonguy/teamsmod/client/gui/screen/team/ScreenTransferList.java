@@ -10,16 +10,16 @@ import com.daposeidonguy.teamsmod.common.network.messages.MessageGuiTransfer;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
 public class ScreenTransferList extends ScreenPages {
 
     protected ScreenTransferList(ScreenBase parent) {
-        super(new StringTextComponent("transferlist"), parent);
+        super(new TranslationTextComponent("teamsmod.transferlist.title"), parent);
     }
 
     @Override
@@ -28,11 +28,11 @@ public class ScreenTransferList extends ScreenPages {
         String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("You are not in a team!"));
+            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.transferlist.notinteam"));
             return;
         } else if (ConfigHandler.serverDisableTransfer) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("That feature is disabled"));
+            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.transferlist.disabled"));
         }
         Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(name).iterator();
         while (teamIterator.hasNext()) {
@@ -50,12 +50,6 @@ public class ScreenTransferList extends ScreenPages {
                 }
             }
         }
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        minecraft.fontRenderer.drawString("Player List", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Player List") / 2, guiTop + 10, Color.BLACK.getRGB());
     }
 
 }

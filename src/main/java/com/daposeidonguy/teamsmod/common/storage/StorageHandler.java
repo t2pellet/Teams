@@ -79,10 +79,9 @@ public class StorageHandler extends WorldSavedData {
     }
 
     /* Adds a player to a team */
-    public void addPlayer(PlayerEntity p, UUID uid) {
-        String name = uuidToTeamMap.get(p.getUniqueID());
-        teamToUuidsMap.get(name).add(uid);
-        uuidToTeamMap.put(uid, name);
+    public void addPlayer(String team, UUID uid) {
+        teamToUuidsMap.get(team).add(uid);
+        uuidToTeamMap.put(uid, team);
         markDirty();
     }
 

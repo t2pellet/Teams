@@ -6,9 +6,8 @@ import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public class ScreenHudConfig extends ScreenPages {
 
 
     protected ScreenHudConfig(ScreenBase parent) {
-        super(new StringTextComponent("hudconfig"), parent);
+        super(new TranslationTextComponent("teamsmod.hud.title"), parent);
     }
 
     @Override
@@ -26,7 +25,7 @@ public class ScreenHudConfig extends ScreenPages {
         String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new StringTextComponent("You are not in a team!"));
+            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.hud.notinteam"));
             return;
         }
         Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(name).iterator();
@@ -49,12 +48,5 @@ public class ScreenHudConfig extends ScreenPages {
                 }
             }
         }
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        minecraft.fontRenderer.drawString("Set Priority Players:", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Set Priority Players") / 2, guiTop + 10, Color.BLACK.getRGB());
-
     }
 }

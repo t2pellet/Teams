@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.event.TickEvent;
@@ -58,7 +59,7 @@ public class ClientHandler {
                 JsonArray jsonArray = new JsonParser().parse(nameJson).getAsJsonArray();
                 playerName = jsonArray.get(0).getAsJsonObject().get("name").getAsString();
             } catch (Exception ex) {
-                playerName = "Unknown player";
+                playerName = I18n.format("teamsmod.unknownplayer");
             }
         }
         return playerName;

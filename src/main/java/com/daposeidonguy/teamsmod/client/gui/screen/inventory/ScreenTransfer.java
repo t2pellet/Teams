@@ -14,6 +14,7 @@ public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
     private PlayerInventory playerInv;
     private ContainerTransfer container;
+    private String invTitle;
 
     public ScreenTransfer(ContainerTransfer inventorySlotsIn, PlayerInventory playerInv, ITextComponent title) {
         super(inventorySlotsIn, playerInv, title);
@@ -32,7 +33,7 @@ public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        this.font.drawString("Transfer Item: " + container.getName(), xSize / 2 - this.font.getStringWidth("Transfer Item: " + container.getName()) / 2, 6, Color.DARK_GRAY.getRGB());
+        this.font.drawString(title.getFormattedText(), xSize / 2 - this.font.getStringWidth(invTitle) / 2, 6, Color.DARK_GRAY.getRGB());
     }
 
     @Override

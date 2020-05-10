@@ -7,7 +7,8 @@ import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -15,14 +16,17 @@ import java.util.UUID;
 
 public class ScreenTeamInvite extends ScreenText {
 
-    protected ScreenTeamInvite(ScreenBase parent) {
-        super(new StringTextComponent("teaminvite"), parent);
+    private String teamName;
+
+    protected ScreenTeamInvite(ScreenBase parent, String teamName) {
+        super(new TranslationTextComponent("teamsmod.invite.title", teamName), parent);
+        this.teamName = teamName;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 70, BUTTON_WIDTH, BUTTON_HEIGHT, "Invite Player", (pressable) -> {
+        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 70, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.invite.invite"), (pressable) -> {
             minecraft.player.sendChatMessage("/teamsmod invite " + this.text.getText());
             minecraft.displayGuiScreen(null);
         }));
@@ -43,7 +47,6 @@ public class ScreenTeamInvite extends ScreenText {
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
-        minecraft.fontRenderer.drawString("Invite Players", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Invite Players") / 2, guiTop + 10, Color.BLACK.getRGB());
-        minecraft.fontRenderer.drawString("Eligible Players:", guiLeft + WIDTH + 42 - minecraft.fontRenderer.getStringWidth("Eligible Players:") / 2, guiTop + 35, Color.WHITE.getRGB());
+        minecraft.fontRenderer.drawString(I18n.format("teamsmod.players.suggestions"), guiLeft + WIDTH + 42 - minecraft.fontRenderer.getStringWidth(I18n.format("teamsmod.players.suggestions")) / 2, guiTop + 35, Color.WHITE.getRGB());
     }
 }

@@ -2,43 +2,36 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
-
-import java.awt.*;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ScreenTeamEditor extends ScreenBase {
 
     private String teamName;
 
 
-    public ScreenTeamEditor(ScreenBase parent, String name) {
-        super(new StringTextComponent("teameditor"), parent);
-        this.teamName = name;
+    public ScreenTeamEditor(ScreenBase parent, String teamName) {
+        super(new TranslationTextComponent("teamsmod.edit.title", teamName), parent);
+        this.teamName = teamName;
     }
 
     @Override
     public void init() {
         super.init();
 
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 25, BUTTON_WIDTH, BUTTON_HEIGHT, "Invite Players", btn -> {
-            minecraft.displayGuiScreen(new ScreenTeamInvite(this));
+        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 25, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.invite"), btn -> {
+            minecraft.displayGuiScreen(new ScreenTeamInvite(this, teamName));
         }));
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 50, BUTTON_WIDTH, BUTTON_HEIGHT, "Kick Players", btn -> {
-            minecraft.displayGuiScreen(new ScreenTeamKick(this));
+        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 50, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.kick"), btn -> {
+            minecraft.displayGuiScreen(new ScreenTeamKick(this, teamName));
         }));
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, "Team Options", btn -> {
+        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.config"), btn -> {
             minecraft.displayGuiScreen(new ScreenTeamConfig(this, teamName));
         }));
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, "Leave Team", btn -> {
+        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.leave"), btn -> {
             minecraft.player.sendChatMessage("/teamsmod leave");
             minecraft.displayGuiScreen(null);
         }));
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        minecraft.fontRenderer.drawString("Team Manager: " + teamName, guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Team Manager: " + teamName) / 2, guiTop + 10, Color.BLACK.getRGB());
     }
 
 }

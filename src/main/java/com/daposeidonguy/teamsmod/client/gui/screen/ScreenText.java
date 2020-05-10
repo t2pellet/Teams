@@ -2,7 +2,8 @@ package com.daposeidonguy.teamsmod.client.gui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
 
@@ -10,7 +11,7 @@ public class ScreenText extends ScreenBase {
 
     protected TextFieldWidget text;
 
-    protected ScreenText(StringTextComponent title, ScreenBase parent) {
+    protected ScreenText(ITextComponent title, ScreenBase parent) {
         super(title, parent);
     }
 
@@ -25,7 +26,7 @@ public class ScreenText extends ScreenBase {
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         this.text.render(mouseX, mouseY, partialTicks);
-        minecraft.fontRenderer.drawString("Enter Name:", guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth("Enter Name:") / 2, guiTop + 35, Color.GRAY.getRGB());
+        minecraft.fontRenderer.drawString(I18n.format("teamsmod.text.title"), guiLeft + WIDTH / 2 - minecraft.fontRenderer.getStringWidth(I18n.format("teamsmod.text.title")) / 2, guiTop + 35, Color.GRAY.getRGB());
     }
 
     @Override

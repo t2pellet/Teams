@@ -16,11 +16,11 @@ public class KeyBindHandler {
     public static void register() {
         if (EffectiveSide.get().isClient()) {
             TeamsMod.logger.info("Registering keybindings...");
-            showHud = new KeyBinding("Display Teams HUD", GLFW.GLFW_KEY_V, "key.categories.multiplayer");
+            showHud = new KeyBinding("teamsmod.keyhud.desc", GLFW.GLFW_KEY_V, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(showHud);
-            acceptInvite = new KeyBinding("Accept Team Invite", GLFW.GLFW_KEY_RIGHT_BRACKET, "key.categories.multiplayer");
+            acceptInvite = new KeyBinding("teamsmod.keyaccept.desc", GLFW.GLFW_KEY_RIGHT_BRACKET, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(acceptInvite);
-            switchChat = new KeyBinding("Switch Chat Tab", GLFW.GLFW_KEY_R, "key.categories.multiplayer");
+            switchChat = new KeyBinding("teamsmod.keyswitch.desc", GLFW.GLFW_KEY_R, "key.categories.multiplayer");
         }
     }
 }
