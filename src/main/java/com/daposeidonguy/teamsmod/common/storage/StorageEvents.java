@@ -31,6 +31,9 @@ public class StorageEvents {
     @SubscribeEvent
     public static void serverStart(final FMLServerStartingEvent event) {
         data = TeamDataManager.get(event.getServer().getWorld(DimensionType.OVERWORLD));
+        if (event.getServer().isSinglePlayer()) {
+            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(event.getServer().getWorld(DimensionType.OVERWORLD)));
+        }
     }
 
 }

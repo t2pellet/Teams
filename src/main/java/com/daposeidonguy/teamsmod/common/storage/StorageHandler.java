@@ -1,6 +1,5 @@
 package com.daposeidonguy.teamsmod.common.storage;
 
-import com.daposeidonguy.teamsmod.TeamsMod;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -48,13 +47,17 @@ public class StorageHandler {
             CompoundNBT teamTag = (CompoundNBT) inbt;
             String teamName = teamTag.getString("Team Name");
             readPlayers(teamTag, teamName);
+            if (teamTag.hasUniqueId("Owner")) { // Just for converting old worlds
+                teamToOwnerMap.put(teamName, teamTag.getUniqueId("Owner"));
+            } else {
+                teamToOwnerMap.put(teamName, teamToUuidsMap.get(teamName).get(0));
+            }
             readSettings(teamTag, teamName);
         }
     }
 
     /* Clears all loaded savedata */
     private static void clearData() {
-        TeamsMod.logger.info("Clearing old data");
         teamToUuidsMap.clear();
         uuidToTeamMap.clear();
         teamSettingsMap.clear();
@@ -65,7 +68,7 @@ public class StorageHandler {
     private static void readSettings(final CompoundNBT teamTag, final String teamName) {
         CompoundNBT teamSettings = (CompoundNBT) teamTag.get("Settings");
         Map<String, Boolean> settingsMap = new HashMap<>();
-        if (teamSettings == null) {
+        if (teamSettings == null) { // Just for converting old worlds
             settingsMap.put("disableAdvancementSync", false);
             settingsMap.put("enableFriendlyFire", false);
         } else {
@@ -93,6 +96,7 @@ public class StorageHandler {
         for (String teamName : teamToUuidsMap.keySet()) {
             CompoundNBT teamTag = new CompoundNBT();
             teamTag.putString("Team Name", teamName);
+            teamTag.putUniqueId("Owner", teamToOwnerMap.get(teamName));
             teamTag.put("Player List", writePlayers(teamName));
             teamTag.put("Settings", writeSettings(teamName));
             tagList.add(teamTag);

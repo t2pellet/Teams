@@ -26,7 +26,7 @@ public class ScreenTransferList extends AbstractScreenPages {
         String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.transferlist.notinteam"));
+            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.notinteam"));
             return;
         } else if (ConfigHandler.serverDisableTransfer) {
             minecraft.displayGuiScreen(null);
