@@ -21,8 +21,10 @@ class KeyBindEvents {
     /* Handles keybinded dynamic toggling of certain features */
     @SubscribeEvent
     public static void onKeyInput(final InputEvent.KeyInputEvent event) {
-        if (KeyBindHandler.showHud.isPressed()) {
-            KeyBindHandler.doDisplayHud = !KeyBindHandler.doDisplayHud;
+        if (KeyBindHandler.showStatus.isPressed()) {
+            KeyBindHandler.doDisplayStatus = !KeyBindHandler.doDisplayStatus;
+        } else if (KeyBindHandler.showCompass.isPressed()) {
+            KeyBindHandler.doDisplayCompass = !KeyBindHandler.doDisplayCompass;
         } else if (KeyBindHandler.acceptInvite.isPressed()) {
             ToastInvite toast = Minecraft.getInstance().getToastGui().getToast(ToastInvite.class, IToast.NO_TOKEN);
             if (toast != null) {

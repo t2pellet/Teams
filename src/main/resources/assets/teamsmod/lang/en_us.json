@@ -25,6 +25,7 @@
   "teamsmod.notinteam": "Error: You are not in a team!",
   "teamsmod.inteam": "Error: You are already in a team",
   "teamsmod.playernotinteam": "Error: No such player '%s' in your team",
+  "teamsmod.unknownplayer": "Offline Player",
   "teamsmod.toast.invite": "Invited to team: ",
   "teamsmod.toast.accept": "Press %s to accept",
   "teamsmod.transfer.title": "Transfer Item: %s",
@@ -58,8 +59,8 @@
   "teamsmod.players.title": "Player List: %s",
   "teamsmod.transferlist.disabled": "That feature is disabled!",
   "teamsmod.transferlist.title": "Player List",
-  "teamsmod.keyhud.desc": "Toggle HUD Overlays",
+  "teamsmod.keyhud.desc": "Toggle Status Overlay",
   "teamsmod.keyaccept.desc": "Accept Team Invite",
   "teamsmod.keyswitch.desc": "Switch Chat Tab",
-  "teamsmod.unknownplayer": "Offline Player"
+  "teamsmod.keycompass.desc": "Toggle Compass Overlay"
 }

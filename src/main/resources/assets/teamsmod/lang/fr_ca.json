@@ -58,8 +58,9 @@
   "teamsmod.players.title": "Liste de Joueurs: %s",
   "teamsmod.transferlist.disabled": "Cette Fonctionnalité est Désactivée",
   "teamsmod.transferlist.title": "Liste de Joueurs",
-  "teamsmod.keyhud.desc": "Basculer le HUD",
+  "teamsmod.keyhud.desc": "Basculer le HUD d'État",
   "teamsmod.keyaccept.desc": "Accepte Invitation à une Équipe",
   "teamsmod.keyswitch.desc": "Basculer le Chat d'Équipe",
-  "teamsmod.unknownplayer": "Joueur Hors Ligne"
+  "teamsmod.unknownplayer": "Joueur Hors Ligne",
+  "teamsmod.keycompass.desc": "Basculer le HUD de Compas"
 }

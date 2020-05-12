@@ -25,7 +25,7 @@
   "teamsmod.notsameteam": "Erreur: Vous n'êtes pas dans la même équipe à %s",
   "teamsmod.inteam": "Erreur: Vous êtes déja dans une équipe",
   "teamsmod.playernotinteam": "Erreur: Le joueur '%s' n'est pas dans votre équipe",
-  "teamsmod.toast.invite": "Vous êtes invité à l'équipe:",
+  "teamsmod.toast.invite": "Vous êtes invité à l'équipe: ",
   "teamsmod.toast.accept": "Appuyé sur %s pour accepter",
   "teamsmod.transfer.title": "Transfert des Objets: %s",
   "teamsmod.button.back": "Retour",
@@ -58,8 +58,9 @@
   "teamsmod.players.title": "Liste de Joueurs: %s",
   "teamsmod.transferlist.disabled": "Cette Fonctionnalité est Désactivée",
   "teamsmod.transferlist.title": "Liste de Joueurs",
-  "teamsmod.keyhud.desc": "Basculer le HUD",
+  "teamsmod.keyhud.desc": "Basculer le HUD d'État",
   "teamsmod.keyaccept.desc": "Accepte Invitation à une Équipe",
   "teamsmod.keyswitch.desc": "Basculer le Chat d'Équipe",
-  "teamsmod.unknownplayer": "Joueur Hors Ligne"
+  "teamsmod.unknownplayer": "Joueur Hors Ligne",
+  "teamsmod.keycompass.desc": "Basculer le HUD de Compas"
 }

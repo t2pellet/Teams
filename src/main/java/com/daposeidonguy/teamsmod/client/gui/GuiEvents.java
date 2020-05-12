@@ -119,16 +119,16 @@ public class GuiEvents {
     public static void renderHUDEvent(final RenderGameOverlayEvent.Post event) {
         //Check if clientside and HUD is enabled
         if (EffectiveSide.get().isClient() &&
-                KeyBindHandler.doDisplayHud &&
+                KeyBindHandler.doDisplayStatus &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             UUID id = ClientHandler.mc.player.getUniqueID();
             String team = StorageHandler.uuidToTeamMap.get(id);
             if (team != null) {
-                if (!TeamConfig.disableCompassOverlay) {
+                if (!TeamConfig.disableCompassOverlay && KeyBindHandler.doDisplayCompass) {
                     new CompassOverlay(ClientHandler.mc, team);
                 }
-                if (!TeamConfig.disableStatusOverlay) {
+                if (!TeamConfig.disableStatusOverlay && KeyBindHandler.doDisplayStatus) {
                     new StatusOverlay(ClientHandler.mc, team);
                 }
             }
