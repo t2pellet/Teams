@@ -18,7 +18,7 @@ public class InterfaceTransfer implements INamedContainerProvider {
     }
 
     @Override
-    public Container createMenu(int i, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity playerEntity) {
+    public Container createMenu(int i, @Nonnull final PlayerInventory playerInventory, @Nonnull final PlayerEntity playerEntity) {
         return new ContainerTransfer(i, playerInventory, name);
     }
 

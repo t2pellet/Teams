@@ -44,7 +44,7 @@ class ChatEvents {
     private static void handleTeamChat(final ClientChatReceivedEvent event, final String senderTeam, final String myTeam) {
         if (GuiHandler.displayTeamChat) {
             if (ChatHandler.lastMessageTeam) {
-                if (!senderTeam.equals(myTeam)) {
+                if (senderTeam == null || !senderTeam.equals(myTeam)) {
                     event.setCanceled(true);
                 }
             } else {

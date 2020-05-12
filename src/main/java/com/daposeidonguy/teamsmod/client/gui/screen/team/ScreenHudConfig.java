@@ -13,7 +13,7 @@ import java.util.UUID;
 public class ScreenHudConfig extends AbstractScreenPages {
 
 
-    ScreenHudConfig(AbstractScreenBase parent) {
+    ScreenHudConfig(final AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.hud.title"), parent);
     }
 

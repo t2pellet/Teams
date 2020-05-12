@@ -1,10 +1,15 @@
 package com.daposeidonguy.teamsmod.common.storage;
 
+import com.daposeidonguy.teamsmod.client.ClientHandler;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -20,7 +25,7 @@ public class StorageHandler {
 
 
     /* Syncs advancements of all players in a team */
-    public static void syncPlayers(String team, ServerPlayerEntity player) {
+    public static void syncPlayers(final String team, final ServerPlayerEntity player) {
         if (EffectiveSide.get().isServer() && player != null) {
             for (Advancement adv : ServerLifecycleHooks.getCurrentServer().getAdvancementManager().getAllAdvancements()) {
                 for (UUID id : teamToUuidsMap.get(team)) {
@@ -41,7 +46,7 @@ public class StorageHandler {
         }
     }
 
-    public static void readFromNBT(CompoundNBT nbt) {
+    public static void readFromNBT(final CompoundNBT nbt) {
         clearData();
         for (INBT inbt : nbt.getList("Teams", Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT teamTag = (CompoundNBT) inbt;
@@ -84,14 +89,25 @@ public class StorageHandler {
         List<UUID> uuidList = new ArrayList<>();
         while (playerTagListIterator.hasNext()) {
             CompoundNBT playerTag = (CompoundNBT) playerTagListIterator.next();
-            UUID id = UUID.fromString(playerTag.getString("uuid"));
-            uuidToTeamMap.put(id, teamName);
-            uuidList.add(id);
+            UUID playerId = UUID.fromString(playerTag.getString("uuid"));
+            addPlayerMapping(playerId);
+            uuidToTeamMap.put(playerId, teamName);
+            uuidList.add(playerId);
         }
         teamToUuidsMap.put(teamName, uuidList);
     }
 
-    public static CompoundNBT writeToNBT(CompoundNBT compound) {
+    @OnlyIn(Dist.CLIENT)
+    private static void addPlayerMapping(final UUID playerId) {
+        NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
+        if (playerInfo != null) {
+            String playerName = playerInfo.getGameProfile().getName();
+            ClientHandler.idtoNameMap.put(playerId, playerName);
+            ClientHandler.nametoIdMap.put(playerName, playerId);
+        }
+    }
+
+    public static CompoundNBT writeToNBT(final CompoundNBT compound) {
         ListNBT tagList = new ListNBT();
         for (String teamName : teamToUuidsMap.keySet()) {
             CompoundNBT teamTag = new CompoundNBT();

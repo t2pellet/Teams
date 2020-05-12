@@ -14,23 +14,23 @@ public class ContainerTransfer extends Container {
 
     private final String name;
 
-    ContainerTransfer(int windowID, PlayerInventory playerInv, PacketBuffer extraData) {
+    ContainerTransfer(int windowID, final PlayerInventory playerInv, final PacketBuffer extraData) {
         this(windowID, playerInv, extraData.readString());
     }
 
-    public ContainerTransfer(int windowID, PlayerInventory playerInv, String name) {
+    public ContainerTransfer(int windowID, final PlayerInventory playerInv, final String name) {
         super(ContainerTypes.containerTypeTransfer, windowID);
         this.name = name;
         Inventory inventory = new Inventory(1);
 
         addSlot(new SlotTransfer(inventory, 0, 80, 35, name));
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 addSlot(new Slot(playerInv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (int k = 0; k < 9; k++) {
+        for (int k = 0; k < 9; ++k) {
             addSlot(new Slot(playerInv, k, 8 + k * 18, 142));
         }
     }

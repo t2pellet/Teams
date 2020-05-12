@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ScreenTransferList extends AbstractScreenPages {
 
-    ScreenTransferList(AbstractScreenBase parent) {
+    ScreenTransferList(final AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.transferlist.title"), parent);
     }
 

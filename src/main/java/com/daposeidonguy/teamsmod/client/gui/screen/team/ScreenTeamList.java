@@ -8,7 +8,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class ScreenTeamList extends AbstractScreenPages {
 
-    ScreenTeamList(AbstractScreenBase parent) {
+    ScreenTeamList(final AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.list.title"), parent);
     }
 

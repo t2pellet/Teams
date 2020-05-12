@@ -15,7 +15,7 @@ public abstract class AbstractScreenPages extends AbstractScreenBase {
     private Button nextPage;
     private int page;
 
-    protected AbstractScreenPages(ITextComponent titleIn, AbstractScreenBase parent) {
+    protected AbstractScreenPages(final ITextComponent titleIn, final AbstractScreenBase parent) {
         super(titleIn, parent);
         page = 0;
     }
@@ -27,9 +27,7 @@ public abstract class AbstractScreenPages extends AbstractScreenBase {
         prevPage = new ImageButton(guiLeft + 10, guiTop + 72, 13, 20, 34, 6, 32, BUTTONS, press -> {
             if (press.visible) {
                 for (Widget button : this.buttons) {
-                    if (button.getWidth() != 13 && button != goBack) {
-                        button.y += 100;
-                    }
+                    if (isButtonInList(button)) button.y += 100;
                 }
                 this.page -= 1;
             }
@@ -38,9 +36,7 @@ public abstract class AbstractScreenPages extends AbstractScreenBase {
         nextPage = new ImageButton(guiLeft + WIDTH - 23, guiTop + 72, 13, 20, 17, 6, 32, BUTTONS, press -> {
             if (press.visible) {
                 for (Widget button : this.buttons) {
-                    if (button.getWidth() != 13 && button != goBack) {
-                        button.y -= 100;
-                    }
+                    if (isButtonInList(button)) button.y -= 100;
                 }
                 this.page += 1;
             }
@@ -48,8 +44,13 @@ public abstract class AbstractScreenPages extends AbstractScreenBase {
         children.add(nextPage);
     }
 
+    private boolean isButtonInList(final Widget button) {
+        return button.getWidth() != 13 && button != goBack;
+    }
+
+
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, final float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         this.prevPage.visible = this.page > 0;
         this.nextPage.visible = this.page < Math.ceil(this.buttons.size() >> 2);

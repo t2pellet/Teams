@@ -22,7 +22,7 @@ public abstract class AbstractScreenBase extends Screen {
     protected int BUTTON_CENTERED_X;
     protected Button goBack;
 
-    protected AbstractScreenBase(ITextComponent titleIn, AbstractScreenBase parent) {
+    protected AbstractScreenBase(final ITextComponent titleIn, final AbstractScreenBase parent) {
         super(titleIn);
         this.parent = parent;
     }
@@ -39,7 +39,7 @@ public abstract class AbstractScreenBase extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, final float partialTicks) {
         assert minecraft != null;
         renderBackground();
         minecraft.getTextureManager().bindTexture(BACKGROUND);

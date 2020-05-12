@@ -13,7 +13,7 @@ class SlotTransfer extends Slot {
 
     private final String name;
 
-    public SlotTransfer(IInventory inventoryIn, int index, int xPosition, int yPosition, String name) {
+    public SlotTransfer(final IInventory inventoryIn, int index, int xPosition, int yPosition, final String name) {
         super(inventoryIn, index, xPosition, yPosition);
         this.name = name;
     }

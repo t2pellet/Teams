@@ -40,7 +40,7 @@ public class ChatButton extends ClearButton {
     }
 
     @Override
-    public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
+    public void renderButton(int p_renderButton_1_, int p_renderButton_2_, final float p_renderButton_3_) {
         fill(x - 2, y - 2, x + width + 2, y + height, (int) (179.0D) << 24 & -16777216);
         super.renderButton(p_renderButton_1_, p_renderButton_2_, p_renderButton_3_);
     }

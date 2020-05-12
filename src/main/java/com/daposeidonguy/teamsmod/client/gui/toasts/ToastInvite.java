@@ -12,18 +12,18 @@ import java.awt.*;
 
 public class ToastInvite implements IToast {
 
-    public boolean accepted = false;
     private final String teamName;
+    public boolean accepted = false;
     private boolean firstDraw = true;
     private long firstDrawTime;
 
-    public ToastInvite(String teamName) {
+    public ToastInvite(final String teamName) {
         this.teamName = teamName;
     }
 
     @Override
     @Nonnull
-    public Visibility draw(@Nonnull ToastGui toastGui, long delta) {
+    public Visibility draw(@Nonnull final ToastGui toastGui, final long delta) {
         if (firstDraw) {
             firstDrawTime = delta;
             firstDraw = false;

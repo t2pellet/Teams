@@ -14,7 +14,7 @@ public class GuiHandler {
     public static final Map<UUID, Integer> healthMap = new HashMap<>();
     public static final Map<String, Pair<String, Long>> chatMap = new HashMap<>();
     public static final List<UUID> priorityPlayers = new ArrayList<>();
+    public static final Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
     public static boolean displayTeamChat = false;
     public static NewChatGui backupChatGUI = new NewChatGui(ClientHandler.mc);
-    public static final Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
 }

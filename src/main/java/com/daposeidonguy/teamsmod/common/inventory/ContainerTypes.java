@@ -12,7 +12,7 @@ public class ContainerTypes {
     public static ContainerType<ContainerTransfer> containerTypeTransfer;
 
     @SubscribeEvent
-    public static void register(RegistryEvent.Register<ContainerType<?>> event) {
+    public static void register(final RegistryEvent.Register<ContainerType<?>> event) {
         ContainerTypes.containerTypeTransfer = IForgeContainerType.create(ContainerTransfer::new);
         containerTypeTransfer.setRegistryName("transfer");
         event.getRegistry().register(containerTypeTransfer);

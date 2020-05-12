@@ -23,19 +23,19 @@ public class TeamDataManager extends WorldSavedData {
         markDirty();
     }
 
-    public static TeamDataManager get(ServerWorld world) {
+    public static TeamDataManager get(final ServerWorld world) {
         DimensionSavedDataManager storage = world.getSavedData();
         return storage.getOrCreate(TeamDataManager::new, TeamsMod.MODID);
     }
 
     @Override
-    public void read(@Nonnull CompoundNBT nbt) {
+    public void read(@Nonnull final CompoundNBT nbt) {
         readFromNBT(nbt);
     }
 
     @Override
     @Nonnull
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+    public CompoundNBT write(@Nonnull final CompoundNBT compound) {
         return writeToNBT(compound);
     }
 
@@ -54,14 +54,14 @@ public class TeamDataManager extends WorldSavedData {
     }
 
     /* Adds a player to a team */
-    public void addPlayer(String team, UUID uid) {
+    public void addPlayer(final String team, final UUID uid) {
         teamToUuidsMap.get(team).add(uid);
         uuidToTeamMap.put(uid, team);
         markDirty();
     }
 
     /* Removes a player from a team */
-    public void removePlayer(String team, UUID uid) {
+    public void removePlayer(final String team, final UUID uid) {
         teamToUuidsMap.get(team).remove(uid);
         uuidToTeamMap.remove(uid);
         markDirty();
@@ -69,7 +69,7 @@ public class TeamDataManager extends WorldSavedData {
 
 
     /* Removes a team*/
-    public void removeTeam(String name) {
+    public void removeTeam(final String name) {
         for (UUID id : teamToUuidsMap.get(name)) {
             uuidToTeamMap.remove(id);
         }

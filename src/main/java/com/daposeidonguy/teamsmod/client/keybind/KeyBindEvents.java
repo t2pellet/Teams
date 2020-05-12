@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.client.gui.toasts.IToast;
@@ -30,7 +31,9 @@ class KeyBindEvents {
             if (toast != null) {
                 toast.accepted = true;
                 Minecraft.getInstance().player.sendChatMessage("/teamsmod accept");
-                Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 2.0F);
+                if (StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID()) != null) {
+                    Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 2.0F);
+                }
             }
         } else if (KeyBindHandler.switchChat.isPressed()) {
             try {

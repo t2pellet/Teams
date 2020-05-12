@@ -33,7 +33,7 @@ public class PacketEvents {
 
     /* Updates tick counter and sends Hunger and Health packet every 250 ticks */
     @SubscribeEvent
-    public static void tickEvent(TickEvent.ServerTickEvent event) {
+    public static void tickEvent(final TickEvent.ServerTickEvent event) {
         ticks += 1;
         if (ticks == 250 && EffectiveSide.get().isServer()) {
             for (ServerPlayerEntity playerMP : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
@@ -46,7 +46,7 @@ public class PacketEvents {
 
     /* Sends Hunger and Health packet when a player is hurt */
     @SubscribeEvent
-    public static void onPlayerDamage(LivingHurtEvent event) {
+    public static void onPlayerDamage(final LivingHurtEvent event) {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
@@ -57,7 +57,7 @@ public class PacketEvents {
 
     /* Sends Hunger and Health Packet when a player heals */
     @SubscribeEvent
-    public static void onPlayerHeal(LivingHealEvent event) {
+    public static void onPlayerHeal(final LivingHealEvent event) {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
@@ -70,14 +70,14 @@ public class PacketEvents {
 
     /* Sends Chat packet to all players when ServerChatEvent fires */
     @SubscribeEvent
-    public static void onPlayerChat(ServerChatEvent event) {
+    public static void onPlayerChat(final ServerChatEvent event) {
         boolean teamChat = event.getPlayer().getPersistentData().getBoolean("teamChat");
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageNewChat(event.getPlayer().getGameProfile().getName(), event.getMessage(), teamChat));
     }
 
     /* Sends MessageDeath packet to all players on the dead players team when LivingDeathEvent fires */
     @SubscribeEvent
-    public static void onPlayerDeath(LivingDeathEvent event) {
+    public static void onPlayerDeath(final LivingDeathEvent event) {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             if (!TeamConfig.disableDeathSound) {
                 PacketHandler.sendToTeam((ServerPlayerEntity) event.getEntityLiving(), new MessageDeath());

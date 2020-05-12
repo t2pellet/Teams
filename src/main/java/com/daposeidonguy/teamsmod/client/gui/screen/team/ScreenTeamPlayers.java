@@ -9,11 +9,11 @@ import java.awt.*;
 import java.util.UUID;
 
 public class ScreenTeamPlayers extends AbstractScreenBase {
-    private final String name;
+    private final String teamName;
 
-    ScreenTeamPlayers(AbstractScreenBase parent, String name) {
+    ScreenTeamPlayers(final AbstractScreenBase parent, final String name) {
         super(new TranslationTextComponent("teamsmod.players.title", name), parent);
-        this.name = name;
+        this.teamName = name;
     }
 
     @Override
@@ -22,10 +22,10 @@ public class ScreenTeamPlayers extends AbstractScreenBase {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, final float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         int yoffset = 30;
-        for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
+        for (UUID uid : StorageHandler.teamToUuidsMap.get(teamName)) {
             String playerName = ClientHandler.getUsernameFromUUID(uid);
             ClientHandler.mc.fontRenderer.drawString(playerName, CENTERED_X - (font.getStringWidth(playerName) >> 1), guiTop + yoffset, Color.GRAY.getRGB());
             yoffset += 15;

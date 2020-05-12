@@ -15,14 +15,14 @@ public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
     private final PlayerInventory playerInv;
     private final ContainerTransfer container;
 
-    public ScreenTransfer(ContainerTransfer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+    public ScreenTransfer(final ContainerTransfer screenContainer, final PlayerInventory inv, final ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
         this.container = screenContainer;
         this.playerInv = inv;
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(final float partialTicks, int mouseX, int mouseY) {
         renderBackground();
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         int x = (width - xSize) / 2;

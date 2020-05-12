@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ScreenTeamInvite extends AbstractScreenText {
 
-    ScreenTeamInvite(AbstractScreenBase parent, String teamName) {
+    ScreenTeamInvite(final AbstractScreenBase parent, final String teamName) {
         super(new TranslationTextComponent("teamsmod.invite.title", teamName), parent);
     }
 
@@ -42,7 +42,7 @@ public class ScreenTeamInvite extends AbstractScreenText {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, final float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         minecraft.fontRenderer.drawString(I18n.format("teamsmod.players.suggestions"), guiLeft + WIDTH + 42 - minecraft.fontRenderer.getStringWidth(I18n.format("teamsmod.players.suggestions")) / 2, guiTop + 35, Color.WHITE.getRGB());
     }

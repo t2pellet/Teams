@@ -12,7 +12,7 @@ public class ScreenTeamConfig extends AbstractScreenBase {
     private boolean disableAdvancementSync;
     private boolean enableFriendlyFire;
 
-    ScreenTeamConfig(AbstractScreenBase parent, String name) {
+    ScreenTeamConfig(final AbstractScreenBase parent, final String name) {
         super(new TranslationTextComponent("teamsmod.config.title", name), parent);
         teamName = name;
         disableAdvancementSync = StorageHandler.teamSettingsMap.get(teamName).get("disableAdvancementSync");

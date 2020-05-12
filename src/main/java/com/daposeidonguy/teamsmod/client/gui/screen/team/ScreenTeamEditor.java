@@ -13,7 +13,7 @@ public class ScreenTeamEditor extends AbstractScreenBase {
     private final String teamName;
 
 
-    ScreenTeamEditor(AbstractScreenBase parent, String teamName) {
+    ScreenTeamEditor(final AbstractScreenBase parent, final String teamName) {
         super(new TranslationTextComponent("teamsmod.edit.title", teamName), parent);
         this.teamName = teamName;
     }
@@ -47,8 +47,4 @@ public class ScreenTeamEditor extends AbstractScreenBase {
         }));
     }
 
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-    }
 }

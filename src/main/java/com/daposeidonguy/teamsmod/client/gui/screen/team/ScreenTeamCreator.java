@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 public class ScreenTeamCreator extends AbstractScreenText {
 
-    ScreenTeamCreator(AbstractScreenBase parent) {
+    ScreenTeamCreator(final AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.create.title"), parent);
     }
 
@@ -28,7 +28,7 @@ public class ScreenTeamCreator extends AbstractScreenText {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, final float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
 
         minecraft.fontRenderer.drawString(I18n.format("teamsmod.create.taken"), guiLeft + WIDTH + 40 - minecraft.fontRenderer.getStringWidth(I18n.format("teamsmod.create.taken")) / 2, guiTop + 35, Color.WHITE.getRGB());

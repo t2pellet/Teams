@@ -39,7 +39,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(++id, MessageConfig.class, MessageConfig::encode, MessageConfig::new, MessageConfig::onMessage);
     }
 
-    public static void sendToTeam(ServerPlayerEntity player, AbstractMessage message) {
+    public static void sendToTeam(final ServerPlayerEntity player, final AbstractMessage message) {
         String teamName = StorageHandler.uuidToTeamMap.get(player.getUniqueID());
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (teamName != null) {

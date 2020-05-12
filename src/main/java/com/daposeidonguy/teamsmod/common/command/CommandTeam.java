@@ -33,7 +33,7 @@ public class CommandTeam {
     private static final String[] aliases = {"teamsmod", "teams", "t"};
 
     /* Constructs and registers the team command */
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    public static void register(final CommandDispatcher<CommandSource> dispatcher) {
         TeamsMod.logger.info("Registering commands...");
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         for (String alias : aliases) {
