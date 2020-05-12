@@ -7,20 +7,23 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import javax.annotation.Nonnull;
+
 public class InterfaceTransfer implements INamedContainerProvider {
 
-    private String name;
+    private final String name;
 
     public InterfaceTransfer(String name) {
         this.name = name;
     }
 
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public Container createMenu(int i, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity playerEntity) {
         return new ContainerTransfer(i, playerInventory, name);
     }
 
     @Override
+    @Nonnull
     public ITextComponent getDisplayName() {
         return new StringTextComponent("transfer");
     }

@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /* Handles events related to keybindings */
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class KeyBindEvents {
+class KeyBindEvents {
 
     /* Handles keybinded dynamic toggling of certain features */
     @SubscribeEvent

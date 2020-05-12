@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.Set;
 
-public class SuggestionHandler {
+class SuggestionHandler {
     /* Provides autocomplete suggestion list of teams */
     static final SuggestionProvider<CommandSource> TEAM_SUGGESTIONS = SuggestionProviders.register(new ResourceLocation("teams"), (ctx, builder) -> {
         Set<String> teamSet = StorageHandler.teamToUuidsMap.keySet();

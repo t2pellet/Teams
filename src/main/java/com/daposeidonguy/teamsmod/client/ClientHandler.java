@@ -22,10 +22,10 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientHandler {
 
-    public static Map<UUID, String> idtoNameMap = new HashMap<>();
-    public static Map<String, UUID> nametoIdMap = new HashMap<>();
-    public static Minecraft mc = Minecraft.getInstance();
-    public static MainWindow window = ClientHandler.mc.getMainWindow();
+    public static final Map<UUID, String> idtoNameMap = new HashMap<>();
+    public static final Map<String, UUID> nametoIdMap = new HashMap<>();
+    public static final Minecraft mc = Minecraft.getInstance();
+    public static final MainWindow window = ClientHandler.mc.getMainWindow();
     public static long ticks = 0;
 
     @SubscribeEvent
@@ -41,8 +41,8 @@ public class ClientHandler {
         }
         if (playerName == null) {
             try {
-                playerName = Minecraft.getInstance().getConnection().getPlayerInfo(uuid).getGameProfile().getName();
-            } catch (NullPointerException ex) {
+                playerName = ClientHandler.mc.getConnection().getPlayerInfo(uuid).getGameProfile().getName();
+            } catch (NullPointerException ignored) {
             }
         }
         return playerName;

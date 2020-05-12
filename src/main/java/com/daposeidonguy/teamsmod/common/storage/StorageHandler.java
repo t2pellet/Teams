@@ -2,52 +2,29 @@ package com.daposeidonguy.teamsmod.common.storage;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.DimensionSavedDataManager;
-import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.*;
 
-public class StorageHandler extends WorldSavedData {
+public class StorageHandler {
 
-    public static Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
-    public static Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
-    public static Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
+    public static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
+    public static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
+    public static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
+    public static final Map<String, UUID> teamToOwnerMap = new HashMap<>();
 
-    public StorageHandler() {
-        super(TeamsMod.MODID);
-    }
-
-    public StorageHandler(String name) {
-        super(name);
-        markDirty();
-    }
-
-    public static StorageHandler get(ServerWorld world) {
-        DimensionSavedDataManager storage = world.getSavedData();
-        StorageHandler data = storage.getOrCreate(() -> new StorageHandler(), TeamsMod.MODID);
-        if (data == null) {
-            data = new StorageHandler();
-            storage.set(data);
-        }
-        return data;
-    }
 
     /* Syncs advancements of all players in a team */
     public static void syncPlayers(String team, ServerPlayerEntity player) {
         if (EffectiveSide.get().isServer() && player != null) {
             for (Advancement adv : ServerLifecycleHooks.getCurrentServer().getAdvancementManager().getAllAdvancements()) {
-                Iterator<UUID> uuidIterator = teamToUuidsMap.get(team).iterator();
-                while (uuidIterator.hasNext()) {
-                    UUID id = uuidIterator.next();
+                for (UUID id : teamToUuidsMap.get(team)) {
                     ServerPlayerEntity teammate = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(id);
                     if (teammate != null) {
                         if (teammate.getAdvancements().getProgress(adv).isDone()) {
@@ -65,103 +42,82 @@ public class StorageHandler extends WorldSavedData {
         }
     }
 
-    /* Adds a team */
-    public void addTeam(String name, PlayerEntity player) {
-        List<UUID> tempList = new ArrayList<>();
-        tempList.add(player.getUniqueID());
-        teamToUuidsMap.put(name, tempList);
-        uuidToTeamMap.put(player.getUniqueID(), name);
-        Map<String, Boolean> newSettingsMap = new HashMap<>();
-        newSettingsMap.put("disableAdvancementSync", false);
-        newSettingsMap.put("enableFriendlyFire", false);
-        teamSettingsMap.put(name, newSettingsMap);
-        markDirty();
-    }
-
-    /* Adds a player to a team */
-    public void addPlayer(String team, UUID uid) {
-        teamToUuidsMap.get(team).add(uid);
-        uuidToTeamMap.put(uid, team);
-        markDirty();
-    }
-
-    /* Removes a player from a team */
-    public void removePlayer(PlayerEntity p, UUID uid) {
-        String name = uuidToTeamMap.get(p.getUniqueID());
-        teamToUuidsMap.get(name).remove(uid);
-        uuidToTeamMap.remove(uid);
-        markDirty();
-    }
-
-    /* Removes a team*/
-    public void removeTeam(String name) {
-        Iterator<UUID> uuidIterator = teamToUuidsMap.get(name).iterator();
-        while (uuidIterator.hasNext()) {
-            UUID id = uuidIterator.next();
-            uuidToTeamMap.remove(id);
+    public static void readFromNBT(CompoundNBT nbt) {
+        clearData();
+        for (INBT inbt : nbt.getList("Teams", Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT teamTag = (CompoundNBT) inbt;
+            String teamName = teamTag.getString("Team Name");
+            readPlayers(teamTag, teamName);
+            readSettings(teamTag, teamName);
         }
-        teamToUuidsMap.remove(name);
-        teamSettingsMap.remove(name);
-        markDirty();
     }
 
-    @Override
-    public void read(CompoundNBT nbt) {
+    /* Clears all loaded savedata */
+    private static void clearData() {
+        TeamsMod.logger.info("Clearing old data");
         teamToUuidsMap.clear();
         uuidToTeamMap.clear();
         teamSettingsMap.clear();
-        String teamName;
-        Iterator<INBT> tagList = nbt.getList("Teams", Constants.NBT.TAG_COMPOUND).iterator();
-        while (tagList.hasNext()) {
-            CompoundNBT teamTag = (CompoundNBT) tagList.next();
-            Iterator<INBT> playerTagListIterator = teamTag.getList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
-            List<UUID> uuidList = new ArrayList();
-            teamName = teamTag.getString("Team Name");
-            while (playerTagListIterator.hasNext()) {
-                CompoundNBT playerTag = (CompoundNBT) playerTagListIterator.next();
-                UUID id = UUID.fromString(playerTag.getString("uuid"));
-                uuidToTeamMap.put(id, teamName);
-                uuidList.add(id);
-            }
-            teamToUuidsMap.put(teamName, uuidList);
-            CompoundNBT teamSettings = (CompoundNBT) teamTag.get("Settings");
-            Map<String, Boolean> settingsMap = new HashMap<>();
-            if (teamSettings == null) {
-                settingsMap.put("disableAdvancementSync", false);
-                settingsMap.put("enableFriendlyFire", false);
-            } else {
-                settingsMap.put("disableAdvancementSync", teamSettings.getBoolean("disableAdvancementSync"));
-                settingsMap.put("enableFriendlyFire", teamSettings.getBoolean("enableFriendlyFire"));
-            }
-            teamSettingsMap.put(teamName, settingsMap);
-
-        }
+        teamToOwnerMap.clear();
     }
 
-    @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    /* Reads team settings from NBT */
+    private static void readSettings(final CompoundNBT teamTag, final String teamName) {
+        CompoundNBT teamSettings = (CompoundNBT) teamTag.get("Settings");
+        Map<String, Boolean> settingsMap = new HashMap<>();
+        if (teamSettings == null) {
+            settingsMap.put("disableAdvancementSync", false);
+            settingsMap.put("enableFriendlyFire", false);
+        } else {
+            settingsMap.put("disableAdvancementSync", teamSettings.getBoolean("disableAdvancementSync"));
+            settingsMap.put("enableFriendlyFire", teamSettings.getBoolean("enableFriendlyFire"));
+        }
+        teamSettingsMap.put(teamName, settingsMap);
+    }
+
+    /* Reads team players from NBT */
+    private static void readPlayers(final CompoundNBT teamTag, final String teamName) {
+        Iterator<INBT> playerTagListIterator = teamTag.getList("Player List", Constants.NBT.TAG_COMPOUND).iterator();
+        List<UUID> uuidList = new ArrayList<>();
+        while (playerTagListIterator.hasNext()) {
+            CompoundNBT playerTag = (CompoundNBT) playerTagListIterator.next();
+            UUID id = UUID.fromString(playerTag.getString("uuid"));
+            uuidToTeamMap.put(id, teamName);
+            uuidList.add(id);
+        }
+        teamToUuidsMap.put(teamName, uuidList);
+    }
+
+    public static CompoundNBT writeToNBT(CompoundNBT compound) {
         ListNBT tagList = new ListNBT();
-        Iterator<String> iteratorTeams = teamToUuidsMap.keySet().iterator();
-        while (iteratorTeams.hasNext()) {
+        for (String teamName : teamToUuidsMap.keySet()) {
             CompoundNBT teamTag = new CompoundNBT();
-            String team = iteratorTeams.next();
-            teamTag.putString("Team Name", team);
-            ListNBT playerListTag = new ListNBT();
-            Iterator<UUID> uuidIterator = teamToUuidsMap.get(team).iterator();
-            while (uuidIterator.hasNext()) {
-                UUID id = uuidIterator.next();
-                CompoundNBT playerTag = new CompoundNBT();
-                playerTag.putString("uuid", id.toString());
-                playerListTag.add(playerTag);
-            }
-            teamTag.put("Player List", playerListTag);
-            CompoundNBT teamSettings = new CompoundNBT();
-            teamSettings.putBoolean("disableAdvancementSync", teamSettingsMap.get(team).get("disableAdvancementSync"));
-            teamSettings.putBoolean("enableFriendlyFire", teamSettingsMap.get(team).get("enableFriendlyFire"));
-            teamTag.put("Settings", teamSettings);
+            teamTag.putString("Team Name", teamName);
+            teamTag.put("Player List", writePlayers(teamName));
+            teamTag.put("Settings", writeSettings(teamName));
             tagList.add(teamTag);
         }
         compound.put("Teams", tagList);
         return compound;
     }
+
+    /* Writes saved team players to NBT */
+    private static ListNBT writePlayers(final String teamName) {
+        ListNBT playerListTag = new ListNBT();
+        for (UUID id : teamToUuidsMap.get(teamName)) {
+            CompoundNBT playerTag = new CompoundNBT();
+            playerTag.putString("uuid", id.toString());
+            playerListTag.add(playerTag);
+        }
+        return playerListTag;
+    }
+
+    /* Writes saved team settings to NBT */
+    private static CompoundNBT writeSettings(final String teamName) {
+        CompoundNBT teamSettings = new CompoundNBT();
+        teamSettings.putBoolean("disableAdvancementSync", teamSettingsMap.get(teamName).get("disableAdvancementSync"));
+        teamSettings.putBoolean("enableFriendlyFire", teamSettingsMap.get(teamName).get("enableFriendlyFire"));
+        return teamSettings;
+    }
+
 }

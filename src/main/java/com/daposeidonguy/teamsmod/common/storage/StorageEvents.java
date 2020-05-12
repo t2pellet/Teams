@@ -16,19 +16,21 @@ import net.minecraftforge.fml.network.PacketDistributor;
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class StorageEvents {
 
+    public static TeamDataManager data;
+
     /* Sends SaveData packet to player on login */
     @SubscribeEvent
     public static void playerLogIn(final PlayerEvent.PlayerLoggedInEvent event) {
         if (EffectiveSide.get().isServer()) {
             event.getPlayer().getPersistentData().putBoolean("teamChat", false);
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageSaveData(StorageHandler.teamToUuidsMap));
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageSaveData(event.getPlayer().getServer().getWorld(DimensionType.OVERWORLD)));
         }
     }
 
     /* Gets savedata when the server starts */
     @SubscribeEvent
     public static void serverStart(final FMLServerStartingEvent event) {
-        StorageHandler.get(event.getServer().getWorld(DimensionType.OVERWORLD));
+        data = TeamDataManager.get(event.getServer().getWorld(DimensionType.OVERWORLD));
     }
 
 }

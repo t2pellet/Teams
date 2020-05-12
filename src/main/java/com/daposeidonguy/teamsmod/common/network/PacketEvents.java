@@ -20,7 +20,6 @@ import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 /* Handles events to send network messages */
@@ -30,15 +29,14 @@ public class PacketEvents {
 
     /* Events related to sending MessageHealth and MessageHunger packets */
 
-    public static int ticks = 0;
+    private static int ticks = 0;
+
     /* Updates tick counter and sends Hunger and Health packet every 250 ticks */
     @SubscribeEvent
     public static void tickEvent(TickEvent.ServerTickEvent event) {
         ticks += 1;
         if (ticks == 250 && EffectiveSide.get().isServer()) {
-            Iterator<ServerPlayerEntity> playerMPIterator = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().iterator();
-            while (playerMPIterator.hasNext()) {
-                ServerPlayerEntity playerMP = playerMPIterator.next();
+            for (ServerPlayerEntity playerMP : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
                 PacketHandler.sendToTeam(playerMP, new MessageHealth(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getHealth())));
                 PacketHandler.sendToTeam(playerMP, new MessageHunger(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getFoodStats().getFoodLevel())));
             }

@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.ClientHandler;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenText;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
 import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
@@ -14,13 +14,10 @@ import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class ScreenTeamInvite extends ScreenText {
+public class ScreenTeamInvite extends AbstractScreenText {
 
-    private String teamName;
-
-    protected ScreenTeamInvite(ScreenBase parent, String teamName) {
+    ScreenTeamInvite(AbstractScreenBase parent, String teamName) {
         super(new TranslationTextComponent("teamsmod.invite.title", teamName), parent);
-        this.teamName = teamName;
     }
 
     @Override
@@ -36,7 +33,7 @@ public class ScreenTeamInvite extends ScreenText {
         while (infoIterator.hasNext()) {
             UUID uid = infoIterator.next().getGameProfile().getId();
             String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
-            if (playerName != clientName && !StorageHandler.uuidToTeamMap.containsKey(uid)) {
+            if (!playerName.equals(clientName) && !StorageHandler.uuidToTeamMap.containsKey(uid)) {
                 int width = minecraft.fontRenderer.getStringWidth(playerName);
                 this.addButton(new ClearButton(guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, playerName, btn -> this.text.setText(btn.getMessage())));
                 yoffset += 15;

@@ -1,13 +1,13 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
 
 
-public class ScreenMain extends ScreenBase {
+public class ScreenMain extends AbstractScreenBase {
 
     public ScreenMain() {
         super(new TranslationTextComponent("teamsmod.main.title"), null);

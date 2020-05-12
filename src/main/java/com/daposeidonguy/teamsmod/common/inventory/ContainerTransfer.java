@@ -8,10 +8,11 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
+import javax.annotation.Nonnull;
+
 public class ContainerTransfer extends Container {
 
-    private Inventory inventory;
-    private String name;
+    private final String name;
 
     ContainerTransfer(int windowID, PlayerInventory playerInv, PacketBuffer extraData) {
         this(windowID, playerInv, extraData.readString());
@@ -20,7 +21,7 @@ public class ContainerTransfer extends Container {
     public ContainerTransfer(int windowID, PlayerInventory playerInv, String name) {
         super(ContainerTypes.containerTypeTransfer, windowID);
         this.name = name;
-        inventory = new Inventory(1);
+        Inventory inventory = new Inventory(1);
 
         addSlot(new SlotTransfer(inventory, 0, 80, 35, name));
 
@@ -39,6 +40,7 @@ public class ContainerTransfer extends Container {
     }
 
     @Override
+    @Nonnull
     public ItemStack transferStackInSlot(PlayerEntity player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get(index);
@@ -71,7 +73,7 @@ public class ContainerTransfer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
         return true;
     }
 }

@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 public class TeamsMod {
 
     public static final String MODID = "teamsmod";
-    public static Logger logger = LogManager.getLogger(MODID);
+    public static final Logger logger = LogManager.getLogger(MODID);
     public static boolean doneSetup = false;
     private static TeamsMod instance;
 
@@ -59,7 +59,6 @@ public class TeamsMod {
         TeamsMod.logger.info("Teams: Server starting");
         CommandTeam.register(event.getCommandDispatcher());
     }
-
 
 
 }

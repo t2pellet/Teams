@@ -6,7 +6,7 @@ import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class ScreenPages extends ScreenBase {
+public abstract class AbstractScreenPages extends AbstractScreenBase {
 
     private static final ResourceLocation BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
 
@@ -15,7 +15,7 @@ public class ScreenPages extends ScreenBase {
     private Button nextPage;
     private int page;
 
-    protected ScreenPages(ITextComponent titleIn, ScreenBase parent) {
+    protected AbstractScreenPages(ITextComponent titleIn, AbstractScreenBase parent) {
         super(titleIn, parent);
         page = 0;
     }
@@ -52,7 +52,7 @@ public class ScreenPages extends ScreenBase {
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         this.prevPage.visible = this.page > 0;
-        this.nextPage.visible = this.page < Math.ceil(this.buttons.size() / 4);
+        this.nextPage.visible = this.page < Math.ceil(this.buttons.size() >> 2);
         if (this.prevPage.visible) {
             this.prevPage.render(mouseX, mouseY, partialTicks);
         }

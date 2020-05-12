@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.ClientHandler;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenText;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
 import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
@@ -13,13 +13,10 @@ import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class ScreenTeamKick extends ScreenText {
+public class ScreenTeamKick extends AbstractScreenText {
 
-    private String teamName;
-
-    protected ScreenTeamKick(ScreenBase parent, String teamName) {
+    ScreenTeamKick(AbstractScreenBase parent, String teamName) {
         super(new TranslationTextComponent("teamsmod.kick.title", teamName), parent);
-        this.teamName = teamName;
     }
 
     @Override

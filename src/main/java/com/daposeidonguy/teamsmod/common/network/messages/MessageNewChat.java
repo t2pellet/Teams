@@ -14,11 +14,11 @@ import java.util.function.Supplier;
 /* Sent/received when a player sends a chat message */
 public class MessageNewChat extends AbstractMessage {
 
-    public MessageNewChat(PacketBuffer buf) {
+    public MessageNewChat(final PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageNewChat(String username, String message, boolean teamChat) {
+    public MessageNewChat(final String username, final String message, boolean teamChat) {
         tag.putString("username", username);
         tag.putString("message", message);
         tag.putBoolean("teamChat", teamChat);

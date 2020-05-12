@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenText;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
@@ -10,11 +10,9 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.awt.*;
 import java.util.Iterator;
 
-public class ScreenTeamCreator extends ScreenText {
+public class ScreenTeamCreator extends AbstractScreenText {
 
-    private Button button;
-
-    protected ScreenTeamCreator(ScreenBase parent) {
+    ScreenTeamCreator(AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.create.title"), parent);
     }
 
@@ -22,11 +20,11 @@ public class ScreenTeamCreator extends ScreenText {
     public void init() {
         super.init();
 
-        this.button = new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, "Create Team", btn -> {
+        Button button = new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, "Create Team", btn -> {
             minecraft.player.sendChatMessage("/teamsmod create " + this.text.getText());
             minecraft.displayGuiScreen(null);
         });
-        this.addButton(this.button);
+        this.addButton(button);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class ScreenTeamCreator extends ScreenText {
         int yoffset = 15;
         while (nameIterator.hasNext()) {
             String name = nameIterator.next();
-            minecraft.fontRenderer.drawString(name, guiLeft + WIDTH + 40 - minecraft.fontRenderer.getStringWidth(name) / 2, guiTop + yoffset + 35, Color.GRAY.getRGB());
+            minecraft.fontRenderer.drawString(name, guiLeft + WIDTH + 40 - (minecraft.fontRenderer.getStringWidth(name) >> 1), guiTop + yoffset + 35, Color.GRAY.getRGB());
             yoffset += 15;
         }
 

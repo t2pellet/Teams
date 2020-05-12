@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /* Handles events related to chat features */
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ChatEvents {
+class ChatEvents {
 
     /* Appends prefix to message (depending on config) and plays sound and emboldens message if pinged */
     /* Also handles team messages (removes incoming message from teams chat, ensures messages otherwise added to both chats) */
@@ -32,7 +32,7 @@ public class ChatEvents {
                 event.getMessage().setStyle(new Style().setBold(true));
             }
             handleTeamChat(event, senderTeam, myTeam);
-            if (doPing && (!ChatHandler.lastMessageTeam || (ChatHandler.lastMessageTeam && myTeam != null && senderTeam.equals(myTeam)))) {
+            if (doPing && (!ChatHandler.lastMessageTeam || senderTeam.equals(myTeam))) {
                 Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
         } else if (GuiHandler.displayTeamChat) {
@@ -56,11 +56,11 @@ public class ChatEvents {
         } else {
             if (ChatHandler.lastMessageTeam) {
                 event.setCanceled(true);
-                if (senderTeam != null && myTeam != null && senderTeam.equals(myTeam)) {
+                if (senderTeam != null && senderTeam.equals(myTeam)) {
                     GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
                 }
             } else {
-                if (senderTeam != null && myTeam != null && senderTeam.equals(myTeam)) {
+                if (senderTeam != null && senderTeam.equals(myTeam)) {
                     GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
                 }
             }

@@ -62,5 +62,6 @@
   "teamsmod.keyhud.desc": "Toggle HUD Overlays",
   "teamsmod.keyaccept.desc": "Accept Team Invite",
   "teamsmod.keyswitch.desc": "Switch Chat Tab",
-  "teamsmod.unknownplayer": "Offline Player"
+  "teamsmod.unknownplayer": "Offline Player",
+  "teamsmod.nosuchplayer": "Error: no such player %s"
 }

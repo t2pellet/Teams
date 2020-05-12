@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 /* Sent/received to update client health maps */
 public class MessageHealth extends AbstractMessage {
 
-    public MessageHealth(PacketBuffer buf) {
+    public MessageHealth(final PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageHealth(UUID id, int health) {
+    public MessageHealth(final UUID id, int health) {
         tag.putString("id", id.toString());
         tag.putInt("health", health);
     }

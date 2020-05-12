@@ -43,7 +43,7 @@ public class ConfigHandler {
     }
 
     /* Retrieves values from the client config */
-    public static void bakeClient() {
+    private static void bakeClient() {
         TeamConfig.smallIcon = ConfigHolder.CLIENT_CONFIG.smallIcon.get();
         TeamConfig.useAlternatePosition = ConfigHolder.CLIENT_CONFIG.useAlternatePosition.get();
         TeamConfig.disableStatusOverlay = ConfigHolder.CLIENT_CONFIG.disableStatusOverlay.get();
@@ -52,7 +52,7 @@ public class ConfigHandler {
     }
 
     /* Retrieves values from the common config */
-    public static void bakeCommon() {
+    private static void bakeCommon() {
         /* Common */
         TeamConfig.disablePing = ConfigHolder.COMMON_CONFIG.disablePing.get();
         TeamConfig.disablePrefix = ConfigHolder.COMMON_CONFIG.disablePrefix.get();

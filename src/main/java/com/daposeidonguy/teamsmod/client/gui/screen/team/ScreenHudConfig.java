@@ -2,19 +2,18 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenPages;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenPages;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Iterator;
 import java.util.UUID;
 
-public class ScreenHudConfig extends ScreenPages {
+public class ScreenHudConfig extends AbstractScreenPages {
 
 
-    protected ScreenHudConfig(ScreenBase parent) {
+    ScreenHudConfig(AbstractScreenBase parent) {
         super(new TranslationTextComponent("teamsmod.hud.title"), parent);
     }
 
@@ -28,9 +27,7 @@ public class ScreenHudConfig extends ScreenPages {
             minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.hud.notinteam"));
             return;
         }
-        Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(name).iterator();
-        while (teamIterator.hasNext()) {
-            UUID uid = teamIterator.next();
+        for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
             if (!uid.equals(minecraft.player.getUniqueID())) {
                 String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
                 if (playerName != null) {

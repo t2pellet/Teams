@@ -12,14 +12,13 @@ import java.awt.*;
 public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TeamsMod.MODID, "textures/gui/transfer.png");
-    private PlayerInventory playerInv;
-    private ContainerTransfer container;
-    private String invTitle;
+    private final PlayerInventory playerInv;
+    private final ContainerTransfer container;
 
-    public ScreenTransfer(ContainerTransfer inventorySlotsIn, PlayerInventory playerInv, ITextComponent title) {
-        super(inventorySlotsIn, playerInv, title);
-        this.container = inventorySlotsIn;
-        this.playerInv = playerInv;
+    public ScreenTransfer(ContainerTransfer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+        super(screenContainer, inv, titleIn);
+        this.container = screenContainer;
+        this.playerInv = inv;
     }
 
     @Override
@@ -33,7 +32,7 @@ public class ScreenTransfer extends ContainerScreen<ContainerTransfer> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        this.font.drawString(title.getFormattedText(), xSize / 2 - this.font.getStringWidth(invTitle) / 2, 6, Color.DARK_GRAY.getRGB());
+        this.font.drawString(title.getFormattedText(), xSize / 2 - this.font.getStringWidth(title.getFormattedText()) / 2, 6, Color.DARK_GRAY.getRGB());
     }
 
     @Override

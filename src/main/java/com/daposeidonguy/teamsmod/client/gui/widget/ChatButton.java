@@ -8,8 +8,8 @@ import net.minecraft.client.gui.NewChatGui;
 
 public class ChatButton extends ClearButton {
 
-    private static int buttonWidth1 = ClientHandler.mc.fontRenderer.getStringWidth("Display: Server Chat");
-    private static int buttonWidth2 = ClientHandler.mc.fontRenderer.getStringWidth("Display: Team Chat");
+    private static final int buttonWidth1 = ClientHandler.mc.fontRenderer.getStringWidth("Display: Server Chat");
+    private static final int buttonWidth2 = ClientHandler.mc.fontRenderer.getStringWidth("Display: Team Chat");
 
     public ChatButton(int xIn, int yIn, int widthIn, int heightIn) {
         super(xIn, yIn, widthIn, heightIn, "Display: Server Chat", btn -> {

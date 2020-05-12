@@ -15,7 +15,7 @@ public class CompassOverlay extends AbstractGui {
     private static final int WIDTH = 182;
     private static final int HEIGHT = 5;
 
-    private Minecraft mc;
+    private final Minecraft mc;
 
     public CompassOverlay(Minecraft mc, String teamName) {
         this.mc = mc;

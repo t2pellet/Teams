@@ -11,7 +11,7 @@ public abstract class AbstractMessage {
     CompoundNBT tag = new CompoundNBT();
 
     /* Decodes PacketBuffer buf into CompoundNBT tag */
-    public AbstractMessage(PacketBuffer buf) {
+    AbstractMessage(final PacketBuffer buf) {
         tag = buf.readCompoundTag();
     }
 
@@ -20,10 +20,10 @@ public abstract class AbstractMessage {
     }
 
     /* Encodes CompoundNBT tag into PacketBuffer buf */
-    public void encode(PacketBuffer buf) {
+    public void encode(final PacketBuffer buf) {
         buf.writeCompoundTag(tag);
     }
 
     /* Handles logic for when the message is received, given context ctx */
-    public abstract void onMessage(Supplier<NetworkEvent.Context> ctx);
+    public abstract void onMessage(final Supplier<NetworkEvent.Context> ctx);
 }

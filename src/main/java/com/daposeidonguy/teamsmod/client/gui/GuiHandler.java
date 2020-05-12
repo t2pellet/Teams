@@ -10,11 +10,11 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class GuiHandler {
-    public static Map<UUID, Integer> hungerMap = new HashMap<>();
-    public static Map<UUID, Integer> healthMap = new HashMap<>();
-    public static Map<String, Pair<String, Long>> chatMap = new HashMap<>();
-    public static List<UUID> priorityPlayers = new ArrayList<>();
+    public static final Map<UUID, Integer> hungerMap = new HashMap<>();
+    public static final Map<UUID, Integer> healthMap = new HashMap<>();
+    public static final Map<String, Pair<String, Long>> chatMap = new HashMap<>();
+    public static final List<UUID> priorityPlayers = new ArrayList<>();
     public static boolean displayTeamChat = false;
     public static NewChatGui backupChatGUI = new NewChatGui(ClientHandler.mc);
-    public static Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
+    public static final Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
 }

@@ -14,12 +14,12 @@ public class MessageHunger extends AbstractMessage {
         super(buf);
     }
 
-    public MessageHunger(UUID id, int health) {
+    public MessageHunger(final UUID id, int health) {
         tag.putString("id", id.toString());
         tag.putInt("hunger", health);
     }
 
-    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+    public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             UUID uid;
             try {

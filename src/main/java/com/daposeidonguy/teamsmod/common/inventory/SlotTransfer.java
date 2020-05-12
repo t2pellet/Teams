@@ -9,9 +9,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-public class SlotTransfer extends Slot {
+class SlotTransfer extends Slot {
 
-    private String name;
+    private final String name;
 
     public SlotTransfer(IInventory inventoryIn, int index, int xPosition, int yPosition, String name) {
         super(inventoryIn, index, xPosition, yPosition);
@@ -27,6 +27,9 @@ public class SlotTransfer extends Slot {
             CompoundNBT tagStack = new CompoundNBT();
             stack1.write(tagStack);
             ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(name);
+            if (p == null) {
+                return;
+            }
             if (p.inventory.getFirstEmptyStack() != -1) {
                 p.addItemStackToInventory(stack1);
             } else {

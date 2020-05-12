@@ -16,7 +16,7 @@ import java.util.UUID;
 public class StatusOverlay extends AbstractGui {
 
     private int offsetY;
-    private Minecraft mc;
+    private final Minecraft mc;
 
     public StatusOverlay(Minecraft mc, String teamName) {
         offsetY = 0;
@@ -56,9 +56,9 @@ public class StatusOverlay extends AbstractGui {
         NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(playerUUID);
         String playerName = info.getGameProfile().getName();
         ResourceLocation skinLoc = info.getLocationSkin();
-        int health = GuiHandler.healthMap.containsKey(playerUUID) ? GuiHandler.healthMap.get(playerUUID) : 20;
-        int hunger = GuiHandler.hungerMap.containsKey(playerUUID) ? GuiHandler.hungerMap.get(playerUUID) : 20;
-        if (health == -1) {
+        int health = GuiHandler.healthMap.getOrDefault(playerUUID, 20);
+        int hunger = GuiHandler.hungerMap.getOrDefault(playerUUID, 20);
+        if (health < 0) {
             return;
         }
         mc.getTextureManager().bindTexture(new ResourceLocation(TeamsMod.MODID, "textures/gui/icon.png"));

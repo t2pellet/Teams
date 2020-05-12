@@ -15,19 +15,19 @@ import java.util.function.Supplier;
 /* Sent/received when a player opens Item Transfer GUI */
 public class MessageGuiTransfer extends AbstractMessage {
 
-    public MessageGuiTransfer(PacketBuffer buf) {
+    public MessageGuiTransfer(final PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageGuiTransfer(UUID id, String name) {
+    public MessageGuiTransfer(final UUID id, final String name) {
         tag.putString("id", id.toString());
         tag.putString("name", name);
     }
 
-    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+    public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (EffectiveSide.get().isServer() && !TeamConfig.disableInventoryTransfer) {
-                if (tag.getString("id") != null && tag.getString("name") != null) {
+                if (!tag.getString("id").equals("") && !tag.getString("name").equals("")) {
                     ServerPlayerEntity p = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(tag.getString("id")));
                     if (p != null) {
                         NetworkHooks.openGui(p, new InterfaceTransfer(tag.getString("name")), buf -> buf.writeString(tag.getString("name")));

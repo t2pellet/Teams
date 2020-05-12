@@ -7,21 +7,23 @@ import net.minecraft.client.gui.toasts.ToastGui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.LanguageMap;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 
 public class ToastInvite implements IToast {
 
     public boolean accepted = false;
-    String teamName;
-    boolean firstDraw = true;
-    long firstDrawTime;
+    private final String teamName;
+    private boolean firstDraw = true;
+    private long firstDrawTime;
 
     public ToastInvite(String teamName) {
         this.teamName = teamName;
     }
 
     @Override
-    public Visibility draw(ToastGui toastGui, long delta) {
+    @Nonnull
+    public Visibility draw(@Nonnull ToastGui toastGui, long delta) {
         if (firstDraw) {
             firstDrawTime = delta;
             firstDraw = false;

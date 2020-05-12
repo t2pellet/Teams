@@ -1,18 +1,18 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.gui.screen.ScreenBase;
+import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class ScreenTeamConfig extends ScreenBase {
+public class ScreenTeamConfig extends AbstractScreenBase {
 
-    private String teamName;
+    private final String teamName;
     private boolean disableAdvancementSync;
     private boolean enableFriendlyFire;
 
-    protected ScreenTeamConfig(ScreenBase parent, String name) {
+    ScreenTeamConfig(AbstractScreenBase parent, String name) {
         super(new TranslationTextComponent("teamsmod.config.title", name), parent);
         teamName = name;
         disableAdvancementSync = StorageHandler.teamSettingsMap.get(teamName).get("disableAdvancementSync");

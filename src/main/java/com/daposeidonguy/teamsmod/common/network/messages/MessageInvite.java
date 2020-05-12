@@ -13,16 +13,16 @@ import java.util.function.Supplier;
 /* Sent to player invited to a team */
 public class MessageInvite extends AbstractMessage {
 
-    public MessageInvite(PacketBuffer buf) {
+    public MessageInvite(final PacketBuffer buf) {
         super(buf);
     }
 
-    public MessageInvite(String teamName) {
+    public MessageInvite(final String teamName) {
         tag.putString("teamName", teamName);
     }
 
-    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> displayToast()));
+    public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> this::displayToast));
         ctx.get().setPacketHandled(true);
     }
 

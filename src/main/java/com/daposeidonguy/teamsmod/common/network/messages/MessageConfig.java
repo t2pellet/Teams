@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class MessageConfig extends AbstractMessage {
 
-    public MessageConfig(PacketBuffer buf) {
+    public MessageConfig(final PacketBuffer buf) {
         super(buf);
     }
 
@@ -21,7 +21,7 @@ public class MessageConfig extends AbstractMessage {
         tag.putBoolean("disableDeathSound", TeamConfig.disableDeathSound);
     }
 
-    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+    public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             ConfigHandler.serverDisablePing = tag.getBoolean("disablePing");
             ConfigHandler.serverDisableTransfer = tag.getBoolean("disableTransfer");

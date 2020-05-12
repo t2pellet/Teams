@@ -14,14 +14,14 @@ import java.util.function.Supplier;
 /* Sent/received when a player dies */
 public class MessageDeath extends AbstractMessage {
 
-    public MessageDeath(PacketBuffer buf) {
+    public MessageDeath(final PacketBuffer buf) {
         super(buf);
     }
 
     public MessageDeath() {
     }
 
-    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+    public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             if (!TeamConfig.disableDeathSound && !ConfigHandler.serverDisableDeathSound) {
                 Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 5.0F);

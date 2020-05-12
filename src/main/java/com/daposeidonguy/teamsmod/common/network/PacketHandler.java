@@ -12,7 +12,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 /* Registers network messages */
@@ -29,24 +28,22 @@ public class PacketHandler {
     public static void register() {
         TeamsMod.logger.info("Registering packets...");
         int id = 0;
-        INSTANCE.registerMessage(id++, MessageDeath.class, MessageDeath::encode, MessageDeath::new, MessageDeath::onMessage);
-        INSTANCE.registerMessage(id++, MessageGuiTransfer.class, MessageGuiTransfer::encode, MessageGuiTransfer::new, MessageGuiTransfer::onMessage);
-        INSTANCE.registerMessage(id++, MessageHealth.class, MessageHealth::encode, MessageHealth::new, MessageHealth::onMessage);
-        INSTANCE.registerMessage(id++, MessageHunger.class, MessageHunger::encode, MessageHunger::new, MessageHunger::onMessage);
-        INSTANCE.registerMessage(id++, MessageSaveData.class, MessageSaveData::encode, MessageSaveData::new, MessageSaveData::onMessage);
-        INSTANCE.registerMessage(id++, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
-        INSTANCE.registerMessage(id++, MessageNewChat.class, MessageNewChat::encode, MessageNewChat::new, MessageNewChat::onMessage);
-        INSTANCE.registerMessage(id++, MessageTeamChat.class, MessageTeamChat::encode, MessageTeamChat::new, MessageTeamChat::onMessage);
-        INSTANCE.registerMessage(id++, MessageConfig.class, MessageConfig::encode, MessageConfig::new, MessageConfig::onMessage);
+        INSTANCE.registerMessage(++id, MessageDeath.class, MessageDeath::encode, MessageDeath::new, MessageDeath::onMessage);
+        INSTANCE.registerMessage(++id, MessageGuiTransfer.class, MessageGuiTransfer::encode, MessageGuiTransfer::new, MessageGuiTransfer::onMessage);
+        INSTANCE.registerMessage(++id, MessageHealth.class, MessageHealth::encode, MessageHealth::new, MessageHealth::onMessage);
+        INSTANCE.registerMessage(++id, MessageHunger.class, MessageHunger::encode, MessageHunger::new, MessageHunger::onMessage);
+        INSTANCE.registerMessage(++id, MessageSaveData.class, MessageSaveData::encode, MessageSaveData::new, MessageSaveData::onMessage);
+        INSTANCE.registerMessage(++id, MessageInvite.class, MessageInvite::encode, MessageInvite::new, MessageInvite::onMessage);
+        INSTANCE.registerMessage(++id, MessageNewChat.class, MessageNewChat::encode, MessageNewChat::new, MessageNewChat::onMessage);
+        INSTANCE.registerMessage(++id, MessageTeamChat.class, MessageTeamChat::encode, MessageTeamChat::new, MessageTeamChat::onMessage);
+        INSTANCE.registerMessage(++id, MessageConfig.class, MessageConfig::encode, MessageConfig::new, MessageConfig::onMessage);
     }
 
     public static void sendToTeam(ServerPlayerEntity player, AbstractMessage message) {
         String teamName = StorageHandler.uuidToTeamMap.get(player.getUniqueID());
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (teamName != null) {
-            Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
-            while (teamIterator.hasNext()) {
-                UUID playerId = teamIterator.next();
+            for (UUID playerId : StorageHandler.teamToUuidsMap.get(teamName)) {
                 if (!playerId.equals(player.getUniqueID())) {
                     ServerPlayerEntity teamPlayer = server.getPlayerList().getPlayerByUUID(playerId);
                     if (teamPlayer != null) {

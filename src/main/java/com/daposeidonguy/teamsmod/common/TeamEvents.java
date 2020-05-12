@@ -3,6 +3,7 @@ package com.daposeidonguy.teamsmod.common;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
@@ -12,10 +13,13 @@ import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+
+import java.util.UUID;
 
 /* Handles events relating to miscellaneous team features */
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class TeamEvents {
+class TeamEvents {
 
     /* Syncs advancements with player and their team upon login (depending on config) */
     @SubscribeEvent
@@ -36,7 +40,7 @@ public class TeamEvents {
             PlayerEntity target = (PlayerEntity) event.getEntityLiving();
             String targetTeam = StorageHandler.uuidToTeamMap.get(target.getUniqueID());
             String attackerTeam = StorageHandler.uuidToTeamMap.get(attacker.getUniqueID());
-            if (targetTeam != null && attackerTeam != null && targetTeam.equals(attackerTeam) && !StorageHandler.teamSettingsMap.get(targetTeam).get("enableFriendlyFire")) {
+            if (targetTeam != null && targetTeam.equals(attackerTeam) && !StorageHandler.teamSettingsMap.get(targetTeam).get("enableFriendlyFire")) {
                 event.setCanceled(true);
             }
         }
@@ -48,7 +52,16 @@ public class TeamEvents {
         if (!TeamConfig.disableAdvancementSync && !event.getEntity().getEntityWorld().isRemote) {
             String team = StorageHandler.uuidToTeamMap.get(event.getPlayer().getUniqueID());
             if (!StorageHandler.teamSettingsMap.get(team).get("disableAdvancementSync")) {
-                StorageHandler.syncPlayers(team, (ServerPlayerEntity) event.getPlayer());
+                Advancement adv = event.getAdvancement();
+                ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+                for (UUID playerID : StorageHandler.teamToUuidsMap.get(team)) {
+                    ServerPlayerEntity teammate = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerID);
+                    if (teammate != null) {
+                        for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
+                            teammate.getAdvancements().grantCriterion(adv, s);
+                        }
+                    }
+                }
             }
         }
     }
