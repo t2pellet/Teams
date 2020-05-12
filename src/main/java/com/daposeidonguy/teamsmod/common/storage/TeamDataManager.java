@@ -61,12 +61,12 @@ public class TeamDataManager extends WorldSavedData {
     }
 
     /* Removes a player from a team */
-    public void removePlayer(PlayerEntity p, UUID uid) {
-        String name = uuidToTeamMap.get(p.getUniqueID());
-        teamToUuidsMap.get(name).remove(uid);
+    public void removePlayer(String team, UUID uid) {
+        teamToUuidsMap.get(team).remove(uid);
         uuidToTeamMap.remove(uid);
         markDirty();
     }
+
 
     /* Removes a team*/
     public void removeTeam(String name) {
