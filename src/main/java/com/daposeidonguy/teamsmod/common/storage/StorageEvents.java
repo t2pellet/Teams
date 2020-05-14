@@ -23,6 +23,7 @@ public class StorageEvents {
     public static void playerLogIn(final PlayerEvent.PlayerLoggedInEvent event) {
         if (EffectiveSide.get().isServer()) {
             event.getPlayer().getPersistentData().putBoolean("teamChat", false);
+            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(event.getPlayer().getServer().getWorld(DimensionType.OVERWORLD)));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageSaveData(event.getPlayer().getServer().getWorld(DimensionType.OVERWORLD)));
         }
     }

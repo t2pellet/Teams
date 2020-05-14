@@ -50,7 +50,7 @@ public abstract class AbstractScreenBase extends Screen {
             }
         }
         this.goBack.render(mouseX, mouseY, partialTicks);
-        this.font.drawString(title.getFormattedText(), CENTERED_X - (font.getStringWidth(title.getFormattedText()) >> 1), guiTop + 10, Color.BLACK.getRGB());
+        this.font.drawString(title.getFormattedText(), CENTERED_X - font.getStringWidth(title.getFormattedText()) / 2, guiTop + 10, Color.BLACK.getRGB());
     }
 
 

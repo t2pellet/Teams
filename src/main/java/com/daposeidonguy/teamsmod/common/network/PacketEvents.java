@@ -35,7 +35,7 @@ public class PacketEvents {
     @SubscribeEvent
     public static void tickEvent(final TickEvent.ServerTickEvent event) {
         ticks += 1;
-        if (ticks == 250 && EffectiveSide.get().isServer()) {
+        if (ticks == 200 && EffectiveSide.get().isServer()) {
             for (ServerPlayerEntity playerMP : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
                 PacketHandler.sendToTeam(playerMP, new MessageHealth(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getHealth())));
                 PacketHandler.sendToTeam(playerMP, new MessageHunger(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getFoodStats().getFoodLevel())));

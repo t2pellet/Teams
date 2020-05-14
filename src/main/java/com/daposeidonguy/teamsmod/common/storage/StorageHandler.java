@@ -8,8 +8,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -97,13 +95,14 @@ public class StorageHandler {
         teamToUuidsMap.put(teamName, uuidList);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void addPlayerMapping(final UUID playerId) {
-        NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
-        if (playerInfo != null) {
-            String playerName = playerInfo.getGameProfile().getName();
-            ClientHandler.idtoNameMap.put(playerId, playerName);
-            ClientHandler.nametoIdMap.put(playerName, playerId);
+        if (EffectiveSide.get().isClient()) {
+            NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
+            if (playerInfo != null) {
+                String playerName = playerInfo.getGameProfile().getName();
+                ClientHandler.idtoNameMap.put(playerId, playerName);
+                ClientHandler.nametoIdMap.put(playerName, playerId);
+            }
         }
     }
 

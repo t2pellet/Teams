@@ -20,7 +20,7 @@ public class ScreenTeamCreator extends AbstractScreenText {
     public void init() {
         super.init();
 
-        Button button = new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, "Create Team", btn -> {
+        Button button = new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.create.create"), btn -> {
             minecraft.player.sendChatMessage("/teamsmod create " + this.text.getText());
             minecraft.displayGuiScreen(null);
         });

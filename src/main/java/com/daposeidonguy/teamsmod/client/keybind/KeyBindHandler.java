@@ -27,4 +27,6 @@ public class KeyBindHandler {
             switchChat = new KeyBinding("teamsmod.keyswitch.desc", GLFW.GLFW_KEY_R, "key.categories.multiplayer");
         }
     }
+
+
 }

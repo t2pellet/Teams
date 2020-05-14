@@ -33,6 +33,7 @@ public class ClientHandler {
         ticks += 1;
     }
 
+
     /* Returns username of player given UUID if online, null otherwise */
     public static String getOnlineUsernameFromUUID(final UUID uuid) {
         String playerName = idtoNameMap.get(uuid);

@@ -6,6 +6,8 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.UUID;
+
 
 public class ScreenMain extends AbstractScreenBase {
 
@@ -29,11 +31,18 @@ public class ScreenMain extends AbstractScreenBase {
         this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 50, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.list"), btn -> {
             minecraft.displayGuiScreen(new ScreenTeamList(this));
         }));
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.transfer"), btn -> {
+        Button buttonTransfer = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.transfer"), btn -> {
             minecraft.displayGuiScreen(new ScreenTransferList(this));
         }));
+        buttonTransfer.active = isTeamOwner();
         this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.hud"), btn -> {
             minecraft.displayGuiScreen(new ScreenHudConfig(this));
         }));
+    }
+
+    private boolean isTeamOwner() {
+        UUID clientId = minecraft.player.getUniqueID();
+        String team = StorageHandler.uuidToTeamMap.get(clientId);
+        return StorageHandler.teamToOwnerMap.get(team).equals(clientId);
     }
 }
