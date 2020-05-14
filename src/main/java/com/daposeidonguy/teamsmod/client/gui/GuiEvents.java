@@ -42,7 +42,7 @@ public class GuiEvents {
     public static void onRenderPlayer(final RenderPlayerEvent.Pre event) {
         String playerName = event.getPlayer().getGameProfile().getName();
         String localName = ClientHandler.mc.player.getGameProfile().getName();
-        if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName)) {
+        if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName) && !TeamConfig.disableChatBubble) {
             String text = GuiHandler.chatMap.get(playerName).getFirst();
             long tick = GuiHandler.chatMap.get(playerName).getSecond();
             if ((ClientHandler.ticks - tick) < 200) {
@@ -83,9 +83,10 @@ public class GuiEvents {
             DisplayEffectsScreen guiInventory = (DisplayEffectsScreen) event.getGui();
             boolean isCreative = event.getGui() instanceof CreativeScreen;
             int renderX = (TeamConfig.useAlternatePosition || isCreative) ? 2 : guiInventory.getGuiLeft() + 152;
+            renderX += TeamConfig.smallIcon ? 5 : 0;
             int renderY = (TeamConfig.useAlternatePosition || isCreative) ? 2 : guiInventory.getGuiTop() + 4;
             int renderWidth = TeamConfig.smallIcon ? 15 : 20;
-            int renderHeight = TeamConfig.smallIcon ? 14 : 18;
+            int renderHeight = TeamConfig.smallIcon ? 13 : 18;
             ResourceLocation renderLoc = TeamConfig.smallIcon ? new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png") : new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png");
             ImageButton guiButtonImage = new ImageButton(renderX, renderY, renderWidth, renderHeight, 0, 0, renderHeight, renderLoc, press -> {
                 ClientHandler.mc.displayGuiScreen(new ScreenMain());
@@ -119,7 +120,6 @@ public class GuiEvents {
     public static void renderHUDEvent(final RenderGameOverlayEvent.Post event) {
         //Check if clientside and HUD is enabled
         if (EffectiveSide.get().isClient() &&
-                KeyBindHandler.doDisplayStatus &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             UUID id = ClientHandler.mc.player.getUniqueID();

@@ -38,10 +38,11 @@ public class ScreenTeamEditor extends AbstractScreenBase {
             }
         }));
         configButton.active = isTeamOwner;
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.leave"), btn -> {
+        Button leaveButton = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.leave"), btn -> {
             minecraft.player.sendChatMessage("/teamsmod leave");
             minecraft.displayGuiScreen(null);
         }));
+        leaveButton.active = !isTeamOwner || StorageHandler.teamToUuidsMap.get(StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID())).size() == 1;
     }
 
     private boolean isTeamOwner() {

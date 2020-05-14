@@ -1,12 +1,11 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
+import com.daposeidonguy.teamsmod.common.config.ConfigHandler;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import java.util.UUID;
 
 
 public class ScreenMain extends AbstractScreenBase {
@@ -34,15 +33,10 @@ public class ScreenMain extends AbstractScreenBase {
         Button buttonTransfer = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.transfer"), btn -> {
             minecraft.displayGuiScreen(new ScreenTransferList(this));
         }));
-        buttonTransfer.active = isTeamOwner();
-        this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.hud"), btn -> {
+        buttonTransfer.active = inTeam && !ConfigHandler.serverDisableTransfer;
+        Button buttonHud = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.hud"), btn -> {
             minecraft.displayGuiScreen(new ScreenHudConfig(this));
         }));
-    }
-
-    private boolean isTeamOwner() {
-        UUID clientId = minecraft.player.getUniqueID();
-        String team = StorageHandler.uuidToTeamMap.get(clientId);
-        return StorageHandler.teamToOwnerMap.get(team).equals(clientId);
+        buttonHud.active = inTeam;
     }
 }

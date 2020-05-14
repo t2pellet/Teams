@@ -61,7 +61,7 @@ public class PacketEvents {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
-            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
+            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() + event.getAmount())));
             PacketHandler.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
         }
     }

@@ -1,7 +1,7 @@
 {
   "teamsmod.list.success": "List of teams: ",
   "teamsmod.player.teamless": "%s is not in a team",
-  "teamsmod.player.success": "%s is in the following team: %1$s",
+  "teamsmod.player.success": "%s is in the following team: %2$s",
   "teamsmod.info.invalidteam": "Error: No such team",
   "teamsmod.info.success": "List of players: ",
   "teamsmod.config.invalid": "Error: Invalid config option",

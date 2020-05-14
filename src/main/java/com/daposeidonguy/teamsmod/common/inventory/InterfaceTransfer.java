@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
 
@@ -25,6 +25,6 @@ public class InterfaceTransfer implements INamedContainerProvider {
     @Override
     @Nonnull
     public ITextComponent getDisplayName() {
-        return new StringTextComponent("transfer");
+        return new TranslationTextComponent("teamsmod.transfer.title", name);
     }
 }

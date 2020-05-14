@@ -1,11 +1,11 @@
 package com.daposeidonguy.teamsmod.client.gui.overlay;
 
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -78,18 +78,18 @@ public class CompassOverlay extends AbstractGui {
 
     private void renderHUDHead(final ResourceLocation skin, final double renderFactor) {
         mc.getTextureManager().bindTexture(skin);
-        GL11.glPushMatrix();
         int x = (int) (scaledWidth / 2 - HUD_WIDTH / 4 + renderFactor * HUD_WIDTH / 2 + 41);
         int y = (int) ((scaledHeight * 0.01) + 12);
-        GL11.glScalef(0.25F, 0.25F, 0.25F);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(0.25F, 0.25F, 0.25F);
         if (1 - Math.abs(renderFactor) < 0.6) {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
+            RenderSystem.enableBlend();
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
             blit(4 * x, 4 * y, 32, 32, 32, 32);
-            GL11.glDisable(GL11.GL_BLEND);
+            RenderSystem.disableBlend();
         } else {
             blit(4 * x, 4 * y, 32, 32, 32, 32);
         }
-        GL11.glPopMatrix();
+        RenderSystem.popMatrix();
     }
 }

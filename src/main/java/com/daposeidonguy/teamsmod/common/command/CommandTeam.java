@@ -35,7 +35,7 @@ public class CommandTeam {
     /* Constructs and registers the team command */
     public static void register(final CommandDispatcher<CommandSource> dispatcher) {
         TeamsMod.logger.info("Registering commands...");
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         for (String alias : aliases) {
             dispatcher.register(Commands.literal(alias)
                     .then(Commands.literal("create")
@@ -60,7 +60,7 @@ public class CommandTeam {
                     .then(Commands.literal("leave")
                             .executes(ctx -> teamLeave(server, ctx.getSource())))
                     .then(Commands.literal("remove")
-                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(SuggestionHandler.TEAM_SUGGESTIONS).requires(source -> source.hasPermissionLevel(server.getOpPermissionLevel()) || server.isSinglePlayer())
+                            .then(Commands.argument("teamName", StringArgumentType.word()).suggests(SuggestionHandler.TEAM_SUGGESTIONS).requires(source -> source.hasPermissionLevel(server.getOpPermissionLevel()) || server.isSinglePlayer() || TeamConfig.noOpRemoveTeam)
                                     .executes(ctx -> teamRemove(server, ctx.getSource(), StringArgumentType.getString(ctx, "teamName")))))
                     .then(Commands.literal("config")
                             .then(Commands.argument("configOption", StringArgumentType.word()).suggests(SuggestionHandler.CONFIG_SUGGESTIONS)

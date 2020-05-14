@@ -46,16 +46,20 @@ public class StorageHandler {
 
     public static void readFromNBT(final CompoundNBT nbt) {
         clearData();
-        for (INBT inbt : nbt.getList("Teams", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT teamTag = (CompoundNBT) inbt;
-            String teamName = teamTag.getString("Team Name");
-            readPlayers(teamTag, teamName);
-            if (teamTag.hasUniqueId("Owner")) { // Just for converting old worlds
-                teamToOwnerMap.put(teamName, teamTag.getUniqueId("Owner"));
-            } else {
-                teamToOwnerMap.put(teamName, teamToUuidsMap.get(teamName).get(0));
+        try {
+            for (INBT inbt : nbt.getList("Teams", Constants.NBT.TAG_COMPOUND)) {
+                CompoundNBT teamTag = (CompoundNBT) inbt;
+                String teamName = teamTag.getString("Team Name");
+                ListNBT playersTag = teamTag.getList("Player List", Constants.NBT.TAG_COMPOUND);
+                if (playersTag.size() == 0) {
+                    continue;
+                }
+                readPlayers(teamTag, teamName);
+                CompoundNBT tagPlayer = (CompoundNBT) playersTag.get(0);
+                teamToOwnerMap.put(teamName, tagPlayer.getUniqueId("uuid"));
+                readSettings(teamTag, teamName);
             }
-            readSettings(teamTag, teamName);
+        } catch (Exception doNothing) {
         }
     }
 

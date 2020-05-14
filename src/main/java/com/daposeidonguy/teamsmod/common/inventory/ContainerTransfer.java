@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.common.inventory;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -36,7 +37,7 @@ public class ContainerTransfer extends Container {
     }
 
     public String getName() {
-        return name;
+        return I18n.format("teamsmod.transfer.title", name);
     }
 
     @Override
