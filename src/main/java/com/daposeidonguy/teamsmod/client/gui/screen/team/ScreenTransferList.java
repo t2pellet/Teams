@@ -3,7 +3,6 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenPages;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
-import com.daposeidonguy.teamsmod.common.config.ConfigHandler;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTransfer;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageGuiTransfer;
@@ -24,14 +23,6 @@ public class ScreenTransferList extends AbstractScreenPages {
     public void init() {
         super.init();
         String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
-        if (name == null) {
-            minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.notinteam"));
-            return;
-        } else if (ConfigHandler.serverDisableTransfer) {
-            minecraft.displayGuiScreen(null);
-            minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.transferlist.disabled"));
-        }
         for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
             if (!uid.equals(minecraft.player.getUniqueID())) {
                 if (minecraft.getConnection().getPlayerInfo(uid) != null) {

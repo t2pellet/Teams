@@ -37,7 +37,7 @@ class KeyBindEvents {
             if (toast != null) {
                 toast.accepted = true;
                 Minecraft.getInstance().player.sendChatMessage("/teamsmod accept");
-                Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 2.0F);
+                Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.5F);
             }
         } else if (KeyBindHandler.switchChat.isPressed()) {
             try {
@@ -45,7 +45,7 @@ class KeyBindEvents {
                 GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
                 GuiHandler.backupChatGUI = oldGui;
                 GuiHandler.displayTeamChat = !GuiHandler.displayTeamChat;
-                renderChatTime = 30;
+                renderChatTime = 25;
                 prevClientTick = ClientHandler.ticks;
                 PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             } catch (IllegalAccessException ignore) {
@@ -71,8 +71,8 @@ class KeyBindEvents {
                 renderText = "Showing Server Chat";
             }
             float renderX = ClientHandler.mc.getMainWindow().getScaledWidth() / 2 - ClientHandler.mc.fontRenderer.getStringWidth(renderText) / 2;
-            float renderY = ClientHandler.mc.getMainWindow().getScaledHeight() * 0.72F;
-            Color colorText = new Color(1.0F, 1.0F, 1.0F, renderChatTime * 1.0F / 30);
+            float renderY = ClientHandler.mc.getMainWindow().getScaledHeight() * 0.74F;
+            Color colorText = new Color(1.0F, 1.0F, 1.0F, renderChatTime * 1.0F / 25);
             Minecraft.getInstance().fontRenderer.drawString(renderText, renderX, renderY, colorText.getRGB());
             RenderSystem.disableBlend();
             RenderSystem.popMatrix();

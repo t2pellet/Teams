@@ -28,7 +28,7 @@ public class ScreenHudConfig extends AbstractScreenPages {
             return;
         }
         for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
-            if (!uid.equals(minecraft.player.getUniqueID())) {
+            if (!uid.equals(minecraft.player.getUniqueID()) && ClientHandler.mc.getConnection().getPlayerInfo(uid) != null) {
                 String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
                 if (playerName != null) {
                     Button button = new Button(BUTTON_CENTERED_X - 5, guiTop + yOffset, BUTTON_WIDTH + 10, BUTTON_HEIGHT, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {

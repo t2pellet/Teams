@@ -34,7 +34,7 @@ public class TeamConfig {
             builder.push("Gui");
             smallIcon = builder.comment("Use smaller button to open teams GUI").define("smallIcon", false);
             useAlternatePosition = builder.comment("Use alternate position for teams GUI button").define("useAlternatePosition", false);
-            disableStatusOverlay = builder.comment("Disable HUD display showing teammate health and hunger").define("disableTeamsHUD", false);
+            disableStatusOverlay = builder.comment("Disable HUD display showing teammate health and hunger").define("disableStatusOverlay", false);
             disableCompassOverlay = builder.comment("Disable HUD display showing teammate location").define("disableCompassOverlay", false);
             builder.pop();
             builder.push("Miscellaneous");
