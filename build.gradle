@@ -5,13 +5,14 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath files("C:\\Users\\pelle\\OneDrive\\Documents\\Waystone\\build\\libs\\Waystones_1.12.2-4.0.0-sources.jar")
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.4.5"
+version = "1.12.2-final"
 group = "com.daposeidonguy.teamsmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "teamsmod"
 

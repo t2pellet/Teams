@@ -1,49 +1,60 @@
 package com.daposeidonguy.teamsmod;
 
-import com.daposeidonguy.teamsmod.proxy.ServerProxy;
+import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
+import com.daposeidonguy.teamsmod.common.command.CommandTeam;
+import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
+import com.daposeidonguy.teamsmod.common.storage.StorageEvents;
+import com.daposeidonguy.teamsmod.common.storage.TeamDataManager;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(modid = TeamsMod.MODID, name = TeamsMod.NAME, version = TeamsMod.VERSION)
+@Mod(modid = TeamsMod.MODID, name = TeamsMod.MODNAME, version = TeamsMod.VERSION, acceptedMinecraftVersions = TeamsMod.ACCEPTED_VERSIONS)
 public class TeamsMod {
 
-
     public static final String MODID = "teamsmod";
-    public static final String NAME = "Teams Mod";
-    public static final String VERSION = "1.4.5";
+    public static final String MODNAME = "Teams";
+    public static final String VERSION = "1.12.2-final";
+    public static final String ACCEPTED_VERSIONS = "[1.12.2]";
+    public static final Logger logger = LogManager.getLogger(MODID);
+    public static boolean doneSetup = false;
+    private static TeamsMod instance;
 
-    @SidedProxy(clientSide = "com.daposeidonguy.teamsmod.proxy.ClientProxy", serverSide = "com.daposeidonguy.teamsmod.proxy.ServerProxy")
-    public static ServerProxy proxy;
 
-
-    @Instance(MODID)
-    public static TeamsMod instance;
-
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit(event);
+    @Mod.EventHandler
+    private void preInit(FMLPreInitializationEvent event) {
+        if (event.getSide().isClient()) {
+            PacketHandler.register(Side.CLIENT);
+        }
+        instance = this;
+        PacketHandler.register(Side.SERVER);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-        proxy.init(event);
+    @Mod.EventHandler
+    private void init(FMLInitializationEvent event) {
+        if (event.getSide().isClient()) {
+            KeyBindHandler.register();
+            GuiHandler.persistentChatGUI.setAccessible(true);
+        }
+        doneSetup = true;
     }
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit(event);
+    @Mod.EventHandler
+    public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandTeam());
+        StorageEvents.data = TeamDataManager.get(event.getServer().getEntityWorld());
+        if (event.getServer().isSinglePlayer()) {
+            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+        }
     }
 
-    @EventHandler
-    public void serverLoad(FMLServerStartingEvent event) {
-        proxy.serverLoad(event);
-    }
 
-    @EventHandler
-    public void serverStop(FMLServerStoppingEvent event) {
-        proxy.serverStop(event);
-    }
 }
