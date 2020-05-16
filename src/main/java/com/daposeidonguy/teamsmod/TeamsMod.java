@@ -25,7 +25,6 @@ public class TeamsMod {
     public static final String ACCEPTED_VERSIONS = "[1.12.2]";
     public static final Logger logger = LogManager.getLogger(MODID);
     public static boolean doneSetup = false;
-    private static TeamsMod instance;
 
 
     @Mod.EventHandler
@@ -33,7 +32,6 @@ public class TeamsMod {
         if (event.getSide().isClient()) {
             PacketHandler.register(Side.CLIENT);
         }
-        instance = this;
         PacketHandler.register(Side.SERVER);
         MinecraftForge.EVENT_BUS.register(this);
     }

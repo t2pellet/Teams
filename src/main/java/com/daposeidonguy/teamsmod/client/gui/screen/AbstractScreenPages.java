@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import java.io.IOException;
+
 public abstract class AbstractScreenPages extends AbstractScreenBase {
 
     private static final ResourceLocation BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
@@ -44,6 +46,32 @@ public abstract class AbstractScreenPages extends AbstractScreenBase {
         return button.width != 13 && button != goBack;
     }
 
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int state) throws IOException {
+        if (prevPage.mousePressed(this.mc, mouseX, mouseY)) {
+            net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(this, prevPage, this.buttonList);
+            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
+                prevPage = (AbstractButton.Image) event.getButton();
+                this.selectedButton = prevPage;
+                prevPage.playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(prevPage);
+                if (this.equals(this.mc.currentScreen))
+                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
+            }
+        }
+        if (nextPage.mousePressed(this.mc, mouseX, mouseY)) {
+            net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(this, nextPage, this.buttonList);
+            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
+                nextPage = (AbstractButton.Image) event.getButton();
+                this.selectedButton = nextPage;
+                nextPage.playPressSound(this.mc.getSoundHandler());
+                this.actionPerformed(nextPage);
+                if (this.equals(this.mc.currentScreen))
+                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
+            }
+        }
+        super.mouseClicked(mouseX, mouseY, state);
+    }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, final float partialTicks) {
