@@ -1,8 +1,6 @@
 package com.daposeidonguy.teamsmod.client.gui.widget;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiButtonImage;
-import net.minecraft.util.ResourceLocation;
 
 public abstract class AbstractButton extends GuiButton {
 
@@ -13,9 +11,8 @@ public abstract class AbstractButton extends GuiButton {
         this.press = press;
     }
 
-    @Override
-    public void mouseReleased(int mouseX, int mouseY) {
-        if (this.enabled) {
+    public void activate() {
+        if (this.enabled && this.visible) {
             press.onPress(this);
         }
     }
@@ -30,22 +27,5 @@ public abstract class AbstractButton extends GuiButton {
             super(buttonId, x, y, widthIn, heightIn, buttonText, press);
         }
 
-    }
-
-    public static class Image extends GuiButtonImage {
-
-        private static IPress press;
-
-        public Image(int buttonId, int buttonX, int buttonY, int buttonWidth, int buttonHeight, int texX, int texY, int yOffset, ResourceLocation loc, IPress press) {
-            super(buttonId, buttonX, buttonY, buttonWidth, buttonHeight, texX, texY, yOffset, loc);
-            this.press = press;
-        }
-
-        @Override
-        public void mouseReleased(int mouseX, int mouseY) {
-            if (this.enabled && this.visible) {
-                press.onPress(this);
-            }
-        }
     }
 }

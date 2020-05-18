@@ -25,14 +25,16 @@ public class ClientHandler {
     public static final Map<UUID, String> idtoNameMap = new HashMap<>();
     public static final Map<String, UUID> nametoIdMap = new HashMap<>();
     public static final Minecraft mc = Minecraft.getMinecraft();
-    public static final ScaledResolution window = new ScaledResolution(mc);
     public static long ticks = 0;
+
+    public static ScaledResolution getWindow() {
+        return new ScaledResolution(mc);
+    }
 
     @SubscribeEvent
     public static void onTick(final TickEvent.ClientTickEvent event) {
         ticks += 1;
     }
-
 
     /* Returns username of player given UUID if online, null otherwise */
     public static String getOnlineUsernameFromUUID(final UUID uuid) {

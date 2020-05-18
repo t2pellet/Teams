@@ -10,7 +10,7 @@ public abstract class AbstractMessage implements IMessage {
     NBTTagCompound tag = new NBTTagCompound();
 
     /* Constructor used when first creating the message in SimpleChannel::send */
-    AbstractMessage() {
+    public AbstractMessage() {
     }
 
     @Override

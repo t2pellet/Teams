@@ -11,6 +11,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /* Sent to player invited to a team */
 public class MessageInvite extends AbstractMessage {
 
+    public MessageInvite() {
+        super();
+    }
+
     public MessageInvite(final String teamName) {
         tag.setString("teamName", teamName);
     }

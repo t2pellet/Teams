@@ -12,6 +12,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /* Sent/received when a player sends a chat message */
 public class MessageNewChat extends AbstractMessage {
 
+    public MessageNewChat() {
+        super();
+    }
+
     public MessageNewChat(final String username, final String message, boolean teamChat) {
         tag.setString("username", username);
         tag.setString("message", message);

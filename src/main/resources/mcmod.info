@@ -1,7 +1,7 @@
 [
     {
         "modid": "teamsmod",
-        "name": "Teams Mod",
+        "name": "Teams",
         "description": "Adds functional teams to minecraft, enabling advancement syncing, item transfer, HUD overlays and more",
         "version": "1.12.2-final",
         "mcversion": "1.12.2",

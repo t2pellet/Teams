@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
+import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.toasts.IToast;
@@ -41,7 +42,7 @@ class KeyBindEvents {
                 Minecraft.getMinecraft().player.sendChatMessage("/teamsmod accept");
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.5F);
             }
-        } else if (KeyBindHandler.switchChat.isPressed()) {
+        } else if (KeyBindHandler.switchChat.isPressed() && StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID()) != null) {
             try {
                 GuiNewChat oldGui = (GuiNewChat) GuiHandler.persistentChatGUI.get(ClientHandler.mc.ingameGUI);
                 GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
@@ -52,7 +53,6 @@ class KeyBindEvents {
                 PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             } catch (IllegalAccessException ignore) {
             }
-
         }
     }
 
@@ -72,8 +72,8 @@ class KeyBindEvents {
             } else {
                 renderText = "Showing Server Chat";
             }
-            float renderX = ClientHandler.window.getScaledWidth() / 2 - ClientHandler.mc.fontRenderer.getStringWidth(renderText) / 2;
-            float renderY = ClientHandler.window.getScaledHeight() * 0.74F;
+            float renderX = ClientHandler.getWindow().getScaledWidth() / 2 - ClientHandler.mc.fontRenderer.getStringWidth(renderText) / 2;
+            float renderY = ClientHandler.getWindow().getScaledHeight() * 0.77F;
             Color colorText = new Color(1.0F, 1.0F, 1.0F, renderChatTime * 1.0F / 25);
             ClientHandler.mc.fontRenderer.drawString(renderText, (int) renderX, (int) renderY, colorText.getRGB());
             GlStateManager.disableBlend();

@@ -3,7 +3,6 @@ package com.daposeidonguy.teamsmod.common.storage;
 import com.daposeidonguy.teamsmod.client.ClientHandler;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -96,12 +95,12 @@ public class StorageHandler {
     }
 
     private static void addPlayerMapping(final UUID playerId) {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-            NetworkPlayerInfo playerInfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(playerId);
-            if (playerInfo != null) {
-                String playerName = playerInfo.getGameProfile().getName();
-                ClientHandler.idtoNameMap.put(playerId, playerName);
-                ClientHandler.nametoIdMap.put(playerName, playerId);
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+            try {
+                String name = Minecraft.getMinecraft().getConnection().getPlayerInfo(playerId).getGameProfile().getName();
+                ClientHandler.nametoIdMap.put(name, playerId);
+                ClientHandler.idtoNameMap.put(playerId, name);
+            } catch (NullPointerException ignore) {
             }
         }
     }

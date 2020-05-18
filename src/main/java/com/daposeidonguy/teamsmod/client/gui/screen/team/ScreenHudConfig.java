@@ -7,6 +7,7 @@ import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenPages;
 import com.daposeidonguy.teamsmod.client.gui.widget.AbstractButton;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.UUID;
 
@@ -30,8 +31,8 @@ public class ScreenHudConfig extends AbstractScreenPages {
         for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
             if (!uid.equals(mc.player.getUniqueID()) && ClientHandler.mc.getConnection().getPlayerInfo(uid) != null) {
                 String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
-                if (playerName != null) {
-                    AbstractButton.Basic button = new AbstractButton.Basic(GuiHandler.BUTTON_PRIORITY, BUTTON_CENTERED_X - 5, guiTop + yOffset, BUTTON_WIDTH + 10, BUTTON_HEIGHT, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {
+                if (playerName != null && FMLCommonHandler.instance().getSide().isClient()) {
+                    AbstractButton.Basic button = new AbstractButton.Basic(GuiHandler.BUTTON_PRIORITY, BUTTON_CENTERED_X - 5, guiTop + yOffset, BUTTON_WIDTH + 10, BUTTON_HEIGHT, playerName + " : " + GuiHandler.priorityPlayers.contains(uid), btn -> {
                         boolean isPriority = GuiHandler.priorityPlayers.contains(uid);
                         if (isPriority) {
                             GuiHandler.priorityPlayers.remove(uid);

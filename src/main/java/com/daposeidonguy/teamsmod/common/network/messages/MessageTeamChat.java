@@ -12,6 +12,10 @@ import java.util.UUID;
 /* Sent/received when a player cycles between team and server chat */
 public class MessageTeamChat extends AbstractMessage {
 
+    public MessageTeamChat() {
+        super();
+    }
+
     public MessageTeamChat(final UUID uuid, boolean teamChat) {
         tag.setUniqueId("uuid", uuid);
         tag.setBoolean("teamChat", teamChat);

@@ -26,20 +26,19 @@ public class ChatButton extends ClearButton {
             if (GuiHandler.displayTeamChat) {
                 button.displayString = "Display: Team Chat";
                 button.setWidth(buttonWidth2);
-                button.x = (int) (ClientHandler.window.getScaledWidth() * 0.99 - buttonWidth2);
+                button.x = (int) (ClientHandler.getWindow().getScaledWidth() * 0.99 - buttonWidth2);
             } else {
                 button.displayString = "Display: Server Chat";
                 button.setWidth(buttonWidth1);
-                button.x = (int) (ClientHandler.window.getScaledWidth() * 0.99 - buttonWidth1);
+                button.x = (int) (ClientHandler.getWindow().getScaledWidth() * 0.99 - buttonWidth1);
             }
         }));
         if (GuiHandler.displayTeamChat) {
             this.displayString = "Display: Team Chat";
             this.setWidth(buttonWidth2);
-            this.x = (int) (ClientHandler.window.getScaledWidth() * 0.99 - buttonWidth2);
+            this.x = (int) (ClientHandler.getWindow().getScaledWidth() * 0.99 - buttonWidth2);
         }
     }
-
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {

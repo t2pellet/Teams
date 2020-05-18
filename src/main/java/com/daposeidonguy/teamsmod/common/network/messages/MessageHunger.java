@@ -11,6 +11,10 @@ import java.util.UUID;
 /* Sent/received to update client hunger maps */
 public class MessageHunger extends AbstractMessage {
 
+    public MessageHunger() {
+        super();
+    }
+
     public MessageHunger(final UUID id, int hunger) {
         tag.setUniqueId("id", id);
         tag.setInteger("hunger", hunger);

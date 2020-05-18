@@ -14,16 +14,23 @@ import static com.daposeidonguy.teamsmod.common.storage.StorageHandler.*;
 
 public class TeamDataManager extends WorldSavedData {
 
-    private TeamDataManager() {
-        super(TeamsMod.MODID);
+    private static final String NAME = TeamsMod.MODID;
+
+    public TeamDataManager() {
+        super(NAME);
+    }
+
+    public TeamDataManager(String name) {
+        super(name);
+        markDirty();
     }
 
     public static TeamDataManager get(World world) {
         MapStorage storage = world.getMapStorage();
-        TeamDataManager data = (TeamDataManager) storage.getOrLoadData(TeamDataManager.class, TeamsMod.MODID);
+        TeamDataManager data = (TeamDataManager) storage.getOrLoadData(TeamDataManager.class, NAME);
         if (data == null) {
             data = new TeamDataManager();
-            world.setData(TeamsMod.MODID, data);
+            world.setData(NAME, data);
         }
         return data;
     }

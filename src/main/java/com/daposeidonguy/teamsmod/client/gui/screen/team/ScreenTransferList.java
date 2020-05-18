@@ -10,7 +10,6 @@ import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageGuiTransfer;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.UUID;
 
@@ -30,9 +29,7 @@ public class ScreenTransferList extends AbstractScreenPages {
                     String otherP = mc.getConnection().getPlayerInfo(uid).getGameProfile().getName();
                     addButton(new AbstractButton.Basic(GuiHandler.BUTTON_TRANSFER, BUTTON_CENTERED_X, guiTop + yOffset, BUTTON_WIDTH, BUTTON_HEIGHT, otherP, btn -> {
                         mc.displayGuiScreen(new ScreenTransfer(new ContainerTransfer(mc.player.inventory, otherP), mc.player.inventory, new TextComponentTranslation("teamsmod.transfer.title", otherP)));
-                        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-                            PacketHandler.INSTANCE.sendToServer(new MessageGuiTransfer(mc.player.getUniqueID(), otherP));
-                        }
+                        PacketHandler.INSTANCE.sendToServer(new MessageGuiTransfer(mc.player.getUniqueID(), otherP));
                     }));
                     yOffset += 25;
                 }

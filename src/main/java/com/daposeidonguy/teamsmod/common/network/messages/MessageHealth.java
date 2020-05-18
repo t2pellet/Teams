@@ -11,6 +11,10 @@ import java.util.UUID;
 /* Sent/received to update client health maps */
 public class MessageHealth extends AbstractMessage {
 
+    public MessageHealth() {
+        super();
+    }
+
     public MessageHealth(final UUID id, int health) {
         tag.setUniqueId("id", id);
         tag.setInteger("health", health);

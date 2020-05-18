@@ -16,7 +16,7 @@ public class KeyBindHandler {
 
     public static void register() {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-            showStatus = new KeyBinding("teamsmod.keyhud.desc", Keyboard.KEY_W, "key.categories.multiplayer");
+            showStatus = new KeyBinding("teamsmod.keyhud.desc", Keyboard.KEY_V, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(showStatus);
             showCompass = new KeyBinding("teamsmod.keycompass.desc", Keyboard.KEY_M, "key.categories.multilpayer");
             ClientRegistry.registerKeyBinding(showCompass);

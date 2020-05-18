@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
-import java.io.IOException;
 
 public abstract class AbstractScreenBase extends GuiScreen {
 
@@ -33,29 +32,21 @@ public abstract class AbstractScreenBase extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
+        buttonList.clear();
         this.guiLeft = (this.width - WIDTH) / 2;
         this.guiTop = (this.height - HEIGHT) / 2;
         this.CENTERED_X = guiLeft + WIDTH / 2;
         this.BUTTON_CENTERED_X = guiLeft + (WIDTH - BUTTON_WIDTH) / 2;
-        goBack = new AbstractButton.Basic(GuiHandler.BUTTON_BACK, BUTTON_CENTERED_X, guiTop + 130, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.button.back"), btn -> {
-            mc.displayGuiScreen(parent);
-        });
+        goBack = this.addButton(new GuiButton(GuiHandler.BUTTON_BACK, BUTTON_CENTERED_X, guiTop + 130, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.button.back")));
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int state) throws IOException {
-        if (goBack.mousePressed(this.mc, mouseX, mouseY)) {
-            net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(this, goBack, this.buttonList);
-            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
-                goBack = event.getButton();
-                this.selectedButton = goBack;
-                goBack.playPressSound(this.mc.getSoundHandler());
-                this.actionPerformed(goBack);
-                if (this.equals(this.mc.currentScreen))
-                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this, event.getButton(), this.buttonList));
-            }
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == GuiHandler.BUTTON_BACK) {
+            mc.displayGuiScreen(parent);
+        } else if (button instanceof AbstractButton) {
+            ((AbstractButton) button).activate();
         }
-        super.mouseClicked(mouseX, mouseY, state);
     }
 
     @Override
@@ -63,13 +54,19 @@ public abstract class AbstractScreenBase extends GuiScreen {
         drawDefaultBackground();
         mc.getTextureManager().bindTexture(BACKGROUND);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
-        for (GuiButton button : this.buttonList) {
-            if (button.y < this.guiTop + HEIGHT - 40 && button.y >= this.guiTop + 25) {
-                button.drawButton(mc, mouseX, mouseY, partialTicks);
+        mc.fontRenderer.drawString(title.getFormattedText(), CENTERED_X - mc.fontRenderer.getStringWidth(title.getFormattedText()) / 2, guiTop + 10, Color.BLACK.getRGB());
+        for (GuiButton button : buttonList) {
+            if (button == goBack) {
+                button.visible = true;
+            } else if (button.id != GuiHandler.BUTTON_NEXTPAGE && button.id != GuiHandler.BUTTON_PREVPAGE) {
+                if (button.y < this.guiTop + HEIGHT - 40 && button.y >= this.guiTop + 25) {
+                    button.visible = true;
+                } else {
+                    button.visible = false;
+                }
             }
         }
-        this.goBack.drawButton(mc, mouseX, mouseY, partialTicks);
-        mc.fontRenderer.drawString(title.getFormattedText(), CENTERED_X - mc.fontRenderer.getStringWidth(title.getFormattedText()) / 2, guiTop + 10, Color.BLACK.getRGB());
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
 

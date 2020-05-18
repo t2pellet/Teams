@@ -61,4 +61,5 @@ teamsmod.keyhud.desc=Basculer le HUD d'État
 teamsmod.keyaccept.desc=Accepte Invitation à une Équipe
 teamsmod.keyswitch.desc=Basculer le Chat d'Équipe
 teamsmod.unknownplayer=Joueur Hors Ligne
-teamsmod.keycompass.desc=Basculer le HUD de Compas
+teamsmod.keycompass.desc=Basculer le HUD de Compas,
+teamsmod.badarguments=Erreur de syntaxe. Entrez /help pour de l'aide

@@ -51,6 +51,9 @@ class TeamEvents {
     public static void achievementGet(final AdvancementEvent event) {
         if (!TeamConfig.server.disableAdvancementSync && !event.getEntity().getEntityWorld().isRemote) {
             String team = StorageHandler.uuidToTeamMap.get(event.getEntityPlayer().getUniqueID());
+            if (StorageHandler.teamSettingsMap.get(team) == null) {
+                return;
+            }
             if (!StorageHandler.teamSettingsMap.get(team).get("disableAdvancementSync")) {
                 Advancement adv = event.getAdvancement();
                 EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
