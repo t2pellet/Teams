@@ -46,6 +46,76 @@ public class CommandTeam extends CommandBase {
         aliases.add("teamsmod");
     }
 
+    @Override
+    public String getName() {
+        return TeamsMod.MODID;
+    }
+
+    @Override
+    public String getUsage(ICommandSender sender) {
+        return help;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return true;
+    }
+
+    @Override
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (FMLCommonHandler.instance().getEffectiveSide().isServer() && args.length > 0) {
+            switch (args[0]) {
+                case "create":
+                    checkLength(args, 2);
+                    teamCreate(server, sender, args[1]);
+                    break;
+                case "list":
+                    teamList(sender);
+                    break;
+                case "info":
+                    checkLength(args, 2);
+                    teamInfo(server, sender, args[1]);
+                    break;
+                case "player":
+                    checkLength(args, 2);
+                    teamPlayer(server, sender, args[1]);
+                    break;
+                case "invite":
+                    checkLength(args, 2);
+                    teamInvite(sender, args[1]);
+                    break;
+                case "accept":
+                    teamAccept(server, sender);
+                    break;
+                case "kick":
+                    checkLength(args, 2);
+                    teamKick(server, sender, args[1]);
+                    break;
+                case "leave":
+                    teamLeave(server, sender);
+                    break;
+                case "remove":
+                    checkLength(args, 2);
+                    teamRemove(server, sender, args[1]);
+                    break;
+                case "config":
+                    checkLength(args, 3);
+                    if (!args[2].equalsIgnoreCase("false") && !args[2].equalsIgnoreCase("true")) {
+                        throw new CommandException(I18n.format("teamsmod.badarguments"));
+                    }
+                    teamConfig(server, sender, args[1], Boolean.valueOf(args[2]));
+                    break;
+            }
+        } else {
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
+        }
+    }
+
     /* Creates a team with name teamName and adds the command sender to the team */
     private void teamCreate(final MinecraftServer server, final ICommandSender sender, final String teamName) throws CommandException {
         if (sender instanceof EntityPlayer) {
@@ -226,71 +296,6 @@ public class CommandTeam extends CommandBase {
         }
     }
 
-    @Override
-    public String getName() {
-        return TeamsMod.MODID;
-    }
-
-    @Override
-    public String getUsage(ICommandSender sender) {
-        return help;
-    }
-
-    @Override
-    public List<String> getAliases() {
-        return aliases;
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer() && args.length > 0) {
-            switch (args[0]) {
-                case "create":
-                    checkLength(args, 2);
-                    teamCreate(server, sender, args[1]);
-                    break;
-                case "list":
-                    teamList(sender);
-                    break;
-                case "info":
-                    checkLength(args, 2);
-                    teamInfo(server, sender, args[1]);
-                    break;
-                case "player":
-                    checkLength(args, 2);
-                    teamPlayer(server, sender, args[1]);
-                    break;
-                case "invite":
-                    checkLength(args, 2);
-                    teamInvite(sender, args[1]);
-                    break;
-                case "accept":
-                    teamAccept(server, sender);
-                    break;
-                case "kick":
-                    checkLength(args, 2);
-                    teamKick(server, sender, args[1]);
-                    break;
-                case "leave":
-                    teamLeave(server, sender);
-                    break;
-                case "remove":
-                    checkLength(args, 2);
-                    teamRemove(server, sender, args[1]);
-                    break;
-                case "config":
-                    checkLength(args, 3);
-                    if (!args[2].equalsIgnoreCase("false") && !args[2].equalsIgnoreCase("true")) {
-                        throw new CommandException(I18n.format("teamsmod.badarguments"));
-                    }
-                    teamConfig(server, sender, args[1], Boolean.valueOf(args[2]));
-                    break;
-            }
-        } else {
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
-        }
-    }
-
     private void checkLength(String[] args, int length) throws CommandException {
         if (args.length != length) {
             throw new CommandException(I18n.format("teamsmod.badarguments"));
@@ -301,16 +306,49 @@ public class CommandTeam extends CommandBase {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         List<String> tabCompletions = new ArrayList<>();
         if (args.length == 1) {
-            tabCompletions.add("config");
-            tabCompletions.add("remove");
-            tabCompletions.add("leave");
-            tabCompletions.add("kick");
-            tabCompletions.add("accept");
-            tabCompletions.add("invite");
-            tabCompletions.add("player");
-            tabCompletions.add("info");
-            tabCompletions.add("list");
-            tabCompletions.add("create");
+            char[] charArray = args[0].toCharArray();
+            if (charArray.length < 1) {
+                tabCompletions.add("config");
+                tabCompletions.add("remove");
+                tabCompletions.add("leave");
+                tabCompletions.add("kick");
+                tabCompletions.add("accept");
+                tabCompletions.add("invite");
+                tabCompletions.add("player");
+                tabCompletions.add("info");
+                tabCompletions.add("list");
+                tabCompletions.add("create");
+            } else {
+                if (charArray[0] == 'c') {
+                    tabCompletions.add("config");
+                    tabCompletions.add("create");
+                } else if (charArray[0] == 'r') {
+                    tabCompletions.add("remove");
+                } else if (charArray[0] == 'l') {
+                    tabCompletions.add("leave");
+                    tabCompletions.add("list");
+                } else if (charArray[0] == 'k') {
+                    tabCompletions.add("kick");
+                } else if (charArray[0] == 'a') {
+                    tabCompletions.add("accept");
+                } else if (charArray[0] == 'i') {
+                    tabCompletions.add("info");
+                    tabCompletions.add("invite");
+                } else if (charArray[0] == 'p') {
+                    tabCompletions.add("player");
+                } else {
+                    tabCompletions.add("config");
+                    tabCompletions.add("remove");
+                    tabCompletions.add("leave");
+                    tabCompletions.add("kick");
+                    tabCompletions.add("accept");
+                    tabCompletions.add("invite");
+                    tabCompletions.add("player");
+                    tabCompletions.add("info");
+                    tabCompletions.add("list");
+                    tabCompletions.add("create");
+                }
+            }
         }
         if (args.length == 2) {
             switch (args[0]) {
@@ -354,4 +392,5 @@ public class CommandTeam extends CommandBase {
         }
         return tabCompletions;
     }
+
 }

@@ -8,13 +8,13 @@ import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import com.daposeidonguy.teamsmod.common.storage.StorageEvents;
 import com.daposeidonguy.teamsmod.common.storage.TeamDataManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,14 +31,11 @@ public class TeamsMod {
 
     @Mod.EventHandler
     private void preInit(FMLPreInitializationEvent event) {
-        preInitClient();
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            PacketHandler.register(Side.CLIENT);
+        }
         PacketHandler.register(Side.SERVER);
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void preInitClient() {
-        PacketHandler.register(Side.CLIENT);
     }
 
     @Mod.EventHandler

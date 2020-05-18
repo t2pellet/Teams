@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class AbstractScreenPages extends AbstractScreenBase {
+public abstract class AbstractScreenPages extends AbstractScreenBase {
 
     private static final ResourceLocation BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
 
@@ -51,7 +51,7 @@ public class AbstractScreenPages extends AbstractScreenBase {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         prevPage.visible = page > 0;
-        nextPage.visible = page < (buttonList.size() - 3) / 4;
+        nextPage.visible = page < (buttonList.size() - 3) / 4 && (buttonList.size() - 3) % 4 > 0;
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

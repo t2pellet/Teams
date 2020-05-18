@@ -1,6 +1,6 @@
 teamsmod.list.success=List of teams: 
 teamsmod.player.teamless=%s is not in a team
-teamsmod.player.success=%s is in the following team: %1$s
+teamsmod.player.success=%s is in the following team: %2$s
 teamsmod.info.invalidteam=Error: No such team
 teamsmod.info.success=List of players: 
 teamsmod.config.invalid=Error: Invalid config option
@@ -26,7 +26,7 @@ teamsmod.inteam=Error: You are already in a team
 teamsmod.playernotinteam=Error: No such player '%s' in your team
 teamsmod.unknownplayer=Offline Player
 teamsmod.toast.invite=Invited to team: 
-teamsmod.toast.accept=Press %s to accept
+teamsmod.toast.accept=%s to accept
 teamsmod.transfer.title=Transfer Item: %s
 teamsmod.button.back=Go back
 teamsmod.text.title=Enter name:

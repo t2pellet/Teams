@@ -45,16 +45,20 @@ public class StorageHandler {
 
     public static void readFromNBT(final NBTTagCompound nbt) {
         clearData();
-        for (NBTBase nbtBase : nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND)) {
-            NBTTagCompound teamTag = (NBTTagCompound) nbtBase;
-            String teamName = teamTag.getString("Team Name");
-            readPlayers(teamTag, teamName);
-            if (teamTag.hasUniqueId("Owner")) { // Just for converting old worlds
-                teamToOwnerMap.put(teamName, teamTag.getUniqueId("Owner"));
-            } else {
-                teamToOwnerMap.put(teamName, teamToUuidsMap.get(teamName).get(0));
+        try {
+            for (NBTBase nbtBase : nbt.getTagList("Teams", Constants.NBT.TAG_COMPOUND)) {
+                NBTTagCompound teamTag = (NBTTagCompound) nbtBase;
+                String teamName = teamTag.getString("Team Name");
+                NBTTagList playersTag = teamTag.getTagList("Player List", Constants.NBT.TAG_COMPOUND);
+                if (playersTag.tagCount() == 0) {
+                    continue;
+                }
+                readPlayers(teamTag, teamName);
+                NBTTagCompound tagPlayer = (NBTTagCompound) playersTag.get(0);
+                teamToOwnerMap.put(teamName, tagPlayer.getUniqueId("uuid"));
+                readSettings(teamTag, teamName);
             }
-            readSettings(teamTag, teamName);
+        } catch (Exception doNothing) {
         }
     }
 
@@ -110,7 +114,6 @@ public class StorageHandler {
         for (String teamName : teamToUuidsMap.keySet()) {
             NBTTagCompound teamTag = new NBTTagCompound();
             teamTag.setString("Team Name", teamName);
-            teamTag.setUniqueId("Owner", teamToOwnerMap.get(teamName));
             teamTag.setTag("Player List", writePlayers(teamName));
             teamTag.setTag("Settings", writeSettings(teamName));
             tagList.appendTag(teamTag);

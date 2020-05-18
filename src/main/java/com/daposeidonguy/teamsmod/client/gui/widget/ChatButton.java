@@ -41,6 +41,12 @@ public class ChatButton extends ClearButton {
     }
 
     @Override
+    public void mouseReleased(int mouseX, int mouseY) {
+        activate();
+        super.mouseReleased(mouseX, mouseY);
+    }
+
+    @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         drawRect(x - 2, y - 2, x + width + 2, y + height, (int) (179.0D) << 24 & -16777216);
         super.drawButton(mc, mouseX, mouseY, partialTicks);

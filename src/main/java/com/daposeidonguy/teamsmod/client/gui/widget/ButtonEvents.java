@@ -6,7 +6,6 @@ import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenMain;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import net.minecraft.client.gui.GuiButtonImage;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -39,12 +38,7 @@ public class ButtonEvents {
 
     @SubscribeEvent
     public static void buttonPress(final GuiScreenEvent.ActionPerformedEvent event) {
-        if (event.getGui() instanceof GuiChat) {
-            if (event.getButton().id == GuiHandler.BUTTON_CHAT) {
-                ChatButton button = (ChatButton) event.getButton();
-                button.activate();
-            }
-        } else if (event.getGui() instanceof InventoryEffectRenderer) {
+        if (event.getGui() instanceof InventoryEffectRenderer) {
             if (event.getButton().id == GuiHandler.BUTTON_GUI) {
                 ClientHandler.mc.displayGuiScreen(new ScreenMain());
             }
