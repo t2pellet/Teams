@@ -97,18 +97,18 @@ public class CompassOverlay extends Gui {
         int y = (int) ((scaledHeight * 0.01) + 12);
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.25F, 0.25F, 0.25F);
+        String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";
         if (1 - Math.abs(renderFactor) < 0.6) {
             GlStateManager.enableBlend();
             GlStateManager.color(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
             drawTexturedModalRect(4 * x, 4 * y, 32, 32, 32, 32);
+            Color colorText = new Color(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
             GlStateManager.scale(2.0F, 2.0F, 2.0F);
-            String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";
-            drawString(mc.fontRenderer, strMagnitude, 2 * x - mc.fontRenderer.getStringWidth(strMagnitude) / 2 + 8, 2 * y + 17, Color.WHITE.getRGB());
+            drawString(mc.fontRenderer, strMagnitude, 2 * x - mc.fontRenderer.getStringWidth(strMagnitude) / 2 + 8, 2 * y + 17, colorText.getRGB());
             GlStateManager.disableBlend();
         } else {
             drawTexturedModalRect(4 * x, 4 * y, 32, 32, 32, 32);
             GlStateManager.scale(2.0F, 2.0F, 2.0F);
-            String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";
             drawString(mc.fontRenderer, strMagnitude, 2 * x - mc.fontRenderer.getStringWidth(strMagnitude) / 2 + 8, 2 * y + 17, Color.WHITE.getRGB());
         }
         GlStateManager.popMatrix();
