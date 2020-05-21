@@ -1,13 +1,17 @@
 package com.daposeidonguy.teamsmod.client.gui.overlay;
 
+import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.mojang.realmsclient.util.Pair;
+import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -32,12 +36,17 @@ public class CompassOverlay extends Gui {
         while (uuidIterator.hasNext()) {
             UUID playerId = uuidIterator.next();
             if (!playerId.equals(mc.player.getUniqueID())) {
-                EntityPlayer player = mc.world.getPlayerEntityByUUID(playerId);
+                NetworkPlayerInfo player = mc.getConnection().getPlayerInfo(playerId);
                 if (player != null) {
+                    Pair<Integer, Vec2d> posPair = ClientHandler.idtoPosMap.get(playerId);
+                    if (posPair == null || posPair.first() != mc.player.getEntityWorld().provider.getDimension()) {
+                        continue;
+                    }
                     ++onlineCount;
-                    double renderFactor = calculateRenderFactor(player, rotationHead);
-                    ResourceLocation skin = mc.getConnection().getPlayerInfo(playerId).getLocationSkin();
-                    renderHUDHead(skin, renderFactor);
+                    double magnitude = calculateMagnitude(posPair.second());
+                    double renderFactor = calculateRenderFactor(posPair.second(), rotationHead, magnitude);
+                    ResourceLocation skin = player.getLocationSkin();
+                    renderHUDHead(skin, renderFactor, magnitude);
                 }
             }
         }
@@ -46,7 +55,6 @@ public class CompassOverlay extends Gui {
             drawTexturedModalRect(scaledWidth / 2 - HUD_WIDTH / 2, (int) (scaledHeight * 0.01) + 5, 0, 74, HUD_WIDTH, HUD_HEIGHT);
         }
     }
-
 
     private double caculateRotationHead() {
         double rotationHead = mc.player.getRotationYawHead() % 360;
@@ -58,10 +66,15 @@ public class CompassOverlay extends Gui {
         return rotationHead;
     }
 
-    private double calculateRenderFactor(final EntityPlayer player, final double rotationHead) {
-        double diffPosX = player.posX - mc.player.posX;
-        double diffPosZ = player.posZ - mc.player.posZ;
-        double magnitude = Math.sqrt(diffPosX * diffPosX + diffPosZ * diffPosZ);
+    private double calculateMagnitude(final Vec2d pos) {
+        double diffPosX = pos.x - mc.player.posX;
+        double diffPosZ = pos.y - mc.player.posZ;
+        return Math.sqrt(diffPosX * diffPosX + diffPosZ * diffPosZ);
+    }
+
+    private double calculateRenderFactor(final Vec2d pos, final double rotationHead, final double magnitude) {
+        double diffPosX = pos.x - mc.player.posX;
+        double diffPosZ = pos.y - mc.player.posZ;
         diffPosX /= magnitude;
         diffPosZ /= magnitude;
         double angle = Math.atan(diffPosZ / diffPosX) * 180 / Math.PI + 90;
@@ -78,7 +91,7 @@ public class CompassOverlay extends Gui {
         return renderFactor;
     }
 
-    private void renderHUDHead(final ResourceLocation skin, final double renderFactor) {
+    private void renderHUDHead(final ResourceLocation skin, final double renderFactor, final double magnitude) {
         mc.getTextureManager().bindTexture(skin);
         int x = (int) (scaledWidth / 2 - HUD_WIDTH / 4 + renderFactor * HUD_WIDTH / 2 + 41);
         int y = (int) ((scaledHeight * 0.01) + 12);
@@ -88,9 +101,15 @@ public class CompassOverlay extends Gui {
             GlStateManager.enableBlend();
             GlStateManager.color(1.0F, 1.0F, 1.0F, (float) (1.2 - Math.abs(renderFactor)));
             drawTexturedModalRect(4 * x, 4 * y, 32, 32, 32, 32);
+            GlStateManager.scale(2.0F, 2.0F, 2.0F);
+            String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";
+            drawString(mc.fontRenderer, strMagnitude, 2 * x - mc.fontRenderer.getStringWidth(strMagnitude) / 2 + 8, 2 * y + 17, Color.WHITE.getRGB());
             GlStateManager.disableBlend();
         } else {
             drawTexturedModalRect(4 * x, 4 * y, 32, 32, 32, 32);
+            GlStateManager.scale(2.0F, 2.0F, 2.0F);
+            String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";
+            drawString(mc.fontRenderer, strMagnitude, 2 * x - mc.fontRenderer.getStringWidth(strMagnitude) / 2 + 8, 2 * y + 17, Color.WHITE.getRGB());
         }
         GlStateManager.popMatrix();
     }

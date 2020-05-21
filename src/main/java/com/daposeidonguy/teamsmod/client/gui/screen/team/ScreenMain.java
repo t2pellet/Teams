@@ -3,7 +3,7 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.widget.AbstractButton;
-import com.daposeidonguy.teamsmod.common.config.TeamConfig;
+import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -34,7 +34,7 @@ public class ScreenMain extends AbstractScreenBase {
         AbstractButton.Basic buttonTransfer = this.addButton(new AbstractButton.Basic(GuiHandler.BUTTON_TRANSFERLIST, BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.transfer"), btn -> {
             mc.displayGuiScreen(new ScreenTransferList(this));
         }));
-        buttonTransfer.enabled = inTeam && !TeamConfig.serverDisableTransfer;
+        buttonTransfer.enabled = inTeam && !ConfigHelper.serverDisableTransfer;
         AbstractButton.Basic buttonHud = this.addButton(new AbstractButton.Basic(GuiHandler.BUTTON_HUD, BUTTON_CENTERED_X, guiTop + 100, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.main.hud"), btn -> {
             mc.displayGuiScreen(new ScreenHudConfig(this));
         }));

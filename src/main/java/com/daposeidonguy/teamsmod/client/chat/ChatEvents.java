@@ -2,6 +2,7 @@ package com.daposeidonguy.teamsmod.client.chat;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
+import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.client.Minecraft;
@@ -69,7 +70,7 @@ class ChatEvents {
 
     /* Returns true if player should be "pinged", and false otherwise */
     private static boolean doPing(final String msg, final String player, final String team) {
-        if (TeamConfig.common.disablePing || TeamConfig.serverDisablePing) {
+        if (TeamConfig.common.disablePing || ConfigHelper.serverDisablePing) {
             return false;
         }
         boolean mentionsPlayer = msg.contains(" " + player) || msg.contains(player + " ") || msg.equals(player);

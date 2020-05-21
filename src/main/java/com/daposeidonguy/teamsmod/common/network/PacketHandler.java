@@ -29,6 +29,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(MessageNewChat.MessageHandler.class, MessageNewChat.class, ++id, side);
         INSTANCE.registerMessage(MessageTeamChat.MessageHandler.class, MessageTeamChat.class, ++id, side);
         INSTANCE.registerMessage(MessageConfig.MessageHandler.class, MessageConfig.class, ++id, side);
+        INSTANCE.registerMessage(MessagePos.MessageHandler.class, MessagePos.class, ++id, side);
     }
 
     public static void sendToTeam(final EntityPlayerMP player, final AbstractMessage message) {

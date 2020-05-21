@@ -31,7 +31,7 @@ public class ButtonEvents {
             int renderWidth = TeamConfig.client.smallIcon ? 15 : 20;
             int renderHeight = TeamConfig.client.smallIcon ? 13 : 18;
             ResourceLocation renderLoc = TeamConfig.client.smallIcon ? new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png") : new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png");
-            GuiButtonImage buttonTeamScreen = new GuiButtonImage(GuiHandler.BUTTON_GUI, renderX, renderY, renderWidth, renderHeight, 0, 0, renderHeight, renderLoc);
+            GuiButtonImage buttonTeamScreen = new GuiButtonImage(GuiHandler.BUTTON_GUI, renderX - (TeamConfig.client.smallIcon ? 2 : 0), renderY, renderWidth, renderHeight, 0, 0, renderHeight + (TeamConfig.client.smallIcon ? 1 : 0), renderLoc);
             event.getButtonList().add(buttonTeamScreen);
         }
     }

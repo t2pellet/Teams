@@ -1,6 +1,6 @@
 teamsmod.list.success=Liste d'équipes: 
 teamsmod.player.teamless=%s n'est pas dans une équipe
-teamsmod.player.success=%s est dans l'équipe suivante: %1$s
+teamsmod.player.success=%s est dans l'équipe suivante: %2$s
 teamsmod.info.invalidteam=Erreur: L'équipe n'existe pas
 teamsmod.info.success=Liste de Joueurs: 
 teamsmod.config.invalid=Erreur: Option invalide

@@ -1,5 +1,6 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
+import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -18,9 +19,9 @@ public class MessageConfig extends AbstractMessage {
         @Override
         public IMessage onMessage(MessageConfig message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                TeamConfig.serverDisablePing = message.tag.getBoolean("disablePing");
-                TeamConfig.serverDisableTransfer = message.tag.getBoolean("disableTransfer");
-                TeamConfig.serverDisableDeathSound = message.tag.getBoolean("disableDeathSound");
+                ConfigHelper.serverDisablePing = message.tag.getBoolean("disablePing");
+                ConfigHelper.serverDisableTransfer = message.tag.getBoolean("disableTransfer");
+                ConfigHelper.serverDisableDeathSound = message.tag.getBoolean("disableDeathSound");
             });
             return null;
         }

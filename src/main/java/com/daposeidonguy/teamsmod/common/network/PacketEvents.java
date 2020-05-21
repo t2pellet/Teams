@@ -2,15 +2,13 @@ package com.daposeidonguy.teamsmod.common.network;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.messages.MessageDeath;
-import com.daposeidonguy.teamsmod.common.network.messages.MessageHealth;
-import com.daposeidonguy.teamsmod.common.network.messages.MessageHunger;
-import com.daposeidonguy.teamsmod.common.network.messages.MessageNewChat;
+import com.daposeidonguy.teamsmod.common.network.messages.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -61,7 +59,7 @@ public class PacketEvents {
         if (event.getEntity() instanceof EntityPlayer && FMLCommonHandler.instance().getEffectiveSide().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             EntityPlayerMP playerEntity = (EntityPlayerMP) event.getEntityLiving();
-            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
+            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() + event.getAmount())));
             PacketHandler.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
         }
     }
@@ -82,6 +80,14 @@ public class PacketEvents {
             if (!TeamConfig.common.disableDeathSound) {
                 PacketHandler.sendToTeam((EntityPlayerMP) event.getEntityLiving(), new MessageDeath());
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerMove(final LivingEvent.LivingUpdateEvent event) {
+        if (!event.getEntity().getEntityWorld().isRemote && event.getEntity() instanceof EntityPlayerMP) {
+            EntityPlayerMP playerMP = (EntityPlayerMP) event.getEntityLiving();
+            PacketHandler.sendToTeam(playerMP, new MessagePos(playerMP));
         }
     }
 

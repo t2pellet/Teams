@@ -10,7 +10,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID)
-public class ConfigEvent {
+public class ConfigHelper {
+    public static boolean serverDisableDeathSound = false;
+    public static boolean serverDisableTransfer = false;
+    public static boolean serverDisablePing = false;
+
     @SubscribeEvent
     public static void onConfigUpdate(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(TeamsMod.MODID)) {

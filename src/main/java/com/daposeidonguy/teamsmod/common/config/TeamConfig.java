@@ -9,9 +9,6 @@ public class TeamConfig {
     public static ClientConfig client = new ClientConfig();
     public static CommonConfig common = new CommonConfig();
     public static ServerConfig server = new ServerConfig();
-    public static boolean serverDisableDeathSound = false;
-    public static boolean serverDisableTransfer = false;
-    public static boolean serverDisablePing = false;
 
     public static class ClientConfig {
         @Config.Comment("Uses small icon for button to open Teams GUI")

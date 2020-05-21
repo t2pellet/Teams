@@ -51,7 +51,6 @@ public class TeamDataManager extends WorldSavedData {
         List<UUID> tempList = new ArrayList<>();
         tempList.add(player.getUniqueID());
         teamToUuidsMap.put(name, tempList);
-        teamToOwnerMap.put(name, player.getUniqueID());
         uuidToTeamMap.put(player.getUniqueID(), name);
         Map<String, Boolean> newSettingsMap = new HashMap<>();
         newSettingsMap.put("disableAdvancementSync", false);
@@ -82,7 +81,6 @@ public class TeamDataManager extends WorldSavedData {
         }
         teamToUuidsMap.remove(name);
         teamSettingsMap.remove(name);
-        teamToOwnerMap.remove(name);
         markDirty();
     }
 }

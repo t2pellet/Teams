@@ -17,8 +17,6 @@ public class StorageHandler {
     public static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
     public static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
     public static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
-    public static final Map<String, UUID> teamToOwnerMap = new HashMap<>();
-
 
     /* Syncs advancements of all players in a team */
     public static void syncPlayers(final String team, final EntityPlayerMP player) {
@@ -43,6 +41,10 @@ public class StorageHandler {
         }
     }
 
+    public static UUID getOwner(String teamName) {
+        return StorageHandler.teamToUuidsMap.get(teamName).get(0);
+    }
+
     public static void readFromNBT(final NBTTagCompound nbt) {
         clearData();
         try {
@@ -54,8 +56,6 @@ public class StorageHandler {
                     continue;
                 }
                 readPlayers(teamTag, teamName);
-                NBTTagCompound tagPlayer = (NBTTagCompound) playersTag.get(0);
-                teamToOwnerMap.put(teamName, tagPlayer.getUniqueId("uuid"));
                 readSettings(teamTag, teamName);
             }
         } catch (Exception doNothing) {
@@ -67,7 +67,6 @@ public class StorageHandler {
         teamToUuidsMap.clear();
         uuidToTeamMap.clear();
         teamSettingsMap.clear();
-        teamToOwnerMap.clear();
     }
 
     /* Reads team settings from NBT */

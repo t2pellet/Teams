@@ -1,6 +1,5 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -24,7 +23,7 @@ public class MessageTeamChat extends AbstractMessage {
     public static class MessageHandler implements IMessageHandler<MessageTeamChat, IMessage> {
         @Override
         public IMessage onMessage(MessageTeamChat message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> {
+            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                 final EntityPlayer playerEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(message.tag.getUniqueId("uuid"));
                 if (playerEntity != null) {
                     playerEntity.getEntityData().setBoolean("teamChat", message.tag.getBoolean("teamChat"));
