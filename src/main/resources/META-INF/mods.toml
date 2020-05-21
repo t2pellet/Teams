@@ -2,7 +2,7 @@ modLoader="javafml"
 loaderVersion="[31,)"
 [[mods]]
     modId="teamsmod"
-    version="1.8"
+    version="1.15.2-R1"
     displayName="Teams"
     credits="\nThanks to jabelar and Cadiboo's example mods for providing some guidance. Thanks to potat10125 for helping test things\n"
     authors="daPoseidonGuy\n"

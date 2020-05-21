@@ -23,7 +23,7 @@ public class StorageHandler {
 
 
     /* Syncs advancements of all players in a team */
-    public static void syncPlayers(final String team, final ServerPlayerEntity player) {
+    public static void syncAdvancements(final String team, final ServerPlayerEntity player) {
         if (EffectiveSide.get().isServer() && player != null) {
             for (Advancement adv : ServerLifecycleHooks.getCurrentServer().getAdvancementManager().getAllAdvancements()) {
                 for (UUID id : teamToUuidsMap.get(team)) {

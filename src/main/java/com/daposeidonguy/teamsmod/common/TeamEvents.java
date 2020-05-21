@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.common;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.common.compat.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import net.minecraft.advancements.Advancement;
@@ -27,7 +28,8 @@ class TeamEvents {
         if (!event.getPlayer().getEntityWorld().isRemote && !TeamConfig.disableAdvancementSync && StorageHandler.uuidToTeamMap.containsKey(event.getPlayer().getUniqueID())) {
             String team = StorageHandler.uuidToTeamMap.get(event.getPlayer().getUniqueID());
             if (!StorageHandler.teamSettingsMap.get(team).get("disableAdvancementSync")) {
-                StorageHandler.syncPlayers(team, (ServerPlayerEntity) event.getEntity());
+                StorageHandler.syncAdvancements(team, (ServerPlayerEntity) event.getEntity());
+                StageHandler.syncStages(team, (ServerPlayerEntity) event.getEntity());
             }
         }
     }

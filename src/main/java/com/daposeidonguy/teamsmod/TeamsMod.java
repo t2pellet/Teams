@@ -4,12 +4,14 @@ import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.command.CommandTeam;
+import com.daposeidonguy.teamsmod.common.compat.StageEvents;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTypes;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -35,6 +37,9 @@ public class TeamsMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::clientSetup);
         MinecraftForge.EVENT_BUS.register(this);
+        if (ModList.get().isLoaded("gamestages")) {
+            MinecraftForge.EVENT_BUS.register(new StageEvents());
+        }
         TeamsMod.logger.info("Registering configs...");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);

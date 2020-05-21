@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.common.command;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.common.compat.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageInvite;
@@ -170,7 +171,8 @@ public class CommandTeam {
         }
         StorageEvents.data.addPlayer(teamName, uid);
         if (!TeamConfig.disableAdvancementSync) {
-            StorageHandler.syncPlayers(teamName, invitee);
+            StorageHandler.syncAdvancements(teamName, invitee);
+            StageHandler.syncStages(teamName, invitee);
         }
         PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         sender.sendFeedback(new TranslationTextComponent("teamsmod.accept.success", teamName), false);

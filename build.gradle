@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.8'
+version = '1.15.2-R1'
 group = 'com.daposeidonguy.teamsmod' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'teamsmod'
 
@@ -94,14 +94,14 @@ dependencies {
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
-
+    compile files("D:\\Tenzin\\Downloads\\GameStages-1.15.2-5.0.2-deobf.jar")
+    compile files("D:\\Tenzin\\Downloads\\Bookshelf-1.15.2-5.2.5-deobf.jar")
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
 
     // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
     // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
     // These dependencies get remapped to your current MCP mappings
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
