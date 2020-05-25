@@ -13,6 +13,8 @@ public class MessageConfig extends AbstractMessage {
         tag.setBoolean("disablePing", TeamConfig.common.disablePing);
         tag.setBoolean("disableTransfer", TeamConfig.server.disableInventoryTransfer);
         tag.setBoolean("disableDeathSound", TeamConfig.common.disableDeathSound);
+        tag.setBoolean("disableCompass", TeamConfig.server.forceDisableCompass);
+        tag.setBoolean("disableStatus", TeamConfig.server.forceDisableStatus);
     }
 
     public static class MessageHandler implements IMessageHandler<MessageConfig, IMessage> {
@@ -22,6 +24,8 @@ public class MessageConfig extends AbstractMessage {
                 ConfigHelper.serverDisablePing = message.tag.getBoolean("disablePing");
                 ConfigHelper.serverDisableTransfer = message.tag.getBoolean("disableTransfer");
                 ConfigHelper.serverDisableDeathSound = message.tag.getBoolean("disableDeathSound");
+                ConfigHelper.serverDisableCompass = message.tag.getBoolean("disableCompass");
+                ConfigHelper.serverDisableStatus = message.tag.getBoolean("disableStatus");
             });
             return null;
         }

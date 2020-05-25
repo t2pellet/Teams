@@ -4,10 +4,10 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.mojang.realmsclient.util.Pair;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.math.Vec2f;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -26,7 +26,7 @@ public class ClientHandler {
 
     public static final Map<UUID, String> idtoNameMap = new HashMap<>();
     public static final Map<String, UUID> nametoIdMap = new HashMap<>();
-    public static final Map<UUID, Pair<Integer, Vec2d>> idtoPosMap = new HashMap<>();
+    public static final Map<UUID, Pair<Integer, Vec2f>> idtoPosMap = new HashMap<>();
     public static final Minecraft mc = Minecraft.getMinecraft();
     public static long ticks = 0;
 

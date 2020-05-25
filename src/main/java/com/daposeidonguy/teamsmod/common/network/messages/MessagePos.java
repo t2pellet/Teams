@@ -2,9 +2,9 @@ package com.daposeidonguy.teamsmod.common.network.messages;
 
 import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.mojang.realmsclient.util.Pair;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.Vec2f;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -29,7 +29,7 @@ public class MessagePos extends AbstractMessage {
         public IMessage onMessage(MessagePos message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 UUID playerId = message.tag.getUniqueId("id");
-                Vec2d pos = new Vec2d(message.tag.getDouble("x"), message.tag.getDouble("z"));
+                Vec2f pos = new Vec2f((float) message.tag.getDouble("x"), (float) message.tag.getDouble("z"));
                 ClientHandler.idtoPosMap.put(playerId, Pair.of(message.tag.getInteger("dim"), pos));
             });
             return null;

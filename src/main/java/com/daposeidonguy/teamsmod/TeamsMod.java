@@ -3,6 +3,7 @@ package com.daposeidonguy.teamsmod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.command.CommandTeam;
+import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import com.daposeidonguy.teamsmod.common.storage.StorageEvents;
@@ -35,6 +36,7 @@ public class TeamsMod {
             PacketHandler.register(Side.CLIENT);
         }
         PacketHandler.register(Side.SERVER);
+        FMLCommonHandler.instance().bus().register(ConfigHelper.class);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

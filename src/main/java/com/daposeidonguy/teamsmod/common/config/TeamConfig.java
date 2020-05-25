@@ -41,6 +41,10 @@ public class TeamConfig {
         public boolean noOpRemoveTeam;
         @Config.Comment("Disables the inventory transfer feature for teams")
         public boolean disableInventoryTransfer;
+        @Config.Comment("Force disable status overlay on connected clients")
+        public boolean forceDisableStatus;
+        @Config.Comment("Force disable compass overlay on connected clients")
+        public boolean forceDisableCompass;
     }
 
 

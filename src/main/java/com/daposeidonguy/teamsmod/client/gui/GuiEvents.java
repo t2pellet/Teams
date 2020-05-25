@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.client.gui.overlay.CompassOverlay;
 import com.daposeidonguy.teamsmod.client.gui.overlay.StatusOverlay;
 import com.daposeidonguy.teamsmod.client.gui.widget.ChatButton;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
+import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
@@ -77,10 +78,10 @@ public class GuiEvents {
             UUID id = ClientHandler.mc.player.getUniqueID();
             String team = StorageHandler.uuidToTeamMap.get(id);
             if (team != null) {
-                if (!TeamConfig.client.disableCompassOverlay && KeyBindHandler.doDisplayCompass) {
+                if (!TeamConfig.client.disableCompassOverlay && KeyBindHandler.doDisplayCompass && !ConfigHelper.serverDisableCompass) {
                     new CompassOverlay(ClientHandler.mc, team);
                 }
-                if (!TeamConfig.client.disableStatusOverlay && KeyBindHandler.doDisplayStatus) {
+                if (!TeamConfig.client.disableStatusOverlay && KeyBindHandler.doDisplayStatus && !ConfigHelper.serverDisableStatus) {
                     new StatusOverlay(ClientHandler.mc, team);
                 }
             }

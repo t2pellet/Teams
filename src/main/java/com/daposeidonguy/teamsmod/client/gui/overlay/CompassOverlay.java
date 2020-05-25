@@ -3,13 +3,13 @@ package com.daposeidonguy.teamsmod.client.gui.overlay;
 import com.daposeidonguy.teamsmod.client.ClientHandler;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import com.mojang.realmsclient.util.Pair;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec2f;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ public class CompassOverlay extends Gui {
             if (!playerId.equals(mc.player.getUniqueID())) {
                 NetworkPlayerInfo player = mc.getConnection().getPlayerInfo(playerId);
                 if (player != null) {
-                    Pair<Integer, Vec2d> posPair = ClientHandler.idtoPosMap.get(playerId);
+                    Pair<Integer, Vec2f> posPair = ClientHandler.idtoPosMap.get(playerId);
                     if (posPair == null || posPair.first() != mc.player.getEntityWorld().provider.getDimension()) {
                         continue;
                     }
@@ -47,6 +47,7 @@ public class CompassOverlay extends Gui {
                     double renderFactor = calculateRenderFactor(posPair.second(), rotationHead, magnitude);
                     ResourceLocation skin = player.getLocationSkin();
                     renderHUDHead(skin, renderFactor, magnitude);
+                } else {
                 }
             }
         }
@@ -66,13 +67,13 @@ public class CompassOverlay extends Gui {
         return rotationHead;
     }
 
-    private double calculateMagnitude(final Vec2d pos) {
+    private double calculateMagnitude(final Vec2f pos) {
         double diffPosX = pos.x - mc.player.posX;
         double diffPosZ = pos.y - mc.player.posZ;
         return Math.sqrt(diffPosX * diffPosX + diffPosZ * diffPosZ);
     }
 
-    private double calculateRenderFactor(final Vec2d pos, final double rotationHead, final double magnitude) {
+    private double calculateRenderFactor(final Vec2f pos, final double rotationHead, final double magnitude) {
         double diffPosX = pos.x - mc.player.posX;
         double diffPosZ = pos.y - mc.player.posZ;
         diffPosX /= magnitude;

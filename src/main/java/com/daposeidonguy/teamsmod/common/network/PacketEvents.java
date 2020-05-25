@@ -14,6 +14,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
@@ -88,6 +89,13 @@ public class PacketEvents {
         if (!event.getEntity().getEntityWorld().isRemote && event.getEntity() instanceof EntityPlayerMP) {
             EntityPlayerMP playerMP = (EntityPlayerMP) event.getEntityLiving();
             PacketHandler.sendToTeam(playerMP, new MessagePos(playerMP));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
+        if (!event.player.world.isRemote) {
+            PacketHandler.INSTANCE.sendTo(new MessageConfig(), (EntityPlayerMP) event.player);
         }
     }
 
