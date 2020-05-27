@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
-import com.daposeidonguy.teamsmod.client.chat.ChatHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
+import com.daposeidonguy.teamsmod.client.chat.ChatHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.PacketBuffer;
@@ -24,10 +24,10 @@ public class MessageNewChat extends AbstractMessage {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Pair<String, Long> chatPair = new Pair<>(tag.getString("message"), ClientHandler.ticks);
-            ChatHandler.lastMessageReceived = new Pair<>(ClientHandler.nametoIdMap.get(tag.getString("username")), tag.getString("message"));
+            Pair<String, Long> chatPair = new Pair<>(tag.getString("message"), ClientHelper.ticks);
+            ChatHelper.setLastMessage(ClientHelper.getIdFromName(tag.getString("username")), tag.getString("message"));
             GuiHandler.chatMap.put(tag.getString("username"), chatPair);
-            ChatHandler.lastMessageTeam = tag.getBoolean("teamChat");
+            ChatHelper.setLastMessageTeam(tag.getBoolean("teamChat"));
         });
         ctx.get().setPacketHandled(true);
     }

@@ -4,6 +4,7 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.compat.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -25,9 +26,9 @@ class TeamEvents {
     /* Syncs advancements with player and their team upon login (depending on config) */
     @SubscribeEvent
     public static void onPlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.getPlayer().getEntityWorld().isRemote && !TeamConfig.disableAdvancementSync && StorageHandler.uuidToTeamMap.containsKey(event.getPlayer().getUniqueID())) {
-            String team = StorageHandler.uuidToTeamMap.get(event.getPlayer().getUniqueID());
-            if (!StorageHandler.teamSettingsMap.get(team).get("disableAdvancementSync")) {
+        if (!event.getPlayer().getEntityWorld().isRemote && !TeamConfig.disableAdvancementSync && StorageHelper.isPlayerInTeam(event.getPlayer().getUniqueID())) {
+            String team = StorageHelper.getTeam(event.getPlayer().getUniqueID());
+            if (!StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
                 StorageHandler.syncAdvancements(team, (ServerPlayerEntity) event.getEntity());
                 StageHandler.syncStages(team, (ServerPlayerEntity) event.getEntity());
             }
@@ -40,9 +41,9 @@ class TeamEvents {
         if (!event.getEntityLiving().getEntityWorld().isRemote && !TeamConfig.enableFriendlyFire && event.getSource().getTrueSource() instanceof PlayerEntity && event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity attacker = (PlayerEntity) event.getSource().getTrueSource();
             PlayerEntity target = (PlayerEntity) event.getEntityLiving();
-            String targetTeam = StorageHandler.uuidToTeamMap.get(target.getUniqueID());
-            String attackerTeam = StorageHandler.uuidToTeamMap.get(attacker.getUniqueID());
-            if (targetTeam != null && targetTeam.equals(attackerTeam) && !StorageHandler.teamSettingsMap.get(targetTeam).get("enableFriendlyFire")) {
+            String targetTeam = StorageHelper.getTeam(target.getUniqueID());
+            String attackerTeam = StorageHelper.getTeam(attacker.getUniqueID());
+            if (targetTeam != null && targetTeam.equals(attackerTeam) && !StorageHelper.getTeamSetting(targetTeam, "enableFriendlyFire")) {
                 event.setCanceled(true);
             }
         }
@@ -52,14 +53,11 @@ class TeamEvents {
     @SubscribeEvent
     public static void achievementGet(final AdvancementEvent event) {
         if (!TeamConfig.disableAdvancementSync && !event.getEntity().getEntityWorld().isRemote) {
-            String team = StorageHandler.uuidToTeamMap.get(event.getPlayer().getUniqueID());
-            if (StorageHandler.teamSettingsMap.get(team) == null) {
-                return;
-            }
-            if (!StorageHandler.teamSettingsMap.get(team).get("disableAdvancementSync")) {
+            String team = StorageHelper.getTeam(event.getPlayer().getUniqueID());
+            if (!StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
                 Advancement adv = event.getAdvancement();
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-                for (UUID playerID : StorageHandler.teamToUuidsMap.get(team)) {
+                for (UUID playerID : StorageHelper.getTeamPlayers(team)) {
                     ServerPlayerEntity teammate = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerID);
                     if (teammate != null) {
                         for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
@@ -75,7 +73,7 @@ class TeamEvents {
     @SubscribeEvent
     public static void onServerChat(final ServerChatEvent event) {
         if (!TeamConfig.disablePrefix) {
-            String teamName = StorageHandler.uuidToTeamMap.get(event.getPlayer().getUniqueID());
+            String teamName = StorageHelper.getTeam(event.getPlayer().getUniqueID());
             if (teamName != null) {
                 StringTextComponent prefix = new StringTextComponent("[" + teamName + "] ");
                 event.setComponent(prefix.appendSibling(event.getComponent()));

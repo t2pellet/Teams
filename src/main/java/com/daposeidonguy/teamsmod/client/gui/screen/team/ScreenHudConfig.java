@@ -1,10 +1,10 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenPages;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -21,15 +21,15 @@ public class ScreenHudConfig extends AbstractScreenPages {
     public void init() {
         super.init();
 
-        String name = StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID());
+        String name = StorageHelper.getTeam(minecraft.player.getUniqueID());
         if (name == null) {
             minecraft.displayGuiScreen(null);
             minecraft.player.sendMessage(new TranslationTextComponent("teamsmod.hud.notinteam"));
             return;
         }
-        for (UUID uid : StorageHandler.teamToUuidsMap.get(name)) {
-            if (!uid.equals(minecraft.player.getUniqueID()) && ClientHandler.mc.getConnection().getPlayerInfo(uid) != null) {
-                String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
+        for (UUID uid : StorageHelper.getTeamPlayers(name)) {
+            if (!uid.equals(minecraft.player.getUniqueID()) && ClientHelper.mc.getConnection().getPlayerInfo(uid) != null) {
+                String playerName = ClientHelper.getOnlineNameFromId(uid);
                 if (playerName != null) {
                     Button button = new Button(BUTTON_CENTERED_X - 5, guiTop + yOffset, BUTTON_WIDTH + 10, BUTTON_HEIGHT, playerName + ": " + GuiHandler.priorityPlayers.contains(uid), btn -> {
                         boolean isPriority = GuiHandler.priorityPlayers.contains(uid);

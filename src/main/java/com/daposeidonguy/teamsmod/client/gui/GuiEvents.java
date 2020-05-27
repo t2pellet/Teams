@@ -1,16 +1,16 @@
 package com.daposeidonguy.teamsmod.client.gui;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.overlay.CompassOverlay;
 import com.daposeidonguy.teamsmod.client.gui.overlay.StatusOverlay;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenMain;
 import com.daposeidonguy.teamsmod.client.gui.widget.ChatButton;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.gui.DisplayEffectsScreen;
@@ -41,11 +41,11 @@ public class GuiEvents {
     @SubscribeEvent
     public static void onRenderPlayer(final RenderPlayerEvent.Pre event) {
         String playerName = event.getPlayer().getGameProfile().getName();
-        String localName = ClientHandler.mc.player.getGameProfile().getName();
+        String localName = ClientHelper.mc.player.getGameProfile().getName();
         if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName) && !TeamConfig.disableChatBubble) {
             String text = GuiHandler.chatMap.get(playerName).getFirst();
             long tick = GuiHandler.chatMap.get(playerName).getSecond();
-            if ((ClientHandler.ticks - tick) < 200) {
+            if ((ClientHelper.ticks - tick) < 200) {
                 renderBubbleHelper(event.getRenderer().getRenderManager(), event.getPlayer(), text, event.getMatrixStack(), event.getBuffers(), event.getLight());
             } else {
                 GuiHandler.chatMap.remove(playerName);
@@ -64,7 +64,7 @@ public class GuiEvents {
             stack.rotate(renderManager.getCameraOrientation());
             stack.scale(-0.025F, -0.025F, 0.025F);
             Matrix4f matrix4f = stack.getLast().getMatrix();
-            float f1 = ClientHandler.mc.gameSettings.getTextBackgroundOpacity(0.25F);
+            float f1 = ClientHelper.mc.gameSettings.getTextBackgroundOpacity(0.25F);
             int j = (int) (f1 * 255.0F) << 24;
             FontRenderer fontrenderer = renderManager.getFontRenderer();
             float f2 = (float) (-fontrenderer.getStringWidth(text) / 2);
@@ -89,7 +89,7 @@ public class GuiEvents {
             int renderHeight = TeamConfig.smallIcon ? 13 : 18;
             ResourceLocation renderLoc = TeamConfig.smallIcon ? new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png") : new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png");
             ImageButton guiButtonImage = new ImageButton(renderX, renderY, renderWidth, renderHeight, 0, 0, renderHeight, renderLoc, press -> {
-                ClientHandler.mc.displayGuiScreen(new ScreenMain());
+                ClientHelper.mc.displayGuiScreen(new ScreenMain());
             });
             event.addWidget(guiButtonImage);
         }
@@ -99,18 +99,18 @@ public class GuiEvents {
     @SubscribeEvent
     public static void onChatScreen(final GuiScreenEvent.InitGuiEvent.Post event) throws IllegalAccessException {
         if (event.getGui() instanceof ChatScreen) {
-            MainWindow window = ClientHandler.mc.getMainWindow();
-            String myTeam = StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID());
+            MainWindow window = ClientHelper.mc.getMainWindow();
+            String myTeam = StorageHelper.getTeam(ClientHelper.mc.player.getUniqueID());
             if (myTeam != null) {
-                int defaultWidth = ClientHandler.mc.fontRenderer.getStringWidth("Display: Server Chat");
+                int defaultWidth = ClientHelper.mc.fontRenderer.getStringWidth("Display: Server Chat");
                 ChatButton button = new ChatButton((int) (window.getScaledWidth() * 0.99 - defaultWidth), (int) (window.getScaledHeight() * 0.89), defaultWidth, 10);
                 event.addWidget(button);
             } else if (GuiHandler.displayTeamChat) {
                 GuiHandler.displayTeamChat = false;
-                NewChatGui oldGui = (NewChatGui) GuiHandler.persistentChatGUI.get(ClientHandler.mc.ingameGUI);
-                GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
+                NewChatGui oldGui = (NewChatGui) GuiHandler.persistentChatGUI.get(ClientHelper.mc.ingameGUI);
+                GuiHandler.persistentChatGUI.set(ClientHelper.mc.ingameGUI, GuiHandler.backupChatGUI);
                 GuiHandler.backupChatGUI = oldGui;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
+                NetworkHelper.sendToServer(new MessageTeamChat(ClientHelper.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             }
         }
     }
@@ -122,14 +122,14 @@ public class GuiEvents {
         if (EffectiveSide.get().isClient() &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            UUID id = ClientHandler.mc.player.getUniqueID();
-            String team = StorageHandler.uuidToTeamMap.get(id);
+            UUID id = ClientHelper.mc.player.getUniqueID();
+            String team = StorageHelper.getTeam(id);
             if (team != null) {
                 if (!TeamConfig.disableCompassOverlay && KeyBindHandler.doDisplayCompass) {
-                    new CompassOverlay(ClientHandler.mc, team);
+                    new CompassOverlay(ClientHelper.mc, team);
                 }
                 if (!TeamConfig.disableStatusOverlay && KeyBindHandler.doDisplayStatus) {
-                    new StatusOverlay(ClientHandler.mc, team);
+                    new StatusOverlay(ClientHelper.mc, team);
                 }
             }
         }

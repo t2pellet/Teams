@@ -17,7 +17,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.UUID;
@@ -37,8 +36,8 @@ public class PacketEvents {
         ticks += 1;
         if (ticks == 200 && EffectiveSide.get().isServer()) {
             for (ServerPlayerEntity playerMP : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-                PacketHandler.sendToTeam(playerMP, new MessageHealth(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getHealth())));
-                PacketHandler.sendToTeam(playerMP, new MessageHunger(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getFoodStats().getFoodLevel())));
+                NetworkHelper.sendToTeam(playerMP, new MessageHealth(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getHealth())));
+                NetworkHelper.sendToTeam(playerMP, new MessageHunger(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getFoodStats().getFoodLevel())));
             }
             ticks = 0;
         }
@@ -50,8 +49,8 @@ public class PacketEvents {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
-            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
-            PacketHandler.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
+            NetworkHelper.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
+            NetworkHelper.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
         }
     }
 
@@ -61,8 +60,8 @@ public class PacketEvents {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
-            PacketHandler.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() + event.getAmount())));
-            PacketHandler.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
+            NetworkHelper.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() + event.getAmount())));
+            NetworkHelper.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
         }
     }
 
@@ -72,7 +71,7 @@ public class PacketEvents {
     @SubscribeEvent
     public static void onPlayerChat(final ServerChatEvent event) {
         boolean teamChat = event.getPlayer().getPersistentData().getBoolean("teamChat");
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageNewChat(event.getPlayer().getGameProfile().getName(), event.getMessage(), teamChat));
+        NetworkHelper.sendToAll(new MessageNewChat(event.getPlayer().getGameProfile().getName(), event.getMessage(), teamChat));
     }
 
     /* Sends MessageDeath packet to all players on the dead players team when LivingDeathEvent fires */
@@ -80,7 +79,7 @@ public class PacketEvents {
     public static void onPlayerDeath(final LivingDeathEvent event) {
         if (event.getEntity() instanceof PlayerEntity && EffectiveSide.get().isServer()) {
             if (!TeamConfig.disableDeathSound) {
-                PacketHandler.sendToTeam((ServerPlayerEntity) event.getEntityLiving(), new MessageDeath());
+                NetworkHelper.sendToTeam((ServerPlayerEntity) event.getEntityLiving(), new MessageDeath());
             }
         }
     }

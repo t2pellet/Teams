@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class ChatHandler {
 
-    public static Pair<UUID, String> lastMessageReceived;
-    public static boolean lastMessageTeam = false;
+    static Pair<UUID, String> lastMessageReceived;
+    static boolean lastMessageTeam = false;
 
 }

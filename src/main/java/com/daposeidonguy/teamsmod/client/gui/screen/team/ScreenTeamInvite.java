@@ -1,10 +1,10 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
 import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.client.resources.I18n;
@@ -32,8 +32,8 @@ public class ScreenTeamInvite extends AbstractScreenText {
         int yoffset = 15;
         while (infoIterator.hasNext()) {
             UUID uid = infoIterator.next().getGameProfile().getId();
-            String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
-            if (!playerName.equals(clientName) && !StorageHandler.uuidToTeamMap.containsKey(uid)) {
+            String playerName = ClientHelper.getOnlineNameFromId(uid);
+            if (!playerName.equals(clientName) && !StorageHelper.isPlayerInTeam(uid)) {
                 int width = minecraft.fontRenderer.getStringWidth(playerName);
                 this.addButton(new ClearButton(guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, playerName, btn -> this.text.setText(btn.getMessage())));
                 yoffset += 15;

@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.common.command;
 
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.command.CommandSource;
@@ -12,7 +12,7 @@ import java.util.Set;
 class SuggestionHandler {
     /* Provides autocomplete suggestion list of teams */
     static final SuggestionProvider<CommandSource> TEAM_SUGGESTIONS = SuggestionProviders.register(new ResourceLocation("teams"), (ctx, builder) -> {
-        Set<String> teamSet = StorageHandler.teamToUuidsMap.keySet();
+        Set<String> teamSet = StorageHelper.getTeamSet();
         if (teamSet.isEmpty()) {
             return Suggestions.empty();
         }

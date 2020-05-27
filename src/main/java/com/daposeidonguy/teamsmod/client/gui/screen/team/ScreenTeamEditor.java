@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -27,13 +27,13 @@ public class ScreenTeamEditor extends AbstractScreenBase {
         }));
         boolean isTeamOwner = isTeamOwner();
         Button kickButton = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 50, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.kick"), btn -> {
-            if (minecraft.player.getUniqueID().equals(StorageHandler.teamToOwnerMap.get(teamName))) {
+            if (minecraft.player.getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
                 minecraft.displayGuiScreen(new ScreenTeamKick(this, teamName));
             }
         }));
         kickButton.active = isTeamOwner;
         Button configButton = this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.config"), btn -> {
-            if (minecraft.player.getUniqueID().equals(StorageHandler.teamToOwnerMap.get(teamName))) {
+            if (minecraft.player.getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
                 minecraft.displayGuiScreen(new ScreenTeamConfig(this, teamName));
             }
         }));
@@ -42,13 +42,13 @@ public class ScreenTeamEditor extends AbstractScreenBase {
             minecraft.player.sendChatMessage("/teamsmod leave");
             minecraft.displayGuiScreen(null);
         }));
-        leaveButton.active = !isTeamOwner || StorageHandler.teamToUuidsMap.get(StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID())).size() == 1;
+        leaveButton.active = !isTeamOwner || StorageHelper.getTeamPlayers(StorageHelper.getTeam(minecraft.player.getUniqueID())).size() == 1;
     }
 
     private boolean isTeamOwner() {
         UUID clientId = minecraft.player.getUniqueID();
-        String team = StorageHandler.uuidToTeamMap.get(clientId);
-        return StorageHandler.teamToOwnerMap.get(team).equals(clientId);
+        String team = StorageHelper.getTeam(clientId);
+        return StorageHelper.getTeamOwner(team).equals(clientId);
     }
 
 }

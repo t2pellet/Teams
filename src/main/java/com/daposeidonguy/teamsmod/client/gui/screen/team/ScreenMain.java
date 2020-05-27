@@ -2,7 +2,7 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.common.config.ConfigHandler;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,11 +18,11 @@ public class ScreenMain extends AbstractScreenBase {
     protected void init() {
         super.init();
         this.goBack.setMessage(I18n.format("teamsmod.button.close"));
-        boolean inTeam = StorageHandler.uuidToTeamMap.containsKey(minecraft.player.getUniqueID());
+        boolean inTeam = StorageHelper.isPlayerInTeam(minecraft.player.getUniqueID());
         String editorText = inTeam ? I18n.format("teamsmod.main.manage") : I18n.format("teamsmod.main.create");
         this.addButton(new Button(BUTTON_CENTERED_X, guiTop + 25, BUTTON_WIDTH, BUTTON_HEIGHT, editorText, btn -> {
             if (inTeam) {
-                minecraft.displayGuiScreen(new ScreenTeamEditor(this, StorageHandler.uuidToTeamMap.get(minecraft.player.getUniqueID())));
+                minecraft.displayGuiScreen(new ScreenTeamEditor(this, StorageHelper.getTeam(minecraft.player.getUniqueID())));
             } else {
                 minecraft.displayGuiScreen(new ScreenTeamCreator(this));
             }

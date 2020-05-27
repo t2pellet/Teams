@@ -3,11 +3,12 @@ package com.daposeidonguy.teamsmod.common.command;
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.compat.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageInvite;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import com.daposeidonguy.teamsmod.common.storage.StorageEvents;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -24,7 +25,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.UUID;
@@ -66,7 +66,7 @@ public class CommandTeam {
                     .then(Commands.literal("config")
                             .then(Commands.argument("configOption", StringArgumentType.word()).suggests(SuggestionHandler.CONFIG_SUGGESTIONS)
                                     .then(Commands.argument("configValue", BoolArgumentType.bool())
-                                            .executes(ctx -> teamConfig(server, ctx.getSource(), StorageHandler.uuidToTeamMap.get(ctx.getSource().asPlayer().getUniqueID()),
+                                            .executes(ctx -> teamConfig(server, ctx.getSource(), StorageHelper.getTeam(ctx.getSource().asPlayer().getUniqueID()),
                                                     StringArgumentType.getString(ctx, "configOption"),
                                                     BoolArgumentType.getBool(ctx, "configValue"))))))
                     .executes(ctx -> {
@@ -88,21 +88,21 @@ public class CommandTeam {
     /* Creates a team with name teamName and adds the command sender to the team */
     private static int teamCreate(final MinecraftServer server, final CommandSource sender, final String teamName) throws CommandSyntaxException {
         PlayerEntity player = sender.asPlayer();
-        if (StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+        if (StorageHelper.doesTeamExist(teamName)) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.create.nametaken")).create();
-        } else if (StorageHandler.uuidToTeamMap.containsKey(player.getUniqueID())) {
+        } else if (StorageHelper.isPlayerInTeam(player.getUniqueID())) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.inteam")).create();
         }
         sender.sendFeedback(new TranslationTextComponent("teamsmod.create.success").appendText(teamName), false);
         StorageEvents.data.addTeam(teamName, player);
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+        NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         return Command.SINGLE_SUCCESS;
     }
 
     /* Sends the list of teams in the server to the command sender */
     private static int teamList(final CommandSource sender) {
         sender.sendFeedback(new TranslationTextComponent("teamsmod.list.success"), false);
-        for (String s : StorageHandler.teamToUuidsMap.keySet()) {
+        for (String s : StorageHelper.getTeamSet()) {
             sender.sendFeedback(new StringTextComponent(s), false);
         }
         return Command.SINGLE_SUCCESS;
@@ -110,11 +110,11 @@ public class CommandTeam {
 
     /* Sends information about the team "teamName" to the command sender */
     private static int teamInfo(final MinecraftServer server, final CommandSource sender, final String teamName) throws CommandSyntaxException {
-        if (!StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+        if (!StorageHelper.doesTeamExist(teamName)) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.info.invalidteam")).create();
         }
         sender.sendFeedback(new TranslationTextComponent("teamsmod.info.success"), false);
-        for (UUID id : StorageHandler.teamToUuidsMap.get(teamName)) {
+        for (UUID id : StorageHelper.getTeamPlayers(teamName)) {
             GameProfile profile = server.getPlayerProfileCache().getProfileByUUID(id);
             if (profile != null) {
                 sender.sendFeedback(new StringTextComponent(profile.getName()), false);
@@ -128,8 +128,8 @@ public class CommandTeam {
         GameProfile profile = server.getPlayerProfileCache().getGameProfileForUsername(playerName);
         if (profile == null) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.nosuchplayer", playerName)).create();
-        } else if (StorageHandler.uuidToTeamMap.containsKey(profile.getId())) {
-            String playerTeam = StorageHandler.uuidToTeamMap.get(profile.getId());
+        } else if (StorageHelper.isPlayerInTeam(profile.getId())) {
+            String playerTeam = StorageHelper.getTeam(profile.getId());
             sender.sendFeedback(new TranslationTextComponent("teamsmod.player.success", playerName, playerTeam), false);
             return Command.SINGLE_SUCCESS;
         } else {
@@ -141,17 +141,17 @@ public class CommandTeam {
     private static int teamInvite(final CommandSource sender, final String playerName) throws CommandSyntaxException {
         ServerPlayerEntity newPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(playerName);
         PlayerEntity oldPlayer = sender.asPlayer();
-        String teamName = StorageHandler.uuidToTeamMap.get(oldPlayer.getUniqueID());
+        String teamName = StorageHelper.getTeam(oldPlayer.getUniqueID());
         if (teamName != null) {
             if (newPlayer == null) {
                 throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.invite.nosuchplayer")).create();
-            } else if (StorageHandler.teamToUuidsMap.get(teamName).contains(newPlayer.getUniqueID())) {
+            } else if (StorageHelper.getTeamPlayers(teamName).contains(newPlayer.getUniqueID())) {
                 throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.invite.alreadyinteam")).create();
             }
             newPlayer.getPersistentData().putString("invitedto", teamName);
             newPlayer.getPersistentData().putUniqueId("invitedby", oldPlayer.getUniqueID());
             oldPlayer.sendMessage(new TranslationTextComponent("teamsmod.invite.success", newPlayer.getGameProfile().getName()));
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> newPlayer), new MessageInvite(teamName));
+            NetworkHelper.sendToPlayer(newPlayer, new MessageInvite(teamName));
             newPlayer.sendMessage(new TranslationTextComponent("teamsmod.invitedtoteam").appendText(teamName));
             return Command.SINGLE_SUCCESS;
         } else {
@@ -166,7 +166,7 @@ public class CommandTeam {
         UUID uid = invitee.getUniqueID();
         if (teamName.equals("")) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.accept.notinvited")).create();
-        } else if (StorageHandler.uuidToTeamMap.containsKey(uid)) {
+        } else if (StorageHelper.isPlayerInTeam(uid)) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.inteam")).create();
         }
         StorageEvents.data.addPlayer(teamName, uid);
@@ -174,7 +174,7 @@ public class CommandTeam {
             StorageHandler.syncAdvancements(teamName, invitee);
             StageHandler.syncStages(teamName, invitee);
         }
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+        NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         sender.sendFeedback(new TranslationTextComponent("teamsmod.accept.success", teamName), false);
         ServerPlayerEntity inviter = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(invitee.getPersistentData().getUniqueId("invitedby"));
         if (inviter != null) {
@@ -191,13 +191,13 @@ public class CommandTeam {
         }
         UUID kickID = profile.getId();
         UUID senderID = sender.asPlayer().getUniqueID();
-        if (StorageHandler.uuidToTeamMap.get(senderID) == null) {
+        if (StorageHelper.getTeam(senderID) == null) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.notinteam")).create();
-        } else if (StorageHandler.uuidToTeamMap.get(kickID) == null || !StorageHandler.uuidToTeamMap.get(senderID).equals(StorageHandler.uuidToTeamMap.get(kickID))) {
+        } else if (StorageHelper.getTeam(kickID) == null || !StorageHelper.getTeam(senderID).equals(StorageHelper.getTeam(kickID))) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.playernotinteam", profile.getName())).create();
         } else {
-            String myTeam = StorageHandler.uuidToTeamMap.get(senderID);
-            if (!StorageHandler.teamToOwnerMap.get(myTeam).equals(senderID)) {
+            String myTeam = StorageHelper.getTeam(senderID);
+            if (!StorageHelper.getTeamOwner(myTeam).equals(senderID)) {
                 throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.notowner", profile.getName())).create();
             } else {
                 StorageEvents.data.removePlayer(myTeam, kickID);
@@ -205,7 +205,7 @@ public class CommandTeam {
                 if (server.getPlayerList().getPlayerByUUID(kickID) != null) {
                     server.getPlayerList().getPlayerByUUID(kickID).sendMessage(new TranslationTextComponent("teamsmod.kicked"));
                 }
-                PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+                NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
                 return Command.SINGLE_SUCCESS;
             }
         }
@@ -214,32 +214,32 @@ public class CommandTeam {
     /* Removes the command sender from their team */
     private static int teamLeave(final MinecraftServer server, final CommandSource sender) throws CommandSyntaxException {
         PlayerEntity p = sender.asPlayer();
-        if (!StorageHandler.uuidToTeamMap.containsKey(p.getUniqueID())) {
+        if (!StorageHelper.isPlayerInTeam(p.getUniqueID())) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.notinteam")).create();
         }
-        String toLeave = StorageHandler.uuidToTeamMap.get(p.getUniqueID());
-        if (StorageHandler.teamToOwnerMap.get(toLeave).equals(sender.asPlayer().getGameProfile().getId())) {
-            if (StorageHandler.teamToUuidsMap.get(toLeave).size() > 1) {
+        String toLeave = StorageHelper.getTeam(p.getUniqueID());
+        if (StorageHelper.getTeamOwner(toLeave).equals(sender.asPlayer().getGameProfile().getId())) {
+            if (StorageHelper.getTeamPlayers(toLeave).size() > 1) {
                 throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.leave.owner")).create();
             }
         }
         StorageEvents.data.removePlayer(toLeave, p.getUniqueID());
         p.sendMessage(new TranslationTextComponent("teamsmod.leave.success"));
-        if (StorageHandler.teamToUuidsMap.get(toLeave).isEmpty()) {
+        if (StorageHelper.getTeamPlayers(toLeave).isEmpty()) {
             StorageEvents.data.removeTeam(toLeave);
         }
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+        NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         return Command.SINGLE_SUCCESS;
     }
 
     /* Removes the team "teamName" from the server */
     private static int teamRemove(final MinecraftServer server, final CommandSource sender, final String teamName) throws CommandSyntaxException {
-        if (!StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+        if (!StorageHelper.doesTeamExist(teamName)) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.remove.nosuchteam", teamName)).create();
         }
         sender.sendFeedback(new TranslationTextComponent("teamsmod.remove.success", teamName), false);
         StorageEvents.data.removeTeam(teamName);
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+        NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -247,11 +247,11 @@ public class CommandTeam {
     private static int teamConfig(final MinecraftServer server, final CommandSource sender, final String teamName, final String configOption, boolean configValue) throws CommandSyntaxException {
         if (!configOption.equals("disableAdvancementSync") && !configOption.equals("enableFriendlyFire")) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.config.invalid")).create();
-        } else if (!sender.asPlayer().getUniqueID().equals(StorageHandler.teamToOwnerMap.get(teamName))) {
+        } else if (!sender.asPlayer().getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.notowner")).create();
         }
-        StorageHandler.teamSettingsMap.get(teamName).put(configOption, configValue);
-        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
+        StorageHelper.setTeamSetting(teamName, configOption, configValue);
+        NetworkHelper.sendToAll(new MessageSaveData(server.getWorld(DimensionType.OVERWORLD)));
         sender.sendFeedback(new TranslationTextComponent("teamsmod.config.success"), false);
         return Command.SINGLE_SUCCESS;
     }

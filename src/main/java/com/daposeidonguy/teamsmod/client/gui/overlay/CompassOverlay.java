@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.client.gui.overlay;
 
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -25,7 +25,7 @@ public class CompassOverlay extends AbstractGui {
         this.scaledHeight = mc.getMainWindow().getScaledHeight();
 
         double rotationHead = caculateRotationHead();
-        Iterator<UUID> uuidIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
+        Iterator<UUID> uuidIterator = StorageHelper.getTeamPlayers(teamName).iterator();
         int onlineCount = 0;
         while (uuidIterator.hasNext()) {
             UUID playerId = uuidIterator.next();

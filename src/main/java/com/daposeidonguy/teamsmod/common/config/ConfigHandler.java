@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.common.config;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageConfig;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,7 +11,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 @Mod.EventBusSubscriber(modid = TeamsMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ConfigHandler {
@@ -28,7 +27,7 @@ public class ConfigHandler {
             ConfigHandler.bakeCommon();
             if (TeamsMod.doneSetup) {
                 DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> {
-                    PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new MessageConfig());
+                    NetworkHelper.sendToAll(new MessageConfig());
                 });
             }
         }
@@ -38,7 +37,7 @@ public class ConfigHandler {
     @SubscribeEvent
     public static void onPlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
         if (EffectiveSide.get().isServer()) {
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new MessageConfig());
+            NetworkHelper.sendToPlayer((ServerPlayerEntity) event.getPlayer(), new MessageConfig());
         }
     }
 

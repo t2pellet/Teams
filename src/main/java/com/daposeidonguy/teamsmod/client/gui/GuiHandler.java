@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.client.gui;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.IngameGui;
 import net.minecraft.client.gui.NewChatGui;
@@ -16,5 +16,5 @@ public class GuiHandler {
     public static final List<UUID> priorityPlayers = new ArrayList<>();
     public static final Field persistentChatGUI = ObfuscationReflectionHelper.findField(IngameGui.class, "field_73840_e");
     public static boolean displayTeamChat = false;
-    public static NewChatGui backupChatGUI = new NewChatGui(ClientHandler.mc);
+    public static NewChatGui backupChatGUI = new NewChatGui(ClientHelper.mc);
 }

@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.common.storage;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
@@ -16,10 +16,10 @@ import java.util.*;
 
 public class StorageHandler {
 
-    public static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
-    public static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
-    public static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
-    public static final Map<String, UUID> teamToOwnerMap = new HashMap<>();
+    static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
+    static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
+    static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
+    static final Map<String, UUID> teamToOwnerMap = new HashMap<>();
 
 
     /* Syncs advancements of all players in a team */
@@ -104,8 +104,7 @@ public class StorageHandler {
             NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
             if (playerInfo != null) {
                 String playerName = playerInfo.getGameProfile().getName();
-                ClientHandler.idtoNameMap.put(playerId, playerName);
-                ClientHandler.nametoIdMap.put(playerName, playerId);
+                ClientHelper.addPlayerMapping(playerName, playerId);
             }
         }
     }

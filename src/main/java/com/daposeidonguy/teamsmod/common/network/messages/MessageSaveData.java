@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.server.ServerWorld;
@@ -28,12 +28,12 @@ public class MessageSaveData extends AbstractMessage {
     public void onMessage(final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             readFromNBT(tag);
-            String myTeam = StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID());
+            String myTeam = StorageHelper.getTeam(ClientHelper.mc.player.getUniqueID());
             if (myTeam == null) {
                 GuiHandler.priorityPlayers.clear();
             }
             for (UUID id : GuiHandler.priorityPlayers) {
-                String theirTeam = StorageHandler.uuidToTeamMap.get(id);
+                String theirTeam = StorageHelper.getTeam(id);
                 if (!theirTeam.equals(myTeam)) {
                     GuiHandler.priorityPlayers.remove(id);
                 }

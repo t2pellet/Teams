@@ -1,12 +1,12 @@
 package com.daposeidonguy.teamsmod.client.keybind;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.NewChatGui;
@@ -40,15 +40,15 @@ class KeyBindEvents {
                 Minecraft.getInstance().player.sendChatMessage("/teamsmod accept");
                 Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.5F);
             }
-        } else if (KeyBindHandler.switchChat.isPressed() && StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID()) != null) {
+        } else if (KeyBindHandler.switchChat.isPressed() && StorageHelper.getTeam(ClientHelper.mc.player.getUniqueID()) != null) {
             try {
-                NewChatGui oldGui = (NewChatGui) GuiHandler.persistentChatGUI.get(ClientHandler.mc.ingameGUI);
-                GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
+                NewChatGui oldGui = (NewChatGui) GuiHandler.persistentChatGUI.get(ClientHelper.mc.ingameGUI);
+                GuiHandler.persistentChatGUI.set(ClientHelper.mc.ingameGUI, GuiHandler.backupChatGUI);
                 GuiHandler.backupChatGUI = oldGui;
                 GuiHandler.displayTeamChat = !GuiHandler.displayTeamChat;
                 renderChatTime = 25;
-                prevClientTick = ClientHandler.ticks;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
+                prevClientTick = ClientHelper.ticks;
+                NetworkHelper.sendToServer(new MessageTeamChat(ClientHelper.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             } catch (IllegalAccessException ignore) {
             }
 
@@ -58,10 +58,10 @@ class KeyBindEvents {
     @SubscribeEvent
     public static void renderChatStatus(TickEvent.RenderTickEvent event) {
         if (renderChatTime > 1 && Minecraft.getInstance().currentScreen == null) {
-            if (ClientHandler.ticks - prevClientTick > 0) {
+            if (ClientHelper.ticks - prevClientTick > 0) {
                 --renderChatTime;
             }
-            prevClientTick = ClientHandler.ticks;
+            prevClientTick = ClientHelper.ticks;
             RenderSystem.pushMatrix();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -71,8 +71,8 @@ class KeyBindEvents {
             } else {
                 renderText = "Showing Server Chat";
             }
-            float renderX = ClientHandler.mc.getMainWindow().getScaledWidth() / 2 - ClientHandler.mc.fontRenderer.getStringWidth(renderText) / 2;
-            float renderY = ClientHandler.mc.getMainWindow().getScaledHeight() * 0.74F;
+            float renderX = ClientHelper.mc.getMainWindow().getScaledWidth() / 2 - ClientHelper.mc.fontRenderer.getStringWidth(renderText) / 2;
+            float renderY = ClientHelper.mc.getMainWindow().getScaledHeight() * 0.74F;
             Color colorText = new Color(1.0F, 1.0F, 1.0F, renderChatTime * 1.0F / 25);
             Minecraft.getInstance().fontRenderer.drawString(renderText, renderX, renderY, colorText.getRGB());
             RenderSystem.disableBlend();

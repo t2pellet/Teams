@@ -2,7 +2,7 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -32,7 +32,7 @@ public class ScreenTeamCreator extends AbstractScreenText {
         super.render(mouseX, mouseY, partialTicks);
 
         minecraft.fontRenderer.drawString(I18n.format("teamsmod.create.taken"), guiLeft + WIDTH + 40 - minecraft.fontRenderer.getStringWidth(I18n.format("teamsmod.create.taken")) / 2, guiTop + 35, Color.WHITE.getRGB());
-        Iterator<String> nameIterator = StorageHandler.teamToUuidsMap.keySet().iterator();
+        Iterator<String> nameIterator = StorageHelper.getTeamSet().iterator();
         int yoffset = 15;
         while (nameIterator.hasNext()) {
             String name = nameIterator.next();

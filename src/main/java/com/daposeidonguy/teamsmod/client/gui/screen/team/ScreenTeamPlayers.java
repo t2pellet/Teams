@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.awt.*;
@@ -25,9 +25,9 @@ public class ScreenTeamPlayers extends AbstractScreenBase {
     public void render(int mouseX, int mouseY, final float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         int yoffset = 30;
-        for (UUID uid : StorageHandler.teamToUuidsMap.get(teamName)) {
-            String playerName = ClientHandler.getUsernameFromUUID(uid);
-            ClientHandler.mc.fontRenderer.drawString(playerName, CENTERED_X - (font.getStringWidth(playerName) >> 1), guiTop + yoffset, Color.GRAY.getRGB());
+        for (UUID uid : StorageHelper.getTeamPlayers(teamName)) {
+            String playerName = ClientHelper.getNameFromId(uid);
+            ClientHelper.mc.fontRenderer.drawString(playerName, CENTERED_X - (font.getStringWidth(playerName) >> 1), guiTop + yoffset, Color.GRAY.getRGB());
             yoffset += 15;
         }
     }

@@ -4,7 +4,7 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.common.config.ConfigHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ChatType;
@@ -25,8 +25,8 @@ class ChatEvents {
             if (TeamConfig.disablePrefix && !event.getMessage().getSiblings().isEmpty()) {
                 event.setMessage(event.getMessage().getSiblings().get(0));
             }
-            String senderTeam = StorageHandler.uuidToTeamMap.get(ChatHandler.lastMessageReceived.getFirst());
-            String myTeam = StorageHandler.uuidToTeamMap.get(Minecraft.getInstance().player.getUniqueID());
+            String senderTeam = StorageHelper.getTeam(ChatHandler.lastMessageReceived.getFirst());
+            String myTeam = StorageHelper.getTeam(Minecraft.getInstance().player.getUniqueID());
             boolean doPing = doPing(ChatHandler.lastMessageReceived.getSecond(), Minecraft.getInstance().player.getGameProfile().getName(), myTeam);
             if (doPing) {
                 event.getMessage().setStyle(new Style().setBold(true));
