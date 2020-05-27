@@ -2,11 +2,12 @@ package com.daposeidonguy.teamsmod.common.command;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageInvite;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import com.daposeidonguy.teamsmod.common.storage.StorageEvents;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -119,32 +120,32 @@ public class CommandTeam extends CommandBase {
     private void teamCreate(final MinecraftServer server, final ICommandSender sender, final String teamName) throws CommandException {
         if (sender instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) sender;
-            if (StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+            if (StorageHelper.doesTeamExist(teamName)) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.create.nametaken").getFormattedText());
-            } else if (StorageHandler.uuidToTeamMap.containsKey(player.getUniqueID())) {
+            } else if (StorageHelper.isPlayerInTeam(player.getUniqueID())) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.inteam").getFormattedText());
             }
             sender.sendMessage(new TextComponentTranslation("teamsmod.create.success").appendText(teamName));
             StorageEvents.data.addTeam(teamName, player);
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+            NetworkHelper.sendToAll(new MessageSaveData());
         }
     }
 
     /* Sends the list of teams in the server to the command sender */
     private void teamList(final ICommandSender sender) {
         sender.sendMessage(new TextComponentTranslation("teamsmod.list.success"));
-        for (String s : StorageHandler.teamToUuidsMap.keySet()) {
+        for (String s : StorageHelper.getTeamSet()) {
             sender.sendMessage(new TextComponentString(s));
         }
     }
 
     /* Sends information about the team "teamName" to the command sender */
     private void teamInfo(final MinecraftServer server, final ICommandSender sender, final String teamName) throws CommandException {
-        if (!StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+        if (!StorageHelper.doesTeamExist(teamName)) {
             throw new CommandException(new TextComponentTranslation("teamsmod.info.invalidteam").getFormattedText());
         }
         sender.sendMessage(new TextComponentTranslation("teamsmod.info.success"));
-        for (UUID id : StorageHandler.teamToUuidsMap.get(teamName)) {
+        for (UUID id : StorageHelper.getTeamPlayers(teamName)) {
             GameProfile profile = server.getPlayerProfileCache().getProfileByUUID(id);
             if (profile != null) {
                 sender.sendMessage(new TextComponentString(profile.getName()));
@@ -157,8 +158,8 @@ public class CommandTeam extends CommandBase {
         GameProfile profile = server.getPlayerProfileCache().getGameProfileForUsername(playerName);
         if (profile == null) {
             throw new CommandException(new TextComponentTranslation("teamsmod.nosuchplayer", playerName).getFormattedText());
-        } else if (StorageHandler.uuidToTeamMap.containsKey(profile.getId())) {
-            String playerTeam = StorageHandler.uuidToTeamMap.get(profile.getId());
+        } else if (StorageHelper.isPlayerInTeam(profile.getId())) {
+            String playerTeam = StorageHelper.getTeam(profile.getId());
             sender.sendMessage(new TextComponentTranslation("teamsmod.player.success", playerName, playerTeam));
         } else {
             throw new CommandException(new TextComponentTranslation("teamsmod.player.teamless", playerName).getFormattedText());
@@ -170,17 +171,17 @@ public class CommandTeam extends CommandBase {
         if (sender instanceof EntityPlayer) {
             EntityPlayerMP newPlayer = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
             EntityPlayer oldPlayer = (EntityPlayer) sender;
-            String teamName = StorageHandler.uuidToTeamMap.get(oldPlayer.getUniqueID());
+            String teamName = StorageHelper.getTeam(oldPlayer.getUniqueID());
             if (teamName != null) {
                 if (newPlayer == null) {
                     throw new CommandException(new TextComponentTranslation("teamsmod.invite.nosuchplayer").getFormattedText());
-                } else if (StorageHandler.teamToUuidsMap.get(teamName).contains(newPlayer.getUniqueID())) {
+                } else if (StorageHelper.getTeamPlayers(teamName).contains(newPlayer.getUniqueID())) {
                     throw new CommandException(new TextComponentTranslation("teamsmod.invite.alreadyinteam").getFormattedText());
                 }
                 newPlayer.getEntityData().setString("invitedto", teamName);
                 newPlayer.getEntityData().setUniqueId("invitedby", oldPlayer.getUniqueID());
                 oldPlayer.sendMessage(new TextComponentTranslation("teamsmod.invite.success", newPlayer.getGameProfile().getName()));
-                PacketHandler.INSTANCE.sendTo(new MessageInvite(teamName), newPlayer);
+                NetworkHelper.sendToPlayer(newPlayer, new MessageInvite(teamName));
                 newPlayer.sendMessage(new TextComponentTranslation("teamsmod.invitedtoteam").appendText(teamName));
             } else {
                 throw new CommandException(new TextComponentTranslation("teamsmod.notinteam").getFormattedText());
@@ -196,14 +197,14 @@ public class CommandTeam extends CommandBase {
             UUID uid = invitee.getUniqueID();
             if (teamName.equals("")) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.accept.notinvited").getFormattedText());
-            } else if (StorageHandler.uuidToTeamMap.containsKey(uid)) {
+            } else if (StorageHelper.isPlayerInTeam(uid)) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.inteam").getFormattedText());
             }
             StorageEvents.data.addPlayer(teamName, uid);
             if (!TeamConfig.server.disableAdvancementSync) {
                 StorageHandler.syncPlayers(teamName, invitee);
             }
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+            NetworkHelper.sendToAll(new MessageSaveData());
             sender.sendMessage(new TextComponentTranslation("teamsmod.accept.success", teamName));
             EntityPlayerMP inviter = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(invitee.getEntityData().getUniqueId("invitedby"));
             if (inviter != null) {
@@ -221,13 +222,13 @@ public class CommandTeam extends CommandBase {
             }
             UUID kickID = profile.getId();
             UUID senderID = ((EntityPlayer) sender).getUniqueID();
-            if (StorageHandler.uuidToTeamMap.get(senderID) == null) {
+            if (!StorageHelper.isPlayerInTeam(senderID)) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.notinteam").getFormattedText());
-            } else if (StorageHandler.uuidToTeamMap.get(kickID) == null || !StorageHandler.uuidToTeamMap.get(senderID).equals(StorageHandler.uuidToTeamMap.get(kickID))) {
+            } else if (!StorageHelper.isPlayerInTeam(kickID) || !StorageHelper.getTeam(senderID).equals(StorageHelper.getTeam(kickID))) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.playernotinteam", profile.getName()).getFormattedText());
             } else {
-                String myTeam = StorageHandler.uuidToTeamMap.get(senderID);
-                if (!StorageHandler.getOwner(myTeam).equals(senderID)) {
+                String myTeam = StorageHelper.getTeam(senderID);
+                if (!StorageHelper.getTeamOwner(myTeam).equals(senderID)) {
                     throw new CommandException(new TextComponentTranslation("teamsmod.notowner", profile.getName()).getFormattedText());
                 } else {
                     StorageEvents.data.removePlayer(myTeam, kickID);
@@ -235,7 +236,7 @@ public class CommandTeam extends CommandBase {
                     if (server.getPlayerList().getPlayerByUUID(kickID) != null) {
                         server.getPlayerList().getPlayerByUUID(kickID).sendMessage(new TextComponentTranslation("teamsmod.kicked"));
                     }
-                    PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+                    NetworkHelper.sendToAll(new MessageSaveData());
                 }
             }
         }
@@ -245,33 +246,33 @@ public class CommandTeam extends CommandBase {
     private void teamLeave(final MinecraftServer server, final ICommandSender sender) throws CommandException {
         if (sender instanceof EntityPlayer) {
             EntityPlayer p = (EntityPlayer) sender;
-            if (!StorageHandler.uuidToTeamMap.containsKey(p.getUniqueID())) {
+            String toLeave = StorageHelper.getTeam(p.getUniqueID());
+            if (toLeave == null) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.notinteam").getFormattedText());
             }
-            String toLeave = StorageHandler.uuidToTeamMap.get(p.getUniqueID());
-            if (StorageHandler.getOwner(toLeave).equals(p.getGameProfile().getId())) {
-                if (StorageHandler.teamToUuidsMap.get(toLeave).size() > 1) {
+            if (StorageHelper.getTeamOwner(toLeave).equals(p.getGameProfile().getId())) {
+                if (StorageHelper.getTeamPlayers(toLeave).size() > 1) {
                     throw new CommandException(new TextComponentTranslation("teamsmod.leave.owner").getFormattedText());
                 }
             }
             StorageEvents.data.removePlayer(toLeave, p.getUniqueID());
             p.sendMessage(new TextComponentTranslation("teamsmod.leave.success"));
-            if (StorageHandler.teamToUuidsMap.get(toLeave).isEmpty()) {
+            if (StorageHelper.getTeamPlayers(toLeave).isEmpty()) {
                 StorageEvents.data.removeTeam(toLeave);
             }
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+            NetworkHelper.sendToAll(new MessageSaveData());
         }
     }
 
     /* Removes the team "teamName" from the server */
     private void teamRemove(final MinecraftServer server, final ICommandSender sender, final String teamName) throws CommandException {
         if (sender.canUseCommand(2, this.getName()) || FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || TeamConfig.server.noOpRemoveTeam) {
-            if (!StorageHandler.teamToUuidsMap.containsKey(teamName)) {
+            if (!StorageHelper.doesTeamExist(teamName)) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.remove.nosuchteam", teamName).getFormattedText());
             }
             sender.sendMessage(new TextComponentTranslation("teamsmod.remove.success", teamName));
             StorageEvents.data.removeTeam(teamName);
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+            NetworkHelper.sendToAll(new MessageSaveData());
         } else {
             throw new CommandException("Missing permissions");
         }
@@ -280,17 +281,17 @@ public class CommandTeam extends CommandBase {
     /* Sets configuration option for team "teamName" */
     private void teamConfig(final MinecraftServer server, final ICommandSender sender, final String configOption, boolean configValue) throws CommandException {
         if (sender instanceof EntityPlayer) {
-            String teamName = StorageHandler.uuidToTeamMap.get(((EntityPlayer) sender).getUniqueID());
+            String teamName = StorageHelper.getTeam(((EntityPlayer) sender).getUniqueID());
             if (teamName == null) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.notinteam").getFormattedText());
             }
             if (!configOption.equals("disableAdvancementSync") && !configOption.equals("enableFriendlyFire")) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.config.invalid").getFormattedText());
-            } else if (!((EntityPlayer) sender).getUniqueID().equals(StorageHandler.getOwner(teamName))) {
+            } else if (!((EntityPlayer) sender).getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
                 throw new CommandException(new TextComponentTranslation("teamsmod.notowner").getFormattedText());
             }
-            StorageHandler.teamSettingsMap.get(teamName).put(configOption, configValue);
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
+            StorageHelper.setTeamSetting(teamName, configOption, configValue);
+            NetworkHelper.sendToAll(new MessageSaveData());
             sender.sendMessage(new TextComponentTranslation("teamsmod.config.success"));
         }
     }
@@ -356,16 +357,14 @@ public class CommandTeam extends CommandBase {
                     tabCompletions.add("enableFriendlyFire");
                     break;
                 case "remove":
-                    for (String team : StorageHandler.teamToUuidsMap.keySet()) {
+                    for (String team : StorageHelper.getTeamSet()) {
                         tabCompletions.add(team);
                     }
                     break;
                 case "kick":
-                    String teamName = StorageHandler.uuidToTeamMap.get(sender.getCommandSenderEntity().getUniqueID());
-                    for (UUID playerId : StorageHandler.teamToUuidsMap.get(teamName)) {
-                        if (FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerId) != null) {
-                            tabCompletions.add(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerId).getName());
-                        }
+                    String teamName = StorageHelper.getTeam(sender.getCommandSenderEntity().getUniqueID());
+                    for (UUID playerId : StorageHelper.getTeamPlayers(teamName)) {
+                        tabCompletions.add(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(playerId).getName());
                     }
                     break;
                 case "invite":
@@ -379,7 +378,7 @@ public class CommandTeam extends CommandBase {
                     }
                     break;
                 case "info":
-                    for (String team : StorageHandler.teamToUuidsMap.keySet()) {
+                    for (String team : StorageHelper.getTeamSet()) {
                         tabCompletions.add(team);
                     }
                     break;

@@ -2,7 +2,7 @@ package com.daposeidonguy.teamsmod.client.gui.overlay;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -30,7 +30,7 @@ public class StatusOverlay extends Gui {
         this.offsetY = 0;
         this.count = 0;
         Iterator<UUID> priorityIterator = GuiHandler.priorityPlayers.iterator();
-        Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
+        Iterator<UUID> teamIterator = StorageHelper.getTeamPlayers(teamName).iterator();
         renderStatuses(priorityIterator, true);
         renderStatuses(teamIterator, false);
     }

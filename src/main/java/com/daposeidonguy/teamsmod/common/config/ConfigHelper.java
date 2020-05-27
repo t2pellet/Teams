@@ -17,12 +17,10 @@ public class ConfigHelper {
     public static boolean serverDisableCompass = false;
 
     @SubscribeEvent
-    public static void onConfigUpdate(ConfigChangedEvent.OnConfigChangedEvent event) {
-        System.out.println("LALALA");
+    public void onConfigUpdate(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(TeamsMod.MODID)) {
-            System.out.println("CONFIG CHANGED");
             ConfigManager.sync(TeamsMod.MODID, Config.Type.INSTANCE);
-            PacketHandler.INSTANCE.sendToAll(new MessageConfig());
         }
     }
+
 }

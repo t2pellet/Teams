@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.client.gui.widget;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.team.ScreenMain;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
@@ -40,7 +40,7 @@ public class ButtonEvents {
     public static void buttonPress(final GuiScreenEvent.ActionPerformedEvent event) {
         if (event.getGui() instanceof InventoryEffectRenderer) {
             if (event.getButton().id == GuiHandler.BUTTON_GUI) {
-                ClientHandler.mc.displayGuiScreen(new ScreenMain());
+                ClientHelper.mc.displayGuiScreen(new ScreenMain());
             }
         }
     }

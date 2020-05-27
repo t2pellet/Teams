@@ -3,7 +3,7 @@ package com.daposeidonguy.teamsmod.client.gui.screen.team;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.widget.AbstractButton;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -29,13 +29,13 @@ public class ScreenTeamEditor extends AbstractScreenBase {
         }));
         boolean isTeamOwner = isTeamOwner();
         GuiButton kickButton = this.addButton(new AbstractButton.Basic(GuiHandler.BUTTON_KICKPLAYERS, BUTTON_CENTERED_X, guiTop + 50, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.kick"), btn -> {
-            if (mc.player.getUniqueID().equals(StorageHandler.getOwner(teamName))) {
+            if (mc.player.getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
                 mc.displayGuiScreen(new ScreenTeamKick(this, teamName));
             }
         }));
         kickButton.enabled = isTeamOwner;
         GuiButton configButton = this.addButton(new AbstractButton.Basic(GuiHandler.BUTTON_CONFIG, BUTTON_CENTERED_X, guiTop + 75, BUTTON_WIDTH, BUTTON_HEIGHT, I18n.format("teamsmod.edit.config"), btn -> {
-            if (mc.player.getUniqueID().equals(StorageHandler.getOwner(teamName))) {
+            if (mc.player.getUniqueID().equals(StorageHelper.getTeamOwner(teamName))) {
                 mc.displayGuiScreen(new ScreenTeamConfig(this, teamName));
             }
         }));
@@ -44,13 +44,13 @@ public class ScreenTeamEditor extends AbstractScreenBase {
             mc.player.sendChatMessage("/teamsmod leave");
             mc.displayGuiScreen(null);
         }));
-        leaveButton.enabled = !isTeamOwner || StorageHandler.teamToUuidsMap.get(StorageHandler.uuidToTeamMap.get(mc.player.getUniqueID())).size() == 1;
+        leaveButton.enabled = !isTeamOwner || StorageHelper.getTeamPlayers(StorageHelper.getTeam(mc.player.getUniqueID())).size() == 1;
     }
 
     private boolean isTeamOwner() {
         UUID clientId = mc.player.getUniqueID();
-        String team = StorageHandler.uuidToTeamMap.get(clientId);
-        return StorageHandler.getOwner(team).equals(clientId);
+        String team = StorageHelper.getTeam(clientId);
+        return StorageHelper.getTeamOwner(team).equals(clientId);
     }
 
 }

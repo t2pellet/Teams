@@ -1,16 +1,16 @@
 package com.daposeidonguy.teamsmod.client.gui;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.overlay.CompassOverlay;
 import com.daposeidonguy.teamsmod.client.gui.overlay.StatusOverlay;
 import com.daposeidonguy.teamsmod.client.gui.widget.ChatButton;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.entity.Render;
@@ -37,11 +37,11 @@ public class GuiEvents {
     @SubscribeEvent
     public static void onRenderPlayer(final RenderPlayerEvent.Pre event) throws InvocationTargetException, IllegalAccessException {
         String playerName = event.getEntityPlayer().getGameProfile().getName();
-        String localName = ClientHandler.mc.player.getGameProfile().getName();
+        String localName = ClientHelper.mc.player.getGameProfile().getName();
         if (!localName.equals(playerName) && GuiHandler.chatMap.containsKey(playerName) && !TeamConfig.client.disableChatBubble) {
             String text = GuiHandler.chatMap.get(playerName).first();
             long tick = GuiHandler.chatMap.get(playerName).second();
-            if ((ClientHandler.ticks - tick) < 200) {
+            if ((ClientHelper.ticks - tick) < 200) {
                 GuiEvents.renderName.invoke(event.getRenderer(), event.getEntityPlayer(), text, event.getX(), event.getY() + 0.5, event.getZ(), 64);
             } else {
                 GuiHandler.chatMap.remove(playerName);
@@ -53,17 +53,17 @@ public class GuiEvents {
     @SubscribeEvent
     public static void onChatScreen(final GuiScreenEvent.InitGuiEvent.Post event) throws IllegalAccessException {
         if (event.getGui() instanceof GuiChat) {
-            String myTeam = StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID());
+            String myTeam = StorageHelper.getTeam(ClientHelper.mc.player.getUniqueID());
             if (myTeam != null) {
-                int defaultWidth = ClientHandler.mc.fontRenderer.getStringWidth("Display: Server Chat");
-                ChatButton button = new ChatButton(GuiHandler.BUTTON_CHAT, (int) (ClientHandler.getWindow().getScaledWidth() * 0.99 - defaultWidth), (int) (ClientHandler.getWindow().getScaledHeight() * 0.89), defaultWidth, 10);
+                int defaultWidth = ClientHelper.mc.fontRenderer.getStringWidth("Display: Server Chat");
+                ChatButton button = new ChatButton(GuiHandler.BUTTON_CHAT, (int) (ClientHelper.getWindow().getScaledWidth() * 0.99 - defaultWidth), (int) (ClientHelper.getWindow().getScaledHeight() * 0.89), defaultWidth, 10);
                 event.getButtonList().add(button);
             } else if (GuiHandler.displayTeamChat) {
                 GuiHandler.displayTeamChat = false;
-                GuiNewChat oldGui = (GuiNewChat) GuiHandler.persistentChatGUI.get(ClientHandler.mc.ingameGUI);
-                GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
+                GuiNewChat oldGui = (GuiNewChat) GuiHandler.persistentChatGUI.get(ClientHelper.mc.ingameGUI);
+                GuiHandler.persistentChatGUI.set(ClientHelper.mc.ingameGUI, GuiHandler.backupChatGUI);
                 GuiHandler.backupChatGUI = oldGui;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
+                NetworkHelper.sendToServer(new MessageTeamChat(ClientHelper.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             }
         }
     }
@@ -75,14 +75,14 @@ public class GuiEvents {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient() &&
                 !event.isCancelable() &&
                 event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            UUID id = ClientHandler.mc.player.getUniqueID();
-            String team = StorageHandler.uuidToTeamMap.get(id);
+            UUID id = ClientHelper.mc.player.getUniqueID();
+            String team = StorageHelper.getTeam(id);
             if (team != null) {
                 if (!TeamConfig.client.disableCompassOverlay && KeyBindHandler.doDisplayCompass && !ConfigHelper.serverDisableCompass) {
-                    new CompassOverlay(ClientHandler.mc, team);
+                    new CompassOverlay(ClientHelper.mc, team);
                 }
                 if (!TeamConfig.client.disableStatusOverlay && KeyBindHandler.doDisplayStatus && !ConfigHelper.serverDisableStatus) {
-                    new StatusOverlay(ClientHandler.mc, team);
+                    new StatusOverlay(ClientHelper.mc, team);
                 }
             }
         }

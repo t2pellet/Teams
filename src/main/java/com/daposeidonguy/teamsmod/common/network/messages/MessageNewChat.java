@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
-import com.daposeidonguy.teamsmod.client.chat.ChatHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
+import com.daposeidonguy.teamsmod.client.chat.ChatHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.Minecraft;
@@ -26,10 +26,10 @@ public class MessageNewChat extends AbstractMessage {
         @Override
         public IMessage onMessage(MessageNewChat message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                Pair<String, Long> chatPair = Pair.of(message.tag.getString("message"), ClientHandler.ticks);
-                ChatHandler.lastMessageReceived = Pair.of(ClientHandler.nametoIdMap.get(message.tag.getString("username")), message.tag.getString("message"));
+                Pair<String, Long> chatPair = Pair.of(message.tag.getString("message"), ClientHelper.ticks);
+                ChatHelper.setLastMessage(ClientHelper.getIdFromName(message.tag.getString("username")), message.tag.getString("message"));
                 GuiHandler.chatMap.put(message.tag.getString("username"), chatPair);
-                ChatHandler.lastMessageTeam = message.tag.getBoolean("teamChat");
+                ChatHelper.setLastMessageTeam(message.tag.getBoolean("teamChat"));
             });
             return null;
         }

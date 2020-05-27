@@ -15,7 +15,7 @@ import java.util.UUID;
 /* Registers network messages */
 public class PacketHandler {
 
-    public static SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(TeamsMod.MODID);
+    static SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(TeamsMod.MODID);
 
     public static void register(Side side) {
         int id = 0;
@@ -30,21 +30,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(MessageTeamChat.MessageHandler.class, MessageTeamChat.class, ++id, side);
         INSTANCE.registerMessage(MessageConfig.MessageHandler.class, MessageConfig.class, ++id, side);
         INSTANCE.registerMessage(MessagePos.MessageHandler.class, MessagePos.class, ++id, side);
-    }
-
-    public static void sendToTeam(final EntityPlayerMP player, final AbstractMessage message) {
-        String teamName = StorageHandler.uuidToTeamMap.get(player.getUniqueID());
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        if (teamName != null) {
-            for (UUID playerId : StorageHandler.teamToUuidsMap.get(teamName)) {
-                if (!playerId.equals(player.getUniqueID())) {
-                    EntityPlayerMP teamPlayer = server.getPlayerList().getPlayerByUUID(playerId);
-                    if (teamPlayer != null) {
-                        INSTANCE.sendTo(message, teamPlayer);
-                    }
-                }
-            }
-        }
     }
 
 }

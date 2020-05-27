@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.common.storage;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,9 +14,9 @@ import java.util.*;
 
 public class StorageHandler {
 
-    public static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
-    public static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
-    public static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
+    static final Map<UUID, String> uuidToTeamMap = new HashMap<>(); // UUID to storage Name
+    static final Map<String, List<UUID>> teamToUuidsMap = new HashMap<>(); //Team name to list of UUIDs
+    static final Map<String, Map<String, Boolean>> teamSettingsMap = new HashMap<>(); //Team name to map of settings
 
     /* Syncs advancements of all players in a team */
     public static void syncPlayers(final String team, final EntityPlayerMP player) {
@@ -39,10 +39,6 @@ public class StorageHandler {
                 }
             }
         }
-    }
-
-    public static UUID getOwner(String teamName) {
-        return StorageHandler.teamToUuidsMap.get(teamName).get(0);
     }
 
     public static void readFromNBT(final NBTTagCompound nbt) {
@@ -101,8 +97,7 @@ public class StorageHandler {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
             try {
                 String name = Minecraft.getMinecraft().getConnection().getPlayerInfo(playerId).getGameProfile().getName();
-                ClientHandler.nametoIdMap.put(name, playerId);
-                ClientHandler.idtoNameMap.put(playerId, name);
+                ClientHelper.addPlayerMapping(name, playerId);
             } catch (NullPointerException ignore) {
             }
         }

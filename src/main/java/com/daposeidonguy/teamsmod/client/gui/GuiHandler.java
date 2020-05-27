@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.client.gui;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiNewChat;
@@ -39,5 +39,5 @@ public class GuiHandler {
     public static final int BUTTON_CONFIG = Integer.MIN_VALUE + 21;
     public static final int BUTTON_LEAVE = Integer.MIN_VALUE + 22;
     public static boolean displayTeamChat = false;
-    public static GuiNewChat backupChatGUI = new GuiNewChat(ClientHandler.mc);
+    public static GuiNewChat backupChatGUI = new GuiNewChat(ClientHelper.mc);
 }

@@ -1,6 +1,7 @@
 package com.daposeidonguy.teamsmod.common.storage;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,8 +21,8 @@ public class StorageEvents {
     public static void playerLogIn(final PlayerEvent.PlayerLoggedInEvent event) {
         if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
             event.player.getEntityData().setBoolean("teamChat", false);
-            PacketHandler.INSTANCE.sendToAll(new MessageSaveData());
-            PacketHandler.INSTANCE.sendTo(new MessageSaveData(), (EntityPlayerMP) event.player);
+            NetworkHelper.sendToAll(new MessageSaveData());
+            NetworkHelper.sendToPlayer((EntityPlayerMP) event.player, new MessageSaveData());
         }
     }
 

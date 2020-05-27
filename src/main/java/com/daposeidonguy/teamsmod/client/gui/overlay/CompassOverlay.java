@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.client.gui.overlay;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import com.mojang.realmsclient.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -31,14 +31,14 @@ public class CompassOverlay extends Gui {
         this.scaledHeight = res.getScaledHeight();
 
         double rotationHead = caculateRotationHead();
-        Iterator<UUID> uuidIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
+        Iterator<UUID> uuidIterator = StorageHelper.getTeamPlayers(teamName).iterator();
         int onlineCount = 0;
         while (uuidIterator.hasNext()) {
             UUID playerId = uuidIterator.next();
             if (!playerId.equals(mc.player.getUniqueID())) {
                 NetworkPlayerInfo player = mc.getConnection().getPlayerInfo(playerId);
                 if (player != null) {
-                    Pair<Integer, Vec2f> posPair = ClientHandler.idtoPosMap.get(playerId);
+                    Pair<Integer, Vec2f> posPair = ClientHelper.idtoPosMap.get(playerId);
                     if (posPair == null || posPair.first() != mc.player.getEntityWorld().provider.getDimension()) {
                         continue;
                     }

@@ -1,12 +1,12 @@
 package com.daposeidonguy.teamsmod.client.gui.screen.team;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenBase;
 import com.daposeidonguy.teamsmod.client.gui.screen.AbstractScreenText;
 import com.daposeidonguy.teamsmod.client.gui.widget.AbstractButton;
 import com.daposeidonguy.teamsmod.client.gui.widget.ClearButton;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -28,11 +28,11 @@ public class ScreenTeamKick extends AbstractScreenText {
             mc.displayGuiScreen(null);
         }));
 
-        Iterator<UUID> uuidIterator = StorageHandler.teamToUuidsMap.get(StorageHandler.uuidToTeamMap.get(mc.player.getUniqueID())).iterator();
+        Iterator<UUID> uuidIterator = StorageHelper.getTeamPlayers(StorageHelper.getTeam(mc.player.getUniqueID())).iterator();
         int yoffset = 15;
         while (uuidIterator.hasNext()) {
             UUID uid = uuidIterator.next();
-            String playerName = ClientHandler.getOnlineUsernameFromUUID(uid);
+            String playerName = ClientHelper.getOnlineUsernameFromUUID(uid);
             if (!uid.equals(mc.player.getUniqueID()) && playerName != null) {
                 int width = mc.fontRenderer.getStringWidth(playerName);
                 addButton(new ClearButton(GuiHandler.BUTTON_PLAYERNAME, guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, playerName, btn -> this.text.setText(btn.displayString)));

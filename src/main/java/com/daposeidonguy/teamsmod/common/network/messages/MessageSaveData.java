@@ -1,8 +1,8 @@
 package com.daposeidonguy.teamsmod.common.network.messages;
 
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -27,12 +27,12 @@ public class MessageSaveData extends AbstractMessage {
         public IMessage onMessage(MessageSaveData message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 readFromNBT(message.tag);
-                String myTeam = StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID());
+                String myTeam = StorageHelper.getTeam(ClientHelper.mc.player.getUniqueID());
                 if (myTeam == null) {
                     GuiHandler.priorityPlayers.clear();
                 }
                 for (UUID id : GuiHandler.priorityPlayers) {
-                    String theirTeam = StorageHandler.uuidToTeamMap.get(id);
+                    String theirTeam = StorageHelper.getTeam(id);
                     if (!theirTeam.equals(myTeam)) {
                         GuiHandler.priorityPlayers.remove(id);
                     }

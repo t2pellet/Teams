@@ -1,12 +1,12 @@
 package com.daposeidonguy.teamsmod.client.keybind;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.client.ClientHandler;
+import com.daposeidonguy.teamsmod.client.ClientHelper;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.toasts.ToastInvite;
-import com.daposeidonguy.teamsmod.common.network.PacketHandler;
+import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageTeamChat;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.toasts.IToast;
@@ -42,15 +42,15 @@ class KeyBindEvents {
                 Minecraft.getMinecraft().player.sendChatMessage("/teamsmod accept");
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.5F);
             }
-        } else if (KeyBindHandler.switchChat.isPressed() && StorageHandler.uuidToTeamMap.get(ClientHandler.mc.player.getUniqueID()) != null) {
+        } else if (KeyBindHandler.switchChat.isPressed() && StorageHelper.isPlayerInTeam(ClientHelper.mc.player.getUniqueID())) {
             try {
-                GuiNewChat oldGui = (GuiNewChat) GuiHandler.persistentChatGUI.get(ClientHandler.mc.ingameGUI);
-                GuiHandler.persistentChatGUI.set(ClientHandler.mc.ingameGUI, GuiHandler.backupChatGUI);
+                GuiNewChat oldGui = (GuiNewChat) GuiHandler.persistentChatGUI.get(ClientHelper.mc.ingameGUI);
+                GuiHandler.persistentChatGUI.set(ClientHelper.mc.ingameGUI, GuiHandler.backupChatGUI);
                 GuiHandler.backupChatGUI = oldGui;
                 GuiHandler.displayTeamChat = !GuiHandler.displayTeamChat;
                 renderChatTime = 25;
-                prevClientTick = ClientHandler.ticks;
-                PacketHandler.INSTANCE.sendToServer(new MessageTeamChat(ClientHandler.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
+                prevClientTick = ClientHelper.ticks;
+                NetworkHelper.sendToServer(new MessageTeamChat(ClientHelper.mc.player.getUniqueID(), GuiHandler.displayTeamChat));
             } catch (IllegalAccessException ignore) {
             }
         }
@@ -58,11 +58,11 @@ class KeyBindEvents {
 
     @SubscribeEvent
     public static void renderChatStatus(TickEvent.RenderTickEvent event) {
-        if (renderChatTime > 1 && ClientHandler.mc.currentScreen == null) {
-            if (ClientHandler.ticks - prevClientTick > 0) {
+        if (renderChatTime > 1 && ClientHelper.mc.currentScreen == null) {
+            if (ClientHelper.ticks - prevClientTick > 0) {
                 --renderChatTime;
             }
-            prevClientTick = ClientHandler.ticks;
+            prevClientTick = ClientHelper.ticks;
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -72,10 +72,10 @@ class KeyBindEvents {
             } else {
                 renderText = "Showing Server Chat";
             }
-            float renderX = ClientHandler.getWindow().getScaledWidth() / 2 - ClientHandler.mc.fontRenderer.getStringWidth(renderText) / 2;
-            float renderY = ClientHandler.getWindow().getScaledHeight() * 0.77F;
+            float renderX = ClientHelper.getWindow().getScaledWidth() / 2 - ClientHelper.mc.fontRenderer.getStringWidth(renderText) / 2;
+            float renderY = ClientHelper.getWindow().getScaledHeight() * 0.77F;
             Color colorText = new Color(1.0F, 1.0F, 1.0F, renderChatTime * 1.0F / 25);
-            ClientHandler.mc.fontRenderer.drawString(renderText, (int) renderX, (int) renderY, colorText.getRGB());
+            ClientHelper.mc.fontRenderer.drawString(renderText, (int) renderX, (int) renderY, colorText.getRGB());
             GlStateManager.disableBlend();
             GlStateManager.popMatrix();
         }

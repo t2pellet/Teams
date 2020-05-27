@@ -4,7 +4,7 @@ import com.daposeidonguy.teamsmod.TeamsMod;
 import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.common.config.ConfigHelper;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.text.ChatType;
@@ -26,14 +26,14 @@ class ChatEvents {
             if (TeamConfig.common.disablePrefix && !event.getMessage().getSiblings().isEmpty()) {
                 event.setMessage(event.getMessage().getSiblings().get(0));
             }
-            String senderTeam = StorageHandler.uuidToTeamMap.get(ChatHandler.lastMessageReceived.first());
-            String myTeam = StorageHandler.uuidToTeamMap.get(Minecraft.getMinecraft().player.getUniqueID());
-            boolean doPing = doPing(ChatHandler.lastMessageReceived.second(), Minecraft.getMinecraft().player.getGameProfile().getName(), myTeam);
+            String senderTeam = StorageHelper.getTeam(ChatHelper.getLastMessageSender());
+            String myTeam = StorageHelper.getTeam(Minecraft.getMinecraft().player.getUniqueID());
+            boolean doPing = doPing(ChatHelper.getLastMessage(), Minecraft.getMinecraft().player.getGameProfile().getName(), myTeam);
             if (doPing) {
                 event.getMessage().setStyle(new Style().setBold(true));
             }
             handleTeamChat(event, senderTeam, myTeam);
-            if (doPing && (!ChatHandler.lastMessageTeam || senderTeam.equals(myTeam))) {
+            if (doPing && (!ChatHelper.wasLastMessageTeam() || senderTeam.equals(myTeam))) {
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
         } else if (GuiHandler.displayTeamChat) {
@@ -44,7 +44,7 @@ class ChatEvents {
     /* Handles cancellation and forwarding of incoming chat messages to the appropriate chat GUI (team or global) */
     private static void handleTeamChat(final ClientChatReceivedEvent event, final String senderTeam, final String myTeam) {
         if (GuiHandler.displayTeamChat) {
-            if (ChatHandler.lastMessageTeam) {
+            if (ChatHelper.wasLastMessageTeam()) {
                 if (senderTeam == null || !senderTeam.equals(myTeam)) {
                     event.setCanceled(true);
                 }
@@ -55,7 +55,7 @@ class ChatEvents {
                 }
             }
         } else {
-            if (ChatHandler.lastMessageTeam) {
+            if (ChatHelper.wasLastMessageTeam()) {
                 event.setCanceled(true);
                 if (senderTeam != null && senderTeam.equals(myTeam)) {
                     GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
