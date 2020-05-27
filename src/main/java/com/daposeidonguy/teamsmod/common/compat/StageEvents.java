@@ -1,6 +1,6 @@
 package com.daposeidonguy.teamsmod.common.compat;
 
-import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
+import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,9 +19,9 @@ public class StageEvents {
     public void gameStage(final GameStageEvent event) {
         if (!event.getEntityLiving().getEntityWorld().isRemote && event.getEntityLiving() instanceof PlayerEntity && ModList.get().isLoaded("gamestages")) {
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
-            String teamName = StorageHandler.uuidToTeamMap.get(playerEntity);
+            String teamName = StorageHelper.getTeam(playerEntity.getUniqueID());
             if (teamName != null) {
-                Iterator<UUID> teamIterator = StorageHandler.teamToUuidsMap.get(teamName).iterator();
+                Iterator<UUID> teamIterator = StorageHelper.getTeamPlayers(teamName).iterator();
                 while (teamIterator.hasNext()) {
                     UUID playerId = teamIterator.next();
                     ServerPlayerEntity teamPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerId);
