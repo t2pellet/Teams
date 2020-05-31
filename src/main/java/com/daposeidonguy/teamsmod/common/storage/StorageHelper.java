@@ -34,6 +34,6 @@ public class StorageHelper {
     }
 
     public static boolean doesTeamExist(String teamName) {
-        return StorageHandler.teamToUuidsMap.containsKey(teamName);
+        return teamName == null ? false : StorageHandler.teamToUuidsMap.containsKey(teamName);
     }
 }

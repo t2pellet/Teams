@@ -13,6 +13,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -23,7 +24,7 @@ import java.util.UUID;
 class TeamEvents {
 
     /* Syncs advancements with player and their team upon login (depending on config) */
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onPlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.getEntityWorld().isRemote && !TeamConfig.server.disableAdvancementSync && StorageHelper.isPlayerInTeam(event.player.getUniqueID())) {
             String team = StorageHelper.getTeam(event.player.getUniqueID());
@@ -52,7 +53,7 @@ class TeamEvents {
     public static void achievementGet(final AdvancementEvent event) {
         if (!TeamConfig.server.disableAdvancementSync && !event.getEntity().getEntityWorld().isRemote) {
             String team = StorageHelper.getTeam(event.getEntityPlayer().getUniqueID());
-            if (!StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
+            if (StorageHelper.doesTeamExist(team) && !StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
                 Advancement adv = event.getAdvancement();
                 EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
                 for (UUID playerID : StorageHelper.getTeamPlayers(team)) {

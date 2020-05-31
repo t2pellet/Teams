@@ -33,8 +33,8 @@ public class ScreenTeamInvite extends AbstractScreenText {
         int yoffset = 15;
         while (infoIterator.hasNext()) {
             UUID uid = infoIterator.next().getGameProfile().getId();
-            String playerName = ClientHelper.getOnlineUsernameFromUUID(uid);
-            if (!playerName.equals(clientName) && StorageHelper.isPlayerInTeam(uid)) {
+            String playerName = ClientHelper.getNameFromId(uid);
+            if (!playerName.equals(clientName) && !StorageHelper.isPlayerInTeam(uid)) {
                 int width = mc.fontRenderer.getStringWidth(playerName);
                 this.addButton(new ClearButton(GuiHandler.BUTTON_PLAYERNAME, guiLeft + WIDTH + 42 - width / 2, guiTop + yoffset + 35, width, 10, playerName, btn -> this.text.setText(btn.displayString)));
                 yoffset += 15;

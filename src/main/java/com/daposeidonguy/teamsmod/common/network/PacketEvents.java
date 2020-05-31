@@ -33,7 +33,7 @@ public class PacketEvents {
     @SubscribeEvent
     public static void tickEvent(final TickEvent.ServerTickEvent event) {
         ticks += 1;
-        if (ticks == 200 && FMLCommonHandler.instance().getEffectiveSide().isServer()) {
+        if (ticks == 150 && FMLCommonHandler.instance().getEffectiveSide().isServer()) {
             List<EntityPlayerMP> playerMPList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
             for (EntityPlayerMP playerMP : playerMPList) {
                 NetworkHelper.sendToTeam(playerMP, new MessageHealth(playerMP.getUniqueID(), MathHelper.ceil(playerMP.getHealth())));
@@ -49,7 +49,11 @@ public class PacketEvents {
         if (event.getEntity() instanceof EntityPlayer && FMLCommonHandler.instance().getEffectiveSide().isServer()) {
             UUID playerID = event.getEntity().getUniqueID();
             EntityPlayerMP playerEntity = (EntityPlayerMP) event.getEntityLiving();
-            NetworkHelper.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
+            if (event.getAmount() > event.getEntityLiving().getHealth()) {
+                NetworkHelper.sendToTeam(playerEntity, new MessageHealth(playerID, 0));
+            } else {
+                NetworkHelper.sendToTeam(playerEntity, new MessageHealth(playerID, MathHelper.ceil(event.getEntityLiving().getHealth() - event.getAmount())));
+            }
             NetworkHelper.sendToTeam(playerEntity, new MessageHunger(playerID, playerEntity.getFoodStats().getFoodLevel()));
         }
     }
