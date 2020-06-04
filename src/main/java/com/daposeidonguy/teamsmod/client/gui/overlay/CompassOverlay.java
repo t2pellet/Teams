@@ -53,7 +53,7 @@ public class CompassOverlay extends Gui {
         }
         if (onlineCount != 0) {
             mc.getTextureManager().bindTexture(ICONS);
-            drawTexturedModalRect(scaledWidth / 2 - HUD_WIDTH / 2, (int) (scaledHeight * 0.01) + 5, 0, 74, HUD_WIDTH, HUD_HEIGHT);
+            drawTexturedModalRect(scaledWidth / 2 - HUD_WIDTH / 2, (int) (scaledHeight * 0.01) + 10, 0, 74, HUD_WIDTH, HUD_HEIGHT);
         }
     }
 
@@ -95,7 +95,7 @@ public class CompassOverlay extends Gui {
     private void renderHUDHead(final ResourceLocation skin, final double renderFactor, final double magnitude) {
         mc.getTextureManager().bindTexture(skin);
         int x = (int) (scaledWidth / 2 - HUD_WIDTH / 4 + renderFactor * HUD_WIDTH / 2 + 41);
-        int y = (int) ((scaledHeight * 0.01) + 12);
+        int y = (int) ((scaledHeight * 0.01) + 16);
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.25F, 0.25F, 0.25F);
         String strMagnitude = String.valueOf(Math.round(magnitude * 1000) / 1000) + "m";

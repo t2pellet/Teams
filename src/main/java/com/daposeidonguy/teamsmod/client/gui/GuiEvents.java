@@ -74,7 +74,7 @@ public class GuiEvents {
         //Check if clientside and HUD is enabled
         if (FMLCommonHandler.instance().getEffectiveSide().isClient() &&
                 !event.isCancelable() &&
-                event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+                event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             UUID id = ClientHelper.mc.player.getUniqueID();
             String team = StorageHelper.getTeam(id);
             if (team != null) {
