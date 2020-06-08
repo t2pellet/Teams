@@ -6,6 +6,7 @@ import com.daposeidonguy.teamsmod.common.network.messages.MessageSaveData;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -18,7 +19,7 @@ public class StorageEvents {
     public static TeamDataManager data;
 
     /* Sends SaveData packet to player on login */
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void playerLogIn(final PlayerEvent.PlayerLoggedInEvent event) {
         if (EffectiveSide.get().isServer()) {
             event.getPlayer().getPersistentData().putBoolean("teamChat", false);

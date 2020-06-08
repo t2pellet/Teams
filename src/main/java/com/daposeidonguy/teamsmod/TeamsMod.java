@@ -4,7 +4,7 @@ import com.daposeidonguy.teamsmod.client.gui.GuiHandler;
 import com.daposeidonguy.teamsmod.client.gui.screen.inventory.ScreenTransfer;
 import com.daposeidonguy.teamsmod.client.keybind.KeyBindHandler;
 import com.daposeidonguy.teamsmod.common.command.CommandTeam;
-import com.daposeidonguy.teamsmod.common.compat.StageEvents;
+import com.daposeidonguy.teamsmod.common.compat.gamestages.StageEvents;
 import com.daposeidonguy.teamsmod.common.config.ConfigHolder;
 import com.daposeidonguy.teamsmod.common.inventory.ContainerTypes;
 import com.daposeidonguy.teamsmod.common.network.PacketHandler;

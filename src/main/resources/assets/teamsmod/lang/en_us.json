@@ -62,5 +62,6 @@
   "teamsmod.keyhud.desc": "Toggle Status Overlay",
   "teamsmod.keyaccept.desc": "Accept Team Invite",
   "teamsmod.keyswitch.desc": "Switch Chat Tab",
-  "teamsmod.keycompass.desc": "Toggle Compass Overlay"
+  "teamsmod.keycompass.desc": "Toggle Compass Overlay",
+  "teamsmod.playerinteam": "That player is already in a team!"
 }

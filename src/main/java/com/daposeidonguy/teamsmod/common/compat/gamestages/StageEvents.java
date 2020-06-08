@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.compat;
+package com.daposeidonguy.teamsmod.common.compat.gamestages;
 
 import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.darkhax.gamestages.GameStageHelper;
@@ -16,7 +16,7 @@ public class StageEvents {
 
     /* Syncs gamestages among teammates when GameStageEvent fires */
     @SubscribeEvent
-    public void gameStage(final GameStageEvent event) {
+    public void gameStage(final GameStageEvent.Added event) {
         if (!event.getEntityLiving().getEntityWorld().isRemote && event.getEntityLiving() instanceof PlayerEntity && ModList.get().isLoaded("gamestages")) {
             ServerPlayerEntity playerEntity = (ServerPlayerEntity) event.getEntityLiving();
             String teamName = StorageHelper.getTeam(playerEntity.getUniqueID());
@@ -26,7 +26,7 @@ public class StageEvents {
                     UUID playerId = teamIterator.next();
                     ServerPlayerEntity teamPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(playerId);
                     if (teamPlayer != null) {
-                        GameStageHelper.addStage(teamPlayer, event.getStageName());
+                        GameStageHelper.getPlayerData(teamPlayer).addStage(event.getStageName());
                     }
                 }
             }

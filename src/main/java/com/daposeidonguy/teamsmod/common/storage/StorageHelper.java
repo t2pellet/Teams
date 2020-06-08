@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class StorageHelper {
     public static String getTeam(UUID playerId) {
-        return StorageHelper.getTeam(playerId);
+        return StorageHandler.uuidToTeamMap.get(playerId);
     }
 
     public static UUID getTeamOwner(String teamName) {
@@ -14,7 +14,7 @@ public class StorageHelper {
     }
 
     public static List<UUID> getTeamPlayers(String teamName) {
-        return StorageHelper.getTeamPlayers(teamName);
+        return StorageHandler.teamToUuidsMap.get(teamName);
     }
 
     public static boolean getTeamSetting(String teamName, String setting) {
@@ -30,10 +30,10 @@ public class StorageHelper {
     }
 
     public static boolean isPlayerInTeam(UUID playerId) {
-        return StorageHelper.isPlayerInTeam(playerId);
+        return StorageHandler.uuidToTeamMap.containsKey(playerId);
     }
 
     public static boolean doesTeamExist(String teamName) {
-        return StorageHelper.doesTeamExist(teamName);
+        return teamName != null && StorageHandler.teamToUuidsMap.containsKey(teamName);
     }
 }

@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.common.command;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.common.compat.StageHandler;
+import com.daposeidonguy.teamsmod.common.compat.gamestages.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.network.NetworkHelper;
 import com.daposeidonguy.teamsmod.common.network.messages.MessageInvite;
@@ -148,11 +148,15 @@ public class CommandTeam {
             } else if (StorageHelper.getTeamPlayers(teamName).contains(newPlayer.getUniqueID())) {
                 throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.invite.alreadyinteam")).create();
             }
-            newPlayer.getPersistentData().putString("invitedto", teamName);
-            newPlayer.getPersistentData().putUniqueId("invitedby", oldPlayer.getUniqueID());
-            oldPlayer.sendMessage(new TranslationTextComponent("teamsmod.invite.success", newPlayer.getGameProfile().getName()));
-            NetworkHelper.sendToPlayer(newPlayer, new MessageInvite(teamName));
-            newPlayer.sendMessage(new TranslationTextComponent("teamsmod.invitedtoteam").appendText(teamName));
+            if (!StorageHelper.isPlayerInTeam(newPlayer.getUniqueID())) {
+                newPlayer.getPersistentData().putString("invitedto", teamName);
+                newPlayer.getPersistentData().putUniqueId("invitedby", oldPlayer.getUniqueID());
+                oldPlayer.sendMessage(new TranslationTextComponent("teamsmod.invite.success", newPlayer.getGameProfile().getName()));
+                NetworkHelper.sendToPlayer(newPlayer, new MessageInvite(teamName));
+                newPlayer.sendMessage(new TranslationTextComponent("teamsmod.invitedtoteam").appendText(teamName));
+            } else {
+                oldPlayer.sendMessage(new TranslationTextComponent("teamsmod.invite.playerinteam"));
+            }
             return Command.SINGLE_SUCCESS;
         } else {
             throw new SimpleCommandExceptionType(new TranslationTextComponent("teamsmod.notinteam")).create();

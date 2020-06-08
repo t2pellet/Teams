@@ -1,4 +1,4 @@
-package com.daposeidonguy.teamsmod.common.compat;
+package com.daposeidonguy.teamsmod.common.compat.gamestages;
 
 import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
 import net.darkhax.gamestages.GameStageHelper;

@@ -82,9 +82,14 @@ public class GuiEvents {
         if (event.getGui() instanceof DisplayEffectsScreen) {
             DisplayEffectsScreen guiInventory = (DisplayEffectsScreen) event.getGui();
             boolean isCreative = event.getGui() instanceof CreativeScreen;
-            int renderX = (TeamConfig.useAlternatePosition || isCreative) ? 2 : guiInventory.getGuiLeft() + 152;
-            renderX += TeamConfig.smallIcon ? 5 : 0;
-            int renderY = (TeamConfig.useAlternatePosition || isCreative) ? 2 : guiInventory.getGuiTop() + 4;
+            int renderX, renderY;
+            if (TeamConfig.useAlternatePosition || isCreative) {
+                renderX = 2;
+                renderY = 2;
+            } else {
+                renderX = TeamConfig.smallIcon ? guiInventory.getGuiLeft() + 157 : guiInventory.getGuiLeft() + 152;
+                renderY = guiInventory.getGuiTop() + 4;
+            }
             int renderWidth = TeamConfig.smallIcon ? 15 : 20;
             int renderHeight = TeamConfig.smallIcon ? 13 : 18;
             ResourceLocation renderLoc = TeamConfig.smallIcon ? new ResourceLocation(TeamsMod.MODID, "textures/gui/buttonsmall.png") : new ResourceLocation(TeamsMod.MODID, "textures/gui/button.png");

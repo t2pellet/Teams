@@ -1,7 +1,7 @@
 package com.daposeidonguy.teamsmod.common;
 
 import com.daposeidonguy.teamsmod.TeamsMod;
-import com.daposeidonguy.teamsmod.common.compat.StageHandler;
+import com.daposeidonguy.teamsmod.common.compat.gamestages.StageHandler;
 import com.daposeidonguy.teamsmod.common.config.TeamConfig;
 import com.daposeidonguy.teamsmod.common.storage.StorageHandler;
 import com.daposeidonguy.teamsmod.common.storage.StorageHelper;
@@ -54,7 +54,7 @@ class TeamEvents {
     public static void achievementGet(final AdvancementEvent event) {
         if (!TeamConfig.disableAdvancementSync && !event.getEntity().getEntityWorld().isRemote) {
             String team = StorageHelper.getTeam(event.getPlayer().getUniqueID());
-            if (!StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
+            if (StorageHelper.doesTeamExist(team) && !StorageHelper.getTeamSetting(team, "disableAdvancementSync")) {
                 Advancement adv = event.getAdvancement();
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
                 for (UUID playerID : StorageHelper.getTeamPlayers(team)) {

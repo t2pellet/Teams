@@ -20,11 +20,12 @@ public class KeyBindHandler {
             TeamsMod.logger.info("Registering keybindings...");
             showStatus = new KeyBinding("teamsmod.keyhud.desc", GLFW.GLFW_KEY_V, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(showStatus);
-            showCompass = new KeyBinding("teamsmod.keycompass.desc", GLFW.GLFW_KEY_M, "key.categories.multilpayer");
+            showCompass = new KeyBinding("teamsmod.keycompass.desc", GLFW.GLFW_KEY_M, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(showCompass);
             acceptInvite = new KeyBinding("teamsmod.keyaccept.desc", GLFW.GLFW_KEY_RIGHT_BRACKET, "key.categories.multiplayer");
             ClientRegistry.registerKeyBinding(acceptInvite);
             switchChat = new KeyBinding("teamsmod.keyswitch.desc", GLFW.GLFW_KEY_R, "key.categories.multiplayer");
+            ClientRegistry.registerKeyBinding(switchChat);
         }
     }
 

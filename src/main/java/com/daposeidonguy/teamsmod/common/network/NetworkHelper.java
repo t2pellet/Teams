@@ -27,7 +27,7 @@ public class NetworkHelper {
     }
 
     public static void sendToPlayer(final ServerPlayerEntity player, final AbstractMessage message) {
-        NetworkHelper.sendToPlayer(player, message);
+        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
     public static void sendToAll(final AbstractMessage message) {
