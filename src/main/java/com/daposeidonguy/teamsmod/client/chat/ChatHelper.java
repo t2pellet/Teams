@@ -7,6 +7,7 @@ import java.util.UUID;
 public class ChatHelper {
 
     public static UUID getLastMessageSender() {
+        if (ChatHandler.lastMessageReceived == null) return null;
         return ChatHandler.lastMessageReceived.getFirst();
     }
 
@@ -24,6 +25,11 @@ public class ChatHelper {
 
     public static void setLastMessageTeam(boolean wasTeam) {
         ChatHandler.lastMessageTeam = wasTeam;
+    }
+
+    public static void clear() {
+        ChatHandler.lastMessageTeam = false;
+        ChatHandler.lastMessageReceived = null;
     }
 
 }
