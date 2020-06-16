@@ -9,6 +9,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.GameType;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -60,6 +61,9 @@ public class StatusOverlay extends Gui {
     /* Renders HUD element for player with UUID playerUUID */
     private void renderStatus(final UUID playerUUID) {
         NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(playerUUID);
+        if (info.getGameType() == GameType.SPECTATOR) {
+            return;
+        }
         String playerName = info.getGameProfile().getName();
         ResourceLocation skinLoc = info.getLocationSkin();
         int health = GuiHandler.healthMap.getOrDefault(playerUUID, 20);

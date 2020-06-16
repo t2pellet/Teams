@@ -10,6 +10,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.GameType;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -42,11 +43,13 @@ public class CompassOverlay extends Gui {
                     if (posPair == null || posPair.first() != mc.player.getEntityWorld().provider.getDimension()) {
                         continue;
                     }
-                    ++onlineCount;
-                    double magnitude = calculateMagnitude(posPair.second());
-                    double renderFactor = calculateRenderFactor(posPair.second(), rotationHead, magnitude);
-                    ResourceLocation skin = player.getLocationSkin();
-                    renderHUDHead(skin, renderFactor, magnitude);
+                    if (player.getGameType() != GameType.SPECTATOR) {
+                        ++onlineCount;
+                        double magnitude = calculateMagnitude(posPair.second());
+                        double renderFactor = calculateRenderFactor(posPair.second(), rotationHead, magnitude);
+                        ResourceLocation skin = player.getLocationSkin();
+                        renderHUDHead(skin, renderFactor, magnitude);
+                    }
                 } else {
                 }
             }

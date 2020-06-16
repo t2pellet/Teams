@@ -23,6 +23,7 @@ class ChatEvents {
     @SubscribeEvent
     public static void onChatReceived(final ClientChatReceivedEvent event) {
         if (event.getType() == ChatType.CHAT) {
+            if (ChatHelper.getLastMessageSender() == null) return;
             if (TeamConfig.common.disablePrefix && !event.getMessage().getSiblings().isEmpty()) {
                 event.setMessage(event.getMessage().getSiblings().get(0));
             }
@@ -36,6 +37,7 @@ class ChatEvents {
             if (doPing && (!ChatHelper.wasLastMessageTeam() || senderTeam.equals(myTeam))) {
                 Minecraft.getMinecraft().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 3.0F);
             }
+            ChatHelper.clear();
         } else if (GuiHandler.displayTeamChat) {
             GuiHandler.backupChatGUI.printChatMessage(event.getMessage());
         }
