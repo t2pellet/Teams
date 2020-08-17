@@ -60,7 +60,9 @@ class TeamEvents {
                     EntityPlayerMP teammate = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerID);
                     if (teammate != null) {
                         for (String s : player.getAdvancements().getProgress(adv).getCompletedCriteria()) {
-                            teammate.getAdvancements().grantCriterion(adv, s);
+							if (!teammate.getAdvancements().getProgress(adv).getCriterionProgress(s).isObtained()) {
+								teammate.getAdvancements().grantCriterion(adv, s);
+							}
                         }
                     }
                 }
